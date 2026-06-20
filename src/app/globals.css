@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+:root {
+  --background: #030712;
+  --foreground: #f8fafc;
+  --card-bg: rgba(15, 23, 42, 0.65);
+  --card-border: rgba(51, 65, 85, 0.4);
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-orange: #f97316;
+  --accent-red: #ef4444;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Glassmorphism Classes */
+.glass-panel {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  border-color: rgba(99, 102, 241, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(99, 102, 241, 0.05);
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #030712;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Animated gauge classes */
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-gauge {
+  animation: dash 1.5s ease-out forwards;
+}
+
+/* Print Styling for PDF Exports */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    background-image: none !important;
+    font-size: 11pt !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-page-break {
+    page-break-after: always;
+    display: block !important;
+    margin-top: 2rem;
+  }
+
+  .glass-panel {
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+    color: #000000 !important;
+    page-break-inside: avoid;
+  }
+
+  .text-slate-400, .text-slate-300, .text-gray-400 {
+    color: #475569 !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #000000 !important;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+
+  th, td {
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 6px 12px !important;
+  }
+}
