@@ -1,0 +1,130 @@
+{
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\eslint.config.mjs": {
+    "mtime": 1781961224.6441703,
+    "hash": "dfa1f5f6a7037bf39dc510f30b180002"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\next-env.d.ts": {
+    "mtime": 1781975836.1550002,
+    "hash": "2a74d3909800ca5467fa83b0ab4a4890"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\next.config.ts": {
+    "mtime": 1781961225.033664,
+    "hash": "9b77af189a21a7a64e4bd7a426f64176"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\postcss.config.mjs": {
+    "mtime": 1781961224.7463775,
+    "hash": "239f3ebf717465dc636818a1a619398d"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\test_accuracy.ts": {
+    "mtime": 1781975844.78734,
+    "hash": "5ec12e127d9d151ea6643501dba3c587"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\test_search_values.ts": {
+    "mtime": 1781966111.1830015,
+    "hash": "9cd2ffb4d62828ddcb99303c76872650"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\app\\layout.tsx": {
+    "mtime": 1781962724.9175427,
+    "hash": "4d844dea22d68957195d47664ab64df4"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\app\\page.tsx": {
+    "mtime": 1781978197.1186497,
+    "hash": "1f8c26b9803b6025149f0c656049e246"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\app\\api\\chat\\route.ts": {
+    "mtime": 1781964743.5925436,
+    "hash": "46dd2f17ea4ce9533c3c426cecde6e07"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\app\\api\\export\\route.ts": {
+    "mtime": 1781977034.055274,
+    "hash": "7f64873754831c871cfe83e6cb68f3e6"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\app\\api\\process\\route.ts": {
+    "mtime": 1781978176.2512853,
+    "hash": "2a366a53bb19140ccba7996867b873dc"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\components\\Charts.tsx": {
+    "mtime": 1781964237.8098254,
+    "hash": "59f69e58cae5e332abb77f393ac668e0"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\components\\ChatAssistant.tsx": {
+    "mtime": 1781977764.8181045,
+    "hash": "18a1f24debcf0bf9b6b4cb48b229d61d"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\components\\OverviewCards.tsx": {
+    "mtime": 1781964222.6394787,
+    "hash": "810741127756c871fdd52f810d5fa9a3"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\components\\Panels.tsx": {
+    "mtime": 1781964270.3110032,
+    "hash": "742176396a3b8d6124fe80d5083e1820"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\components\\RiskCard.tsx": {
+    "mtime": 1781977446.814996,
+    "hash": "9f41ef994f414f149378e48a8190dbc6"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\components\\TransactionTable.tsx": {
+    "mtime": 1781977061.4516697,
+    "hash": "aeb1d2a676fea2cba4aec396ef80cb85"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\components\\UploadZone.tsx": {
+    "mtime": 1781962740.6911776,
+    "hash": "de960fa74dd0fab4e7bbd60c4e9572be"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\lib\\engine\\classifier.ts": {
+    "mtime": 1781962587.523839,
+    "hash": "bc03f9c00c139ee4ac3abfcb8155fbbc"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\lib\\engine\\risk.ts": {
+    "mtime": 1781964687.2766826,
+    "hash": "39db3b231ac8a21235baddc014b58e73"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\lib\\parser\\detector.ts": {
+    "mtime": 1781964573.9095733,
+    "hash": "072610cf2fd2d4e73bc3530d96f60c37"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\lib\\parser\\extractors.ts": {
+    "mtime": 1781978153.3757591,
+    "hash": "23234b6928beccdb5d925eda8a65c19d"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\src\\types\\pdf-parse.d.ts": {
+    "mtime": 1781962625.6196673,
+    "hash": "87b0b4c63c0292088888a4d75359d267"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\AGENTS.md": {
+    "mtime": 1782029684.6778305,
+    "hash": "01e05ce76815893143538ee0522dea2c"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\CLAUDE.md": {
+    "mtime": 1781962487.1680448,
+    "hash": "5c27369b226fcf2be8a6cfe52224e767"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\README.md": {
+    "mtime": 1781961224.571136,
+    "hash": "f15aaa42d5d299d091b1171097ea56ad"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\test\\data\\05-versions-space.pdf": {
+    "mtime": 1781964847.625117,
+    "hash": "86bcd5411c23cd3b036475c6314b3923"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\public\\file.svg": {
+    "mtime": 1781961224.7720783,
+    "hash": "d09f95206c3fa0bb9bd9fefabfd0ea71"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\public\\globe.svg": {
+    "mtime": 1781961224.8125288,
+    "hash": "2aaafa6a49b6563925fe440891e32717"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\public\\next.svg": {
+    "mtime": 1781961224.858081,
+    "hash": "8e061864f388b47f33a1c3780831193e"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\public\\vercel.svg": {
+    "mtime": 1781961224.901959,
+    "hash": "c0af2f507b369b085b35ef4bbe3bcf1e"
+  },
+  "C:\\Users\\acer\\Documents\\GitHub\\FinScope\\public\\window.svg": {
+    "mtime": 1781961224.9411118,
+    "hash": "a2760511c65806022ad20adf74370ff3"
+  }
+}

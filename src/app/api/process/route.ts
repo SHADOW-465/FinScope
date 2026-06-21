@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import pdf from "pdf-parse";
+import pdfParser from "pdf-parse/lib/pdf-parse.js";
 import { detectBank } from "@/lib/parser/detector";
 import { parseStatementText, RawTransaction } from "@/lib/parser/extractors";
 import { classifyTransactions } from "@/lib/engine/classifier";
 import { computeRiskProfile } from "@/lib/engine/risk";
-
-// Safe ESM/CJS interop for pdf-parse
-const pdfParser = typeof pdf === "function" ? pdf : (pdf as any).default || require("pdf-parse");
 
 export async function POST(req: NextRequest) {
   try {
