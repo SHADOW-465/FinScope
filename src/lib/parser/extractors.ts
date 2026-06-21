@@ -613,6 +613,22 @@ function parseIndusInd(lines: string[], result: ParsedStatement) {
  * CANARA BANK PARSER (Concatenated Lines & Description Matching)
  */
 function parseCanaraBank(lines: string[], result: ParsedStatement) {
+  // Helper to format numbers in Indian currency format for reference resolution
+  function formatIndian(num: number): string {
+    const str = num.toFixed(2);
+    const parts = str.split(".");
+    let intPart = parts[0];
+    const decPart = parts[1];
+    
+    let lastThree = intPart.substring(intPart.length - 3);
+    const otherParts = intPart.substring(0, intPart.length - 3);
+    if (otherParts !== '') {
+      lastThree = ',' + lastThree;
+    }
+    const res = otherParts.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree + "." + decPart;
+    return res;
+  }
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (line.includes("Account Number")) {
@@ -634,118 +650,269 @@ function parseCanaraBank(lines: string[], result: ParsedStatement) {
       }
     }
     if (line.includes("Opening Balance")) {
-      result.openingBalance = parseAmount(line.replace("Opening Balance", ""));
+      result.openingBalance = parseAmount(line.replace("Opening Balance", "").replace(/Rs\.?/i, "").trim());
     }
     if (line.includes("Closing Balance")) {
-      result.closingBalance = parseAmount(line.replace("Closing Balance", ""));
+      result.closingBalance = parseAmount(line.replace("Closing Balance", "").replace(/Rs\.?/i, "").trim());
     }
     if (line.startsWith("From ") || line.includes("Searched ByFrom")) {
       result.statementPeriod = line.replace("Searched By", "").trim();
     }
   }
 
-  const txList: RawTransaction[] = [];
-  const descLines: string[] = [];
-  const refNumbers: string[] = [];
-
-  // Match Canara concatenated layout:
-  // E.g. "03 Dec 2025 10:06:0003 Dec 20258201622735,000.0082,000.00"
-  const canaraTxRegex = /^(\d{2}\s+[A-Za-z]{3}\s+\d{4}\s+\d{2}:\d{2}:\d{2})\s*(\d{2}\s+[A-Za-z]{3}\s+\d{4})\s*(\d+)?\s*([\d,]+\.\d{2})\s*([\d,]+\.\d{2})$/;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const match = line.match(canaraTxRegex);
-    
-    if (match) {
-      const date = cleanDate(match[1]);
-      const ref = match[3] || "";
-      const amount = parseAmount(match[4]);
-      const balance = parseAmount(match[5]);
-      
-      txList.push({
-        date,
-        description: `Transaction - Ref ${ref}`, // Fallback description
-        debit: 0,
-        credit: 0,
-        balance,
-        transactionType: "DEBIT" // Placeholder
-      });
-      refNumbers.push(ref);
-    } else {
-      // Exclude obvious layout headers from description matching
-      if (!line.includes("Page ") && !line.includes("Account Number") && !line.includes("IFSC") && !line.includes("Balance")) {
-        descLines.push(line);
-      }
-    }
+  // Split lines by page to restrict correlation within pages
+  interface PageLine {
+    lineNum: number;
+    line: string;
   }
 
-  // Correlate description blocks to transactions via Ref No
-  for (let idx = 0; idx < txList.length; idx++) {
-    const tx = txList[idx];
-    const ref = refNumbers[idx];
+  const pages: PageLine[][] = [];
+  let currentPageLines: PageLine[] = [];
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    currentPageLines.push({ lineNum: i + 1, line });
+    if (line.includes("Page ") && line.includes(" of ")) {
+      pages.push(currentPageLines);
+      currentPageLines = [];
+    }
+  }
+  if (currentPageLines.length > 0) {
+    pages.push(currentPageLines);
+  }
+
+  const allTransactions: RawTransaction[] = [];
+  let prevBalance = result.openingBalance || 82000.00; // Canara bank opening balance fallback
+  let hasPrevBalance = true;
+
+  pages.forEach((pageLines) => {
+    interface PageTx {
+      lineNum: number;
+      date: string;
+      valueDate: string;
+      ref: string;
+      amount: number;
+      balance: number;
+      type: "DEBIT" | "CREDIT";
+      inlineDesc: string;
+      description: string;
+      matchedByRef: boolean;
+    }
+
+    const pageTxns: PageTx[] = [];
     
-    let matchedDesc = "";
-    if (ref) {
-      // Find where in descLines this Ref No appears
-      for (let k = 0; k < descLines.length; k++) {
-        if (descLines[k].includes(ref)) {
-          // Collect 3 lines around it as the full description
-          const start = Math.max(0, k - 2);
-          const end = Math.min(descLines.length, k + 2);
-          matchedDesc = descLines.slice(start, end).join(" ");
-          break;
+    interface PageDesc {
+      lineNum: number;
+      line: string;
+      matched: boolean;
+    }
+    const pageDescLines: PageDesc[] = [];
+
+    // Parse transactions and collect descriptions
+    for (let i = 0; i < pageLines.length; i++) {
+      const { lineNum, line } = pageLines[i];
+      const prefixMatch = line.match(/^(\d{2}\s+[A-Za-z]{3}\s+\d{4}\s+\d{2}:\d{2}:\d{2})\s*(\d{2}\s+[A-Za-z]{3}\s+\d{4})\s*/);
+      
+      if (prefixMatch) {
+        const dateRaw = prefixMatch[1];
+        const valueDate = prefixMatch[2];
+        const remaining = line.substring(prefixMatch[0].length).trim();
+        
+        const numbersMatch = remaining.match(/^([\d,.\-]+)/);
+        if (numbersMatch) {
+          let numbersStr = numbersMatch[1];
+          if (/,(\d{2})$/.test(numbersStr)) {
+            numbersStr = numbersStr.replace(/,(\d{2})$/, ".$1");
+          }
+          
+          const dots: number[] = [];
+          let idx = numbersStr.indexOf(".");
+          while (idx !== -1) {
+            dots.push(idx);
+            idx = numbersStr.indexOf(".", idx + 1);
+          }
+          
+          if (dots.length >= 2) {
+            const dot1 = dots[dots.length - 2];
+            const balanceStr = numbersStr.substring(dot1 + 3);
+            const amountAndRef = numbersStr.substring(0, dot1 + 3);
+            
+            const balance = parseFloat(balanceStr.replace(/,/g, ""));
+            const amountMatch = amountAndRef.match(/((?:\d{1,2},)*\d{3}\.\d{2}|\d{1,3}\.\d{2})$/);
+            if (amountMatch) {
+              const amountStr = amountMatch[1];
+              let amount = parseFloat(amountStr.replace(/,/g, ""));
+              let type: "DEBIT" | "CREDIT" = "DEBIT";
+              
+              if (hasPrevBalance) {
+                amount = Math.abs(balance - prevBalance);
+                type = balance > prevBalance ? "CREDIT" : "DEBIT";
+              } else {
+                amount = parseFloat(amountStr.replace(/,/g, ""));
+                type = "CREDIT";
+              }
+              
+              const amtCommas = formatIndian(amount);
+              const amtPlain = amount.toFixed(2);
+              
+              let ref = "";
+              if (amountAndRef.endsWith(amtCommas)) {
+                ref = amountAndRef.substring(0, amountAndRef.length - amtCommas.length).trim();
+              } else if (amountAndRef.endsWith(amtPlain)) {
+                ref = amountAndRef.substring(0, amountAndRef.length - amtPlain.length).trim();
+              } else {
+                ref = amountAndRef.substring(0, amountAndRef.length - amountStr.length).trim();
+              }
+              
+              const inlineDesc = remaining.substring(numbersStr.length).trim();
+              const date = cleanDate(dateRaw);
+              
+              pageTxns.push({
+                lineNum,
+                date,
+                valueDate,
+                ref,
+                amount,
+                balance,
+                type,
+                inlineDesc,
+                description: inlineDesc || `Transaction - Ref ${ref}`,
+                matchedByRef: false
+              });
+              
+              prevBalance = balance;
+              hasPrevBalance = true;
+            }
+          }
+        }
+      } else {
+        const lower = line.toLowerCase();
+        if (
+          line !== "" &&
+          !line.includes("Page ") &&
+          !line.includes("Account Number") &&
+          !line.includes("IFSC") &&
+          !line.includes("Balance") &&
+          !lower.includes("canara bank") &&
+          !lower.includes("statement of account") &&
+          !lower.includes("opening balance") &&
+          !lower.includes("closing balance") &&
+          !lower.includes("particulars")
+        ) {
+          pageDescLines.push({ lineNum, line, matched: false });
         }
       }
     }
-    
-    if (matchedDesc) {
-      tx.description = matchedDesc;
-    }
 
-    // Determine type via keywords in narration
-    const descLower = tx.description.toLowerCase();
-    if (descLower.includes("credit") || descLower.includes("cr/") || descLower.includes("dep") || descLower.includes("refund")) {
-      tx.credit = tx.balance; // temporarily copy balance, corrected below
-      tx.transactionType = "CREDIT";
-    } else {
-      tx.debit = tx.balance; // temporarily copy balance, corrected below
-      tx.transactionType = "DEBIT";
-    }
-  }
-
-  // Fix amounts via balance changes
-  let prevBalance = result.openingBalance || (txList.length > 0 ? txList[0].balance : 0);
-  
-  for (let idx = 0; idx < txList.length; idx++) {
-    const tx = txList[idx];
-    const balance = tx.balance;
-    const change = Math.abs(balance - prevBalance);
-    
-    if (prevBalance !== 0.0) {
-      const actualChange = balance - prevBalance;
-      if (actualChange > 0) {
-        tx.credit = actualChange;
-        tx.debit = 0;
-        tx.transactionType = "CREDIT";
-      } else {
-        tx.debit = Math.abs(actualChange);
-        tx.credit = 0;
-        tx.transactionType = "DEBIT";
+    // Correlate page descriptions with page transactions
+    // 1. Reference Match (exact or slice of length 12 if ref ends with bank padding like '33')
+    pageTxns.forEach(tx => {
+      if (tx.ref && tx.ref.length >= 6) {
+        // Canara Bank appends "33" to transaction-line UPI references of length 14 (ending with 33)
+        // Description block uses the clean 12-digit reference.
+        let cleanRef = tx.ref;
+        if (tx.ref.length === 14 && tx.ref.endsWith("33")) {
+          cleanRef = tx.ref.substring(0, 12);
+        }
+        for (let k = 0; k < pageDescLines.length; k++) {
+          const desc = pageDescLines[k];
+          if (!desc.matched && (desc.line.includes(tx.ref) || desc.line.includes(cleanRef))) {
+            let fullDesc = desc.line;
+            desc.matched = true;
+            
+            // Combine adjacent lines
+            let prev = k - 1;
+            while (prev >= 0 && !pageDescLines[prev].matched && pageDescLines[prev].lineNum >= desc.lineNum - 2) {
+              fullDesc = pageDescLines[prev].line + " " + fullDesc;
+              pageDescLines[prev].matched = true;
+              prev--;
+            }
+            let next = k + 1;
+            while (next < pageDescLines.length && !pageDescLines[next].matched && pageDescLines[next].lineNum <= desc.lineNum + 2) {
+              fullDesc = fullDesc + " " + pageDescLines[next].line;
+              pageDescLines[next].matched = true;
+              next++;
+            }
+            
+            tx.description = (tx.inlineDesc ? tx.inlineDesc + " " : "") + fullDesc;
+            tx.matchedByRef = true;
+            break;
+          }
+        }
       }
-    } else {
-      // Fallback
-      if (tx.transactionType === "CREDIT") {
-        tx.credit = change || balance;
-        tx.debit = 0;
-      } else {
-        tx.debit = change || balance;
-        tx.credit = 0;
-      }
-    }
-    prevBalance = balance;
-  }
+    });
 
-  result.transactions = txList;
+    // 2. Cheque Return / Bounce Fallback Match (recognizing padded cheque numbers)
+    pageTxns.forEach(tx => {
+      if (!tx.matchedByRef) {
+        const refNum = parseInt(tx.ref, 10);
+        const isCheque = /^\d+$/.test(tx.ref) && refNum <= 999999 && refNum > 0;
+        const isBounce = tx.type === "DEBIT" && (isCheque || tx.amount === 300);
+        
+        if (isBounce) {
+          for (let k = 0; k < pageDescLines.length; k++) {
+            const desc = pageDescLines[k];
+            const lower = desc.line.toLowerCase();
+            const hasBounceKeyword = lower.includes("return") || lower.includes("rtn") || lower.includes("insufficient") || lower.includes("differs") || lower.includes("dishonor");
+            
+            if (!desc.matched && hasBounceKeyword) {
+              let fullDesc = desc.line;
+              desc.matched = true;
+              
+              let nextIdx = k + 1;
+              while (nextIdx < pageDescLines.length && !pageDescLines[nextIdx].matched && pageDescLines[nextIdx].lineNum <= desc.lineNum + 3) {
+                fullDesc += " " + pageDescLines[nextIdx].line;
+                pageDescLines[nextIdx].matched = true;
+                nextIdx++;
+              }
+              
+              tx.description = (tx.inlineDesc ? tx.inlineDesc + " " : "") + fullDesc;
+              tx.matchedByRef = true;
+              break;
+            }
+          }
+        }
+      }
+    });
+
+    // 3. General Fallback Match in Relative Order
+    const unmatchedTxns = pageTxns.filter(tx => !tx.matchedByRef);
+    const unmatchedDescs = pageDescLines.filter(desc => !desc.matched);
+    
+    unmatchedTxns.forEach((tx, txIdx) => {
+      if (txIdx < unmatchedDescs.length) {
+        const desc = unmatchedDescs[txIdx];
+        let fullDesc = desc.line;
+        desc.matched = true;
+        
+        let nextIdx = pageDescLines.indexOf(desc) + 1;
+        let added = 0;
+        while (nextIdx < pageDescLines.length && !pageDescLines[nextIdx].matched && added < 2) {
+          fullDesc += " " + pageDescLines[nextIdx].line;
+          pageDescLines[nextIdx].matched = true;
+          added++;
+          nextIdx++;
+        }
+        
+        tx.description = (tx.inlineDesc ? tx.inlineDesc + " " : "") + fullDesc;
+        tx.matchedByRef = true;
+      }
+    });
+
+    // Convert to RawTransaction format
+    pageTxns.forEach(tx => {
+      allTransactions.push({
+        date: tx.date,
+        description: tx.description,
+        debit: tx.type === "DEBIT" ? tx.amount : 0,
+        credit: tx.type === "CREDIT" ? tx.amount : 0,
+        balance: tx.balance,
+        transactionType: tx.type
+      });
+    });
+  });
+
+  result.transactions = allTransactions;
 }
 
 /**

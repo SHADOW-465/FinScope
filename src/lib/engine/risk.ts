@@ -174,9 +174,15 @@ export function computeRiskProfile(
     const descLower = txn.description.toLowerCase();
     const isBounce = descLower.includes("bounce") || 
                      descLower.includes("nsf") || 
-                     descLower.includes("return") && descLower.includes("chg") ||
+                     (descLower.includes("return") && descLower.includes("chg")) ||
                      descLower.includes("dishonour") || 
-                     descLower.includes("ecs rt");
+                     descLower.includes("ecs rt") ||
+                     descLower.includes("chq return") ||
+                     descLower.includes("cheque return") ||
+                     descLower.includes("chq rtn") ||
+                     descLower.includes("cheque rtn") ||
+                     descLower.includes("inw chq rt") ||
+                     (descLower.includes("chq") && descLower.includes("return"));
                      
     if (txn.transactionType === "DEBIT" && isBounce) {
       bounce_analysis.push({

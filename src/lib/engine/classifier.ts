@@ -22,12 +22,16 @@ export function classifyTransactions(rawTxns: RawTransaction[]): ClassifiedTrans
     // E.g. UPI/Swiggy/swiggystores@i -> "Swiggy"
     if (descLower.includes("upi/")) {
       const parts = desc.split("/");
-      // Usually parts[1] is the user-visible name, parts[2] is UPI ID, or vice versa
-      if (parts.length > 1) {
-        let rawName = parts[1].trim();
-        // If it's a code, try parts[2]
-        if (rawName.match(/^\d+$/) && parts.length > 2) {
-          rawName = parts[2].trim();
+      // If parts[1] is "DR" or "CR" or empty, skip it to find the name
+      let nameIdx = 1;
+      while (nameIdx < parts.length && (parts[nameIdx].toUpperCase() === "DR" || parts[nameIdx].toUpperCase() === "CR" || parts[nameIdx].trim() === "")) {
+        nameIdx++;
+      }
+      if (nameIdx < parts.length) {
+        let rawName = parts[nameIdx].trim();
+        // If it's a numeric reference code, try the next part
+        if (rawName.match(/^\d+$/) && nameIdx + 1 < parts.length) {
+          rawName = parts[nameIdx + 1].trim();
         }
         counterparty = cleanCounterpartyName(rawName);
       }
