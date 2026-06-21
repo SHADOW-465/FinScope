@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { ArrowUpRight, ShieldAlert, BadgeAlert, Landmark, Wallet, ShieldCheck } from "lucide-react";
+import React, { useMemo } from "react";
+import { ArrowUpRight, ShieldAlert, BadgeAlert, Landmark, ShieldCheck } from "lucide-react";
 
 interface IncomeSource {
   source: string;
@@ -37,9 +37,10 @@ interface PanelsProps {
   liabilities: Liability[];
   bounces: ChequeBounce[];
   balanceRisks: BalanceRisk[];
+  durationMonths?: number;
 }
 
-export default function Panels({ income, liabilities, bounces, balanceRisks }: PanelsProps) {
+export default function Panels({ income, liabilities, bounces, balanceRisks, durationMonths = 1 }: PanelsProps) {
   const fmt = (val: number) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -51,9 +52,70 @@ export default function Panels({ income, liabilities, bounces, balanceRisks }: P
   const hasBounces = bounces.length > 0;
   const hasNegativeBalances = balanceRisks.some(r => r.risk_type === "Negative Balance");
 
+  // Helper to identify Business vs Individual counterparties
+  const getSourceType = (source: string): "Business" | "Individual" => {
+    const srcLower = source.toLowerCase();
+    if (
+      /pvt|ltd|limited|inc|corp|co\b|services|technologies|solutions|club|mandram|welfare|association|bank|trust|enterprise|trading|systems|industries/i.test(srcLower)
+    ) {
+      return "Business";
+    }
+    return "Individual";
+  };
+
+  // Sort income streams descending by cumulative amount
+  const sortedIncome = useMemo(() => {
+    return [...income].sort((a, b) => b.amount - a.amount);
+  }, [income]);
+
+  // Bounces & Returns Cardbox Component
+  const bouncesCard = hasBounces && (
+    <div className="glass-panel rounded-2xl p-6 border-rose-500/25 bg-rose-950/5 shadow-lg shadow-rose-950/10 animate-in fade-in duration-300">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+            <ShieldAlert className="w-5 h-5 text-rose-400 animate-pulse" />
+            Bounces & Payment Returns
+          </h3>
+          <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-rose-500/25 text-rose-300 animate-pulse">
+            {bounces.length} flagged
+          </span>
+        </div>
+        <p className="text-xs text-slate-400 leading-normal">
+          Failed clearing transactions, cheque returns, and penalty return charges:
+        </p>
+        <div className="overflow-x-auto max-h-[300px] overflow-y-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="border-b border-slate-800/80 text-slate-400 font-semibold sticky top-0 bg-slate-950/80 backdrop-blur-sm z-10">
+                <th className="py-2.5 px-3">Date</th>
+                <th className="py-2.5 px-3">Narration Description</th>
+                <th className="py-2.5 px-3">Transaction Amount</th>
+                <th className="py-2.5 px-3 text-right">Bounce Charge Fee</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800/40">
+              {bounces.map((b, idx) => (
+                <tr key={idx} className="hover:bg-slate-900/15 bg-rose-950/5">
+                  <td className="py-3 px-3 text-slate-300 whitespace-nowrap font-mono">{b.date}</td>
+                  <td className="py-3 px-3 font-semibold text-rose-300 max-w-md break-words">{b.description}</td>
+                  <td className="py-3 px-3 text-slate-300 whitespace-nowrap font-medium">{fmt(b.amount)}</td>
+                  <td className="py-3 px-3 text-right text-rose-400 font-bold whitespace-nowrap">{fmt(b.charge)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
-      {/* 2-Column Grid for Income & EMI Liabilities on Desktop, Stacked on Mobile */}
+      {/* 1. If has bounces, render at the very top */}
+      {bouncesCard}
+
+      {/* 2. 2-Column Grid for Income & EMI Liabilities on Desktop, Stacked on Mobile */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* INCOME STREAMS CARDBOX */}
         <div className="glass-panel rounded-2xl p-6 flex flex-col justify-between hover:shadow-indigo-500/5 hover:shadow-md transition-all duration-300">
@@ -68,9 +130,9 @@ export default function Panels({ income, liabilities, bounces, balanceRisks }: P
               </span>
             </div>
             <p className="text-xs text-slate-400 leading-normal">
-              Recurring credits, salary deposits, and regular revenue streams:
+              Recurring credits, salary deposits, and regular revenue streams (individual or business classification):
             </p>
-            {income.length === 0 ? (
+            {sortedIncome.length === 0 ? (
               <div className="flex flex-col items-center justify-center p-8 bg-slate-900/30 border border-slate-800/80 rounded-xl min-h-[150px]">
                 <p className="text-xs text-slate-500">No recurring credits detected</p>
               </div>
@@ -80,29 +142,41 @@ export default function Panels({ income, liabilities, bounces, balanceRisks }: P
                   <thead>
                     <tr className="border-b border-slate-800/80 text-slate-400 font-semibold sticky top-0 bg-slate-950/80 backdrop-blur-sm z-10">
                       <th className="py-2.5 px-2">Source Name</th>
-                      <th className="py-2.5 px-2">Amount</th>
-                      <th className="py-2.5 px-2">Freq</th>
+                      <th className="py-2.5 px-2">Type</th>
+                      <th className="py-2.5 px-2 text-right">Cumulative Deposits</th>
+                      <th className="py-2.5 px-2 text-right">Monthly Avg</th>
                       <th className="py-2.5 px-2 text-right">Conf</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/40">
-                    {income.map((inc, idx) => (
-                      <tr key={idx} className="hover:bg-slate-900/20">
-                        <td className="py-3 px-2 font-semibold text-slate-200 flex items-center gap-1.5 truncate max-w-[130px]" title={inc.source}>
-                          <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-                          {inc.source}
-                        </td>
-                        <td className="py-3 px-2 text-slate-200 whitespace-nowrap font-medium">{fmt(inc.amount)}</td>
-                        <td className="py-3 px-2">
-                          <span className="bg-emerald-500/10 text-emerald-400 text-[9px] px-1.5 py-0.5 rounded-md border border-emerald-500/25">
-                            {inc.frequency}
-                          </span>
-                        </td>
-                        <td className="py-3 px-2 text-right text-slate-400 font-medium">
-                          {(inc.confidence * 100).toFixed(0)}%
-                        </td>
-                      </tr>
-                    ))}
+                    {sortedIncome.map((inc, idx) => {
+                      const type = getSourceType(inc.source);
+                      const months = durationMonths && durationMonths > 0 ? durationMonths : 1;
+                      const avgMonthly = inc.amount / months;
+
+                      return (
+                        <tr key={idx} className="hover:bg-slate-900/20">
+                          <td className="py-3 px-2 font-semibold text-slate-200 flex items-center gap-1.5 truncate max-w-[130px]" title={inc.source}>
+                            <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
+                            {inc.source}
+                          </td>
+                          <td className="py-3 px-2">
+                            <span className={`text-[9px] px-1.5 py-0.5 rounded-md border ${
+                              type === "Business"
+                                ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/25"
+                                : "bg-teal-500/10 text-teal-400 border-teal-500/25"
+                            }`}>
+                              {type}
+                            </span>
+                          </td>
+                          <td className="py-3 px-2 text-right text-slate-200 whitespace-nowrap font-medium">{fmt(inc.amount)}</td>
+                          <td className="py-3 px-2 text-right text-emerald-400 whitespace-nowrap font-semibold">{fmt(avgMonthly)}</td>
+                          <td className="py-3 px-2 text-right text-slate-400 font-medium">
+                            {(inc.confidence * 100).toFixed(0)}%
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -161,62 +235,6 @@ export default function Panels({ income, liabilities, bounces, balanceRisks }: P
               </div>
             )}
           </div>
-        </div>
-      </div>
-
-      {/* BOUNCES & RETURNS CARDBOX (Full Width, Warning highlights if bounces > 0) */}
-      <div className={`glass-panel rounded-2xl p-6 transition-all duration-300 ${
-        hasBounces ? "border-rose-500/25 bg-rose-950/5 shadow-lg shadow-rose-950/10 animate-in fade-in duration-300" : "hover:shadow-indigo-500/5 hover:shadow-md"
-      }`}>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-              {hasBounces ? (
-                <ShieldAlert className="w-5 h-5 text-rose-400 animate-pulse" />
-              ) : (
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
-              )}
-              Bounces & Payment Returns
-            </h3>
-            <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold ${
-              hasBounces ? "bg-rose-500/25 text-rose-300 animate-pulse" : "bg-slate-800 text-slate-400"
-            }`}>
-              {bounces.length} flagged
-            </span>
-          </div>
-          <p className="text-xs text-slate-400 leading-normal">
-            Failed clearing transactions, cheque returns, and penalty return charges:
-          </p>
-          {bounces.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 bg-emerald-950/5 border border-emerald-500/15 rounded-xl text-center">
-              <ShieldCheck className="w-8 h-8 text-emerald-400 mb-1" />
-              <p className="text-xs font-semibold text-slate-300">Zero Payment Returns Flagged</p>
-              <p className="text-[10px] text-slate-500">No cheque bounces or return penalty fees found.</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto max-h-[300px] overflow-y-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-800/80 text-slate-400 font-semibold sticky top-0 bg-slate-950/80 backdrop-blur-sm z-10">
-                    <th className="py-2.5 px-3">Date</th>
-                    <th className="py-2.5 px-3">Narration Description</th>
-                    <th className="py-2.5 px-3">Transaction Amount</th>
-                    <th className="py-2.5 px-3 text-right">Bounce Charge Fee</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/40">
-                  {bounces.map((b, idx) => (
-                    <tr key={idx} className="hover:bg-slate-900/15 bg-rose-950/5">
-                      <td className="py-3 px-3 text-slate-300 whitespace-nowrap font-mono">{b.date}</td>
-                      <td className="py-3 px-3 font-semibold text-rose-300 max-w-md break-words">{b.description}</td>
-                      <td className="py-3 px-3 text-slate-300 whitespace-nowrap font-medium">{fmt(b.amount)}</td>
-                      <td className="py-3 px-3 text-right text-rose-400 font-bold whitespace-nowrap">{fmt(b.charge)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
       </div>
 

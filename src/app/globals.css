@@ -70,6 +70,20 @@ body {
   animation: dash 1.5s ease-out forwards;
 }
 
+/* Custom shimmer loading animation */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(150%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.8s infinite ease-in-out;
+}
+
 /* Print Styling for PDF Exports */
 @media print {
   body {

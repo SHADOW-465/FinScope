@@ -5,6 +5,7 @@ import { Search, Filter, ArrowUpRight, ArrowDownRight, ChevronLeft, ChevronRight
 
 interface Transaction {
   date: string;
+  originalDate?: string;
   description: string;
   debit: number;
   credit: number;
@@ -113,7 +114,7 @@ export default function TransactionTable({ transactions, aiEnhancing = false }: 
             </span>
           )}
           <span className="text-xs text-slate-400 font-medium">
-            Showing {filteredTransactions.length} of {transactions.length} items
+             Showing {filteredTransactions.length} of {transactions.length} items
           </span>
         </div>
       </div>
@@ -204,8 +205,10 @@ export default function TransactionTable({ transactions, aiEnhancing = false }: 
               </tr>
             ) : (
               paginatedTransactions.map((t, idx) => {
-                const isBounce = t.category === "Bounce" || 
-                                 /bounce|nsf|return chq|dishonour|ecs rt|chq return|cheque return|chq rtn/i.test(t.description);
+                const isBounce = t.transactionType === "DEBIT" && (
+                  t.category === "Bounce" || 
+                  (/bounce|nsf|return chq|dishonour|ecs rt|chq return|cheque return|chq rtn/i.test(t.description) && !/transfer/i.test(t.description))
+                );
 
                 return (
                   <tr
@@ -216,7 +219,7 @@ export default function TransactionTable({ transactions, aiEnhancing = false }: 
                         : "hover:bg-slate-900/20 border-transparent"
                     }`}
                   >
-                    <td className="py-3.5 px-4 text-slate-300 whitespace-nowrap">{t.date}</td>
+                    <td className="py-3.5 px-4 text-slate-300 whitespace-nowrap">{t.originalDate || t.date}</td>
                     <td className="py-3.5 px-4 font-medium text-slate-200 max-w-sm break-words">
                       <div className="flex items-center flex-wrap gap-1.5">
                         <span className={isBounce ? "text-rose-200 font-semibold" : ""}>

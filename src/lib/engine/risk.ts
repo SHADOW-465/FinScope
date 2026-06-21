@@ -173,7 +173,7 @@ export function computeRiskProfile(
   txns.forEach(txn => {
     const descLower = txn.description.toLowerCase();
     const isBounce = descLower.includes("bounce") || 
-                     descLower.includes("nsf") || 
+                     (descLower.includes("nsf") && !descLower.includes("transfer")) || 
                      (descLower.includes("return") && descLower.includes("chg")) ||
                      descLower.includes("dishonour") || 
                      descLower.includes("ecs rt") ||

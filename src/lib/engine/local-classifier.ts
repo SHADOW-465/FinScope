@@ -82,28 +82,19 @@ export interface LocalClassifierProgress {
   error?: string;
 }
 
-// ─── Singleton Pipeline ────────────────────────────────────────────────────
+// ─── Web Worker Lifecycle Management ───────────────────────────────────────
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let _pipeline: any = null;
+let activeWorker: Worker | null = null;
 
-async function getClassifier() {
-  if (_pipeline) return _pipeline;
-
-  // Dynamic import keeps this entirely out of the SSR bundle
-  const { pipeline, env } = await import("@huggingface/transformers");
-
-  // Always pull from the HuggingFace CDN; rely on browser cache for repeat visits
-  env.allowLocalModels = false;
-  env.useBrowserCache = true;
-
-  _pipeline = await pipeline(
-    "zero-shot-classification",
-    "Xenova/distilbert-base-uncased-mnli",
-    { dtype: "q8" }
-  );
-
-  return _pipeline;
+/**
+ * Terminates the background Web Worker thread immediately if it is active.
+ * Reclaims browser memory and stops CPU usage.
+ */
+export function terminateClassifier() {
+  if (activeWorker) {
+    activeWorker.terminate();
+    activeWorker = null;
+  }
 }
 
 // ─── Selection Heuristic ───────────────────────────────────────────────────
@@ -119,11 +110,10 @@ export function needsEnhancement(txn: ClassifiedTransaction): boolean {
 // ─── Main Export ───────────────────────────────────────────────────────────
 
 /**
- * Runs the ONNX model on ambiguous transactions and returns an updated copy
- * of the full transaction array.
+ * Runs the ONNX model inside a background Web Worker on ambiguous transactions
+ * and returns an updated copy of the full transaction array.
  *
- * Only transactions where `needsEnhancement` returns true are touched.
- * The model result is accepted only when its top-label score exceeds 0.60.
+ * This function keeps the main UI thread 100% responsive and lag-free.
  *
  * @param transactions  Full classified transaction list from the API
  * @param onProgress    Callback fired after each inference step
@@ -133,73 +123,50 @@ export async function enhanceClassifications(
   transactions: ClassifiedTransaction[],
   onProgress: (p: LocalClassifierProgress) => void
 ): Promise<ClassifiedTransaction[]> {
-  // Collect indices that need re-evaluation
-  const targets: Array<{ txn: ClassifiedTransaction; idx: number }> = [];
-  transactions.forEach((txn, idx) => {
-    if (needsEnhancement(txn)) targets.push({ txn, idx });
-  });
+  // Terminate any previous active worker to prevent concurrent run collisions
+  terminateClassifier();
 
-  if (targets.length === 0) {
+  const needsAny = transactions.some(needsEnhancement);
+  if (!needsAny) {
     onProgress({ status: "done", processed: 0, total: 0, enhanced: 0 });
     return transactions;
   }
 
-  // ── Step 1: Load model ──
-  onProgress({ status: "loading", processed: 0, total: targets.length, enhanced: 0 });
+  return new Promise((resolve) => {
+    // Instantiate the background worker
+    const worker = new Worker(new URL("./classifier.worker.ts", import.meta.url));
+    activeWorker = worker;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let classifier: any;
-  try {
-    classifier = await getClassifier();
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    onProgress({
-      status: "error",
-      processed: 0,
-      total: targets.length,
-      enhanced: 0,
-      error: `Model failed to load: ${message}`,
-    });
-    return transactions; // graceful fallback – original classifications kept
-  }
+    worker.onmessage = (e: MessageEvent) => {
+      const { status, processed, total, enhanced, error, result } = e.data;
 
-  // ── Step 2: Inference loop ──
-  onProgress({ status: "running", processed: 0, total: targets.length, enhanced: 0 });
-
-  const result = [...transactions];
-  let enhanced = 0;
-
-  for (let i = 0; i < targets.length; i++) {
-    const { txn, idx } = targets[i];
-    const labels = txn.transactionType === "CREDIT" ? CREDIT_LABELS : DEBIT_LABELS;
-
-    try {
-      const output = await classifier!(txn.description, labels, { multi_label: false });
-      const topLabel: string = output.labels[0];
-      const topScore: number = output.scores[0];
-      const newCategory = LABEL_TO_CATEGORY[topLabel];
-
-      // Accept the model's answer only when it is confident enough
-      if (newCategory && topScore > 0.60) {
-        result[idx] = {
-          ...txn,
-          category: newCategory,
-          confidenceScore: Math.round(topScore * 100) / 100,
-          aiEnhanced: true,
-        };
-        enhanced++;
+      if (status === "error") {
+        onProgress({ status, processed, total, enhanced, error });
+        resolve(transactions); // graceful fallback to original transaction array
+        terminateClassifier();
+      } else if (status === "done") {
+        onProgress({ status, processed, total, enhanced });
+        resolve(result || transactions);
+        terminateClassifier();
+      } else {
+        onProgress({ status, processed, total, enhanced });
       }
-    } catch {
-      // Per-item failure is non-fatal; keep the original classification
-    }
+    };
 
-    onProgress({
-      status: i === targets.length - 1 ? "done" : "running",
-      processed: i + 1,
-      total: targets.length,
-      enhanced,
-    });
-  }
+    worker.onerror = (err) => {
+      console.warn("[FinScope] Classifier Web Worker failed to run:", err);
+      onProgress({
+        status: "error",
+        processed: 0,
+        total: 0,
+        enhanced: 0,
+        error: "Worker thread crashed or failed to compile.",
+      });
+      resolve(transactions);
+      terminateClassifier();
+    };
 
-  return result;
+    // Trigger processing
+    worker.postMessage({ action: "enhance", transactions });
+  });
 }

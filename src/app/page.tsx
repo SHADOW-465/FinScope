@@ -23,6 +23,7 @@ import Charts from "@/components/Charts";
 import Panels from "@/components/Panels";
 import TransactionTable from "@/components/TransactionTable";
 import ChatAssistant from "@/components/ChatAssistant";
+import { terminateClassifier } from "@/lib/engine/local-classifier";
 import type { LocalClassifierProgress } from "@/lib/engine/local-classifier";
 
 // ─── Types ────────────────────────────────────────────────────────────────
@@ -93,6 +94,8 @@ export default function Home() {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [activeAccountId, setActiveAccountId] = useState<string>("");
   const [isExportingExcel, setIsExportingExcel] = useState(false);
+  const [isGlobalLoading, setIsGlobalLoading] = useState(false);
+  const [loadingStage, setLoadingStage] = useState<"parsing" | "ai_enhancing">("parsing");
 
   /**
    * Enhanced reports: after the API returns, the local ONNX model runs in the
@@ -109,17 +112,16 @@ export default function Home() {
   // ── Process Complete handler ──────────────────────────────────────────
 
   const handleProcessComplete = useCallback(async (data: AnalysisResult) => {
-    setAnalysisResult(data);
+    terminateClassifier(); // kill any active background Web Worker run
     setEnhancedReports({});
     setClassifierProgress(null);
     enhancementAbortRef.current = false;
+    setIsGlobalLoading(true);
+    setLoadingStage("ai_enhancing");
 
-    if (data.accounts && data.accounts.length > 0) {
-      setActiveAccountId(data.accounts[0].id);
-    }
+    // Local accumulator to merge enhanced data
+    const updatedReports = { ...data.reports };
 
-    // Run local AI enhancement in the background (non-blocking)
-    // Dynamic import so the ONNX bundle is never part of the initial page load
     try {
       const { enhanceClassifications } = await import("@/lib/engine/local-classifier");
 
@@ -137,11 +139,18 @@ export default function Home() {
         );
 
         if (!enhancementAbortRef.current) {
+          updatedReports[accountId] = { ...report, transactions: enhanced };
           setEnhancedReports((prev) => ({
             ...prev,
-            [accountId]: { ...report, transactions: enhanced },
+            [accountId]: updatedReports[accountId],
           }));
         }
+      }
+
+      if (!enhancementAbortRef.current) {
+        setAnalysisResult({ ...data, reports: updatedReports });
+        setActiveAccountId(data.accounts[0]?.id || "");
+        setIsGlobalLoading(false);
       }
     } catch (err) {
       console.warn("[FinScope] Local AI classifier unavailable:", err);
@@ -152,12 +161,19 @@ export default function Home() {
         enhanced: 0,
         error: String(err),
       });
+
+      if (!enhancementAbortRef.current) {
+        setAnalysisResult(data);
+        setActiveAccountId(data.accounts[0]?.id || "");
+        setIsGlobalLoading(false);
+      }
     }
   }, []);
 
   // ── Reset handler ─────────────────────────────────────────────────────
 
   const handleReset = () => {
+    terminateClassifier(); // kill any active background Web Worker thread
     enhancementAbortRef.current = true; // abort any in-flight enhancement
     setAnalysisResult(null);
     setActiveAccountId("");
@@ -257,7 +273,78 @@ export default function Home() {
 
       {/* MAIN CONTAINER */}
       <main className="flex-grow max-w-[96%] xl:max-w-[98%] 2xl:max-w-[1700px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col justify-center">
-        {!analysisResult || !activeReport ? (
+        {isGlobalLoading ? (
+          <div className="flex flex-col items-center justify-center min-h-[50vh] py-16 animate-in fade-in duration-300">
+            <div className="glass-panel max-w-lg w-full rounded-2xl p-8 flex flex-col items-center gap-6 border border-indigo-500/25 bg-slate-950/40 backdrop-blur-md shadow-2xl shadow-indigo-950/20 text-center">
+              {loadingStage === "parsing" ? (
+                <>
+                  <div className="p-4 bg-indigo-500/10 rounded-full animate-pulse">
+                    <Landmark className="w-10 h-10 text-indigo-400" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-black text-white tracking-tight">
+                      Extracting Financial Ledger
+                    </h3>
+                    <p className="text-xs text-slate-400 max-w-sm leading-relaxed mx-auto">
+                      Parsing bank statements, validating IFSC headers, and aggregating transaction histories.
+                    </p>
+                  </div>
+                  {/* Indeterminate loader */}
+                  <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden relative">
+                    <div className="bg-indigo-500 h-full rounded-full w-2/3 absolute top-0 animate-shimmer" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="p-4 bg-indigo-500/10 rounded-full animate-pulse">
+                    <BrainCircuit className="w-10 h-10 text-indigo-400" />
+                  </div>
+                  <div className="space-y-2 w-full">
+                    <h3 className="text-xl font-black text-white tracking-tight flex items-center justify-center gap-2">
+                      Running AI Verification
+                      <span className="flex h-2 w-2 relative">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-400 max-w-sm leading-relaxed mx-auto">
+                      Running on-device DistilBERT NLI model to resolve miscellaneous counterparties.
+                    </p>
+                  </div>
+
+                  {/* Progress Stats */}
+                  <div className="w-full flex items-center justify-between text-xs text-indigo-400 font-bold px-1">
+                    <span>
+                      {classifierProgress ? `${Math.round((classifierProgress.processed / (classifierProgress.total || 1)) * 100)}% Complete` : "Initializing model..."}
+                    </span>
+                    <span>
+                      {classifierProgress ? `${classifierProgress.processed} / ${classifierProgress.total} Items` : ""}
+                    </span>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-gradient-to-r from-indigo-500 to-purple-600 h-full rounded-full transition-all duration-300"
+                      style={{
+                        width: classifierProgress
+                          ? `${(classifierProgress.processed / (classifierProgress.total || 1)) * 100}%`
+                          : "0%",
+                      }}
+                    />
+                  </div>
+
+                  {classifierProgress && classifierProgress.enhanced > 0 && (
+                    <div className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-1.5">
+                      <Sparkles className="w-3 h-3" />
+                      Enhanced {classifierProgress.enhanced} transaction{classifierProgress.enhanced !== 1 ? "s" : ""}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        ) : !analysisResult || !activeReport ? (
           /* UPLOAD & PROMPT STATE */
           <div className="space-y-12 py-10 animate-in fade-in duration-300">
             {/* Tagline */}
@@ -280,7 +367,14 @@ export default function Home() {
             </div>
 
             {/* Drag & Drop Area */}
-            <UploadZone onProcessComplete={handleProcessComplete} />
+            <UploadZone
+              onProcessStart={() => {
+                setIsGlobalLoading(true);
+                setLoadingStage("parsing");
+              }}
+              onProcessComplete={handleProcessComplete}
+              onProcessError={() => setIsGlobalLoading(false)}
+            />
 
             {/* Product Key Highlights */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto pt-6">
@@ -407,6 +501,7 @@ export default function Home() {
                   liabilities={activeReport.liability_analysis}
                   bounces={activeReport.bounce_analysis}
                   balanceRisks={activeReport.balance_risks}
+                  durationMonths={activeReport.overview.durationMonths}
                 />
               </div>
 

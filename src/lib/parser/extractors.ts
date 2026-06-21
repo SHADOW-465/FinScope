@@ -1,5 +1,6 @@
 export interface RawTransaction {
   date: string;
+  originalDate?: string;
   description: string;
   debit: number;
   credit: number;
@@ -203,6 +204,7 @@ function parseBankOfBaroda(lines: string[], result: ParsedStatement) {
 
         result.transactions.push({
           date,
+          originalDate: dateMatch[1],
           description,
           debit,
           credit,
@@ -405,6 +407,7 @@ function parseICICI(rawLines: string[], result: ParsedStatement) {
     const { amount, balance, indicator, descPrefix, descCount } = parsedAmountAndBal;
     
     let date = "2026-02-01";
+    let originalDate = "";
     const remarks: string[] = [];
     
     for (let k = 0; k < descCount; k++) {
@@ -413,6 +416,7 @@ function parseICICI(rawLines: string[], result: ParsedStatement) {
       const dateMatch = bLine.match(/(\d{1,2}\/[A-Za-z]{3}\/\d{2,4})|(\d{1,2}\/\d{2}\/\d{4})/g);
       if (dateMatch && dateMatch.length > 0) {
         date = cleanDate(dateMatch[0]);
+        originalDate = dateMatch[0];
         continue;
       }
       
@@ -463,6 +467,7 @@ function parseICICI(rawLines: string[], result: ParsedStatement) {
     
     result.transactions.push({
       date,
+      originalDate: originalDate || date,
       description,
       debit,
       credit,
@@ -596,6 +601,7 @@ function parseIndusInd(lines: string[], result: ParsedStatement) {
         
         result.transactions.push({
           date,
+          originalDate: dateMatch[1],
           description: `${typeLine} - ${description}`,
           debit: finalDebit,
           credit: finalCredit,
@@ -689,6 +695,7 @@ function parseCanaraBank(lines: string[], result: ParsedStatement) {
     interface PageTx {
       lineNum: number;
       date: string;
+      originalDate?: string;
       valueDate: string;
       ref: string;
       amount: number;
@@ -770,6 +777,7 @@ function parseCanaraBank(lines: string[], result: ParsedStatement) {
               pageTxns.push({
                 lineNum,
                 date,
+                originalDate: valueDate || dateRaw.split(" ")[0],
                 valueDate,
                 ref,
                 amount,
@@ -903,6 +911,7 @@ function parseCanaraBank(lines: string[], result: ParsedStatement) {
     pageTxns.forEach(tx => {
       allTransactions.push({
         date: tx.date,
+        originalDate: tx.originalDate,
         description: tx.description,
         debit: tx.type === "DEBIT" ? tx.amount : 0,
         credit: tx.type === "CREDIT" ? tx.amount : 0,
@@ -966,6 +975,7 @@ function parseGeneric(lines: string[], result: ParsedStatement) {
         
         result.transactions.push({
           date,
+          originalDate: dateMatch[1],
           description: description || "Transaction",
           debit,
           credit,

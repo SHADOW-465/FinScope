@@ -4,10 +4,12 @@ import React, { useState, useRef } from "react";
 import { UploadCloud, FileText, X, Lock, Unlock, Loader2 } from "lucide-react";
 
 interface UploadZoneProps {
+  onProcessStart: () => void;
   onProcessComplete: (data: any) => void;
+  onProcessError: () => void;
 }
 
-export default function UploadZone({ onProcessComplete }: UploadZoneProps) {
+export default function UploadZone({ onProcessStart, onProcessComplete, onProcessError }: UploadZoneProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -65,6 +67,7 @@ export default function UploadZone({ onProcessComplete }: UploadZoneProps) {
 
   const handleProcess = async () => {
     if (files.length === 0) return;
+    onProcessStart(); // lock parent UI and display global spinner
     setIsProcessing(true);
     setError(null);
 
@@ -91,6 +94,7 @@ export default function UploadZone({ onProcessComplete }: UploadZoneProps) {
     } catch (err: any) {
       console.error(err);
       setError(err.message || "An unexpected error occurred during processing.");
+      onProcessError(); // revert parent block state
     } finally {
       setIsProcessing(false);
     }

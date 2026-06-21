@@ -101,7 +101,8 @@ The on-device classifier is a **post-processing verifier** that runs in the user
 | Layer | Where | What it does |
 |-------|-------|-------------|
 | `classifier.ts` | Server-side (Serverless) | Fast keyword/regex rules. Always runs first. Produces instant results. |
-| `local-classifier.ts` | Client-side browser (ONNX WASM) | Zero-shot NLI entailment via DistilBERT. Reclassifies edge cases only. Never delays initial render. |
+| `local-classifier.ts` | Client-side browser | Orchestrates Web Worker background thread lifecycle. |
+| `classifier.worker.ts` | Background Web Worker | Downloads model, compiles WASM, and runs DistilBERT zero-shot NLI in a background thread (avoids blocking main thread). |
 
 ### Model Details
 * **Model**: `Xenova/distilbert-base-uncased-mnli`
