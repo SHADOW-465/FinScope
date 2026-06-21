@@ -1,7 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
-import { Landmark, FileText, Download, Printer, RotateCcw, ShieldCheck, TrendingUp, Sparkles, BarChart2 } from "lucide-react";
+import React, { useState, useCallback, useRef } from "react";
+import {
+  Landmark,
+  FileText,
+  Download,
+  Printer,
+  RotateCcw,
+  ShieldCheck,
+  TrendingUp,
+  Sparkles,
+  BarChart2,
+  BrainCircuit,
+  CheckCircle2,
+  AlertTriangle,
+  Loader2,
+} from "lucide-react";
 import UploadZone from "@/components/UploadZone";
 import RiskCard from "@/components/RiskCard";
 import OverviewCards from "@/components/OverviewCards";
@@ -9,25 +23,156 @@ import Charts from "@/components/Charts";
 import Panels from "@/components/Panels";
 import TransactionTable from "@/components/TransactionTable";
 import ChatAssistant from "@/components/ChatAssistant";
+import type { LocalClassifierProgress } from "@/lib/engine/local-classifier";
+
+// ─── Types ────────────────────────────────────────────────────────────────
+
+interface AccountMeta {
+  id: string;
+  accountHolder: string;
+  bankName: string;
+  accountNumber: string;
+}
+
+interface AnalysisResult {
+  accounts: AccountMeta[];
+  reports: Record<string, any>;
+}
+
+// ─── AI Enhancement Status Badge ─────────────────────────────────────────
+
+function AIEnhancementBadge({ progress }: { progress: LocalClassifierProgress | null }) {
+  if (!progress || progress.status === "idle") return null;
+
+  if (progress.status === "loading") {
+    return (
+      <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-xs font-medium">
+        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+        Loading AI model…
+      </div>
+    );
+  }
+
+  if (progress.status === "running") {
+    const pct = progress.total > 0 ? Math.round((progress.processed / progress.total) * 100) : 0;
+    return (
+      <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-xs font-medium">
+        <BrainCircuit className="w-3.5 h-3.5 animate-pulse" />
+        AI enhancing… {pct}% ({progress.processed}/{progress.total})
+      </div>
+    );
+  }
+
+  if (progress.status === "done" && progress.total > 0) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-xs font-medium">
+        <CheckCircle2 className="w-3.5 h-3.5" />
+        AI enhanced {progress.enhanced} transaction{progress.enhanced !== 1 ? "s" : ""}
+      </div>
+    );
+  }
+
+  if (progress.status === "error") {
+    return (
+      <div
+        title={progress.error}
+        className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-xs font-medium cursor-help"
+      >
+        <AlertTriangle className="w-3.5 h-3.5" />
+        AI offline – keyword classifier active
+      </div>
+    );
+  }
+
+  return null;
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────
 
 export default function Home() {
-  const [analysisResult, setAnalysisResult] = useState<any>(null); // contains { accounts, reports }
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [activeAccountId, setActiveAccountId] = useState<string>("");
   const [isExportingExcel, setIsExportingExcel] = useState(false);
 
-  const handleProcessComplete = (data: any) => {
+  /**
+   * Enhanced reports: after the API returns, the local ONNX model runs in the
+   * background and gradually replaces per-account transaction arrays.
+   * We keep this separate from `analysisResult` so the initial results appear
+   * instantly without waiting for the AI model to download or infer.
+   */
+  const [enhancedReports, setEnhancedReports] = useState<Record<string, any>>({});
+  const [classifierProgress, setClassifierProgress] = useState<LocalClassifierProgress | null>(null);
+
+  // We use a ref to abort enhancement if the user clicks Reset mid-flight
+  const enhancementAbortRef = useRef(false);
+
+  // ── Process Complete handler ──────────────────────────────────────────
+
+  const handleProcessComplete = useCallback(async (data: AnalysisResult) => {
     setAnalysisResult(data);
+    setEnhancedReports({});
+    setClassifierProgress(null);
+    enhancementAbortRef.current = false;
+
     if (data.accounts && data.accounts.length > 0) {
       setActiveAccountId(data.accounts[0].id);
     }
-  };
+
+    // Run local AI enhancement in the background (non-blocking)
+    // Dynamic import so the ONNX bundle is never part of the initial page load
+    try {
+      const { enhanceClassifications } = await import("@/lib/engine/local-classifier");
+
+      for (const accountId of Object.keys(data.reports)) {
+        if (enhancementAbortRef.current) break;
+
+        const report = data.reports[accountId];
+        const enhanced = await enhanceClassifications(
+          report.transactions,
+          (progress) => {
+            if (!enhancementAbortRef.current) {
+              setClassifierProgress(progress);
+            }
+          }
+        );
+
+        if (!enhancementAbortRef.current) {
+          setEnhancedReports((prev) => ({
+            ...prev,
+            [accountId]: { ...report, transactions: enhanced },
+          }));
+        }
+      }
+    } catch (err) {
+      console.warn("[FinScope] Local AI classifier unavailable:", err);
+      setClassifierProgress({
+        status: "error",
+        processed: 0,
+        total: 0,
+        enhanced: 0,
+        error: String(err),
+      });
+    }
+  }, []);
+
+  // ── Reset handler ─────────────────────────────────────────────────────
 
   const handleReset = () => {
+    enhancementAbortRef.current = true; // abort any in-flight enhancement
     setAnalysisResult(null);
     setActiveAccountId("");
+    setEnhancedReports({});
+    setClassifierProgress(null);
   };
 
-  const activeReport = analysisResult && activeAccountId ? analysisResult.reports[activeAccountId] : null;
+  // ── Derive active report (enhanced if available, else raw API result) ──
+
+  const activeReport =
+    analysisResult && activeAccountId
+      ? enhancedReports[activeAccountId] ?? analysisResult.reports[activeAccountId]
+      : null;
+
+  // ── Excel Export ──────────────────────────────────────────────────────
 
   const handleExportExcel = async () => {
     if (!activeReport) return;
@@ -35,15 +180,10 @@ export default function Home() {
     try {
       const response = await fetch("/api/export", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(activeReport),
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to export Excel report");
-      }
+      if (!response.ok) throw new Error("Failed to export Excel report");
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -62,9 +202,9 @@ export default function Home() {
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
+
+  // ── Render ────────────────────────────────────────────────────────────
 
   return (
     <div className="flex-1 flex flex-col min-h-screen">
@@ -85,7 +225,10 @@ export default function Home() {
         </div>
 
         {analysisResult && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            {/* AI enhancement status */}
+            <AIEnhancementBadge progress={classifierProgress} />
+
             <button
               onClick={handleReset}
               className="px-4 py-2 border border-slate-800 hover:border-slate-700 bg-slate-900/60 hover:bg-slate-900 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
@@ -125,10 +268,14 @@ export default function Home() {
               </span>
               <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-none">
                 Convert Bank Statements <br />
-                Into <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Lending Intelligence</span>
+                Into{" "}
+                <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                  Lending Intelligence
+                </span>
               </h2>
               <p className="text-slate-400 text-base max-w-2xl mx-auto font-medium">
-                Analyze deposits, evaluate recurring liabilities, flag payment returns, and calculate weighted risk scores. Built for modern underwriting.
+                Analyze deposits, evaluate recurring liabilities, flag payment returns,
+                and calculate weighted risk scores. Built for modern underwriting.
               </p>
             </div>
 
@@ -163,12 +310,12 @@ export default function Home() {
 
               <div className="glass-panel p-5 rounded-2xl flex items-start gap-4">
                 <div className="p-3 bg-purple-500/10 rounded-xl">
-                  <BarChart2 className="w-6 h-6 text-purple-400" />
+                  <BrainCircuit className="w-6 h-6 text-purple-400" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-200">Multi-Bank Parsing</h4>
+                  <h4 className="text-sm font-semibold text-slate-200">On-Device AI Classifier</h4>
                   <p className="text-xs text-slate-400 mt-1 leading-normal">
-                    Proprietary parsers decode SBI, HDFC, ICICI, Axis, Canara, BOB, and IndusInd.
+                    DistilBERT ONNX model runs locally in your browser to reclassify ambiguous transactions.
                   </p>
                 </div>
               </div>
@@ -207,7 +354,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2 w-full md:w-auto">
-                  {analysisResult.accounts.map((acc: any) => {
+                  {analysisResult.accounts.map((acc) => {
                     const isActive = acc.id === activeAccountId;
                     return (
                       <button
@@ -222,7 +369,9 @@ export default function Home() {
                         <Landmark className="w-3.5 h-3.5" />
                         <div className="text-left">
                           <p className="font-bold leading-none">{acc.accountHolder}</p>
-                          <p className="text-[9px] opacity-75 mt-0.5 leading-none">{acc.bankName} - {acc.accountNumber}</p>
+                          <p className="text-[9px] opacity-75 mt-0.5 leading-none">
+                            {acc.bankName} - {acc.accountNumber}
+                          </p>
                         </div>
                       </button>
                     );
@@ -235,19 +384,16 @@ export default function Home() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Primary Left Columns */}
               <div className="lg:col-span-8 space-y-6">
-                <OverviewCards
-                  overview={activeReport.overview}
-                  metrics={activeReport.metrics}
-                />
-                
-                <Charts
-                  monthlyAnalysis={activeReport.monthly_analysis}
-                  transactions={activeReport.transactions}
-                />
+                <OverviewCards overview={activeReport.overview} metrics={activeReport.metrics} />
+
+                <Charts monthlyAnalysis={activeReport.monthly_analysis} transactions={activeReport.transactions} />
 
                 <div className="print-page-break" />
 
-                <TransactionTable transactions={activeReport.transactions} />
+                <TransactionTable
+                  transactions={activeReport.transactions}
+                  aiEnhancing={classifierProgress?.status === "loading" || classifierProgress?.status === "running"}
+                />
 
                 <div className="print-page-break" />
 
@@ -267,7 +413,9 @@ export default function Home() {
                   breakdown={activeReport.risk_score.breakdown}
                   bouncesCount={activeReport.bounce_analysis.length}
                   emiBurden={activeReport.metrics.emi_burden}
-                  negativeBalancesCount={activeReport.balance_risks.filter((r: any) => r.risk_type === "Negative Balance").length}
+                  negativeBalancesCount={activeReport.balance_risks.filter(
+                    (r: any) => r.risk_type === "Negative Balance"
+                  ).length}
                 />
               </div>
             </div>
@@ -280,7 +428,10 @@ export default function Home() {
 
       {/* FOOTER */}
       <footer className="py-6 border-t border-slate-900 mt-auto text-center text-xs text-slate-500 no-print">
-        <p>© {new Date().getFullYear()} FinScope. Deployed on Vercel Free Tier. Powered by In-Memory OCR & PDF Extraction.</p>
+        <p>
+          © {new Date().getFullYear()} FinScope. Deployed on Vercel Free Tier. Powered by
+          In-Memory OCR &amp; PDF Extraction + On-Device DistilBERT AI.
+        </p>
       </footer>
     </div>
   );

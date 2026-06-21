@@ -4,6 +4,8 @@ export interface ClassifiedTransaction extends RawTransaction {
   category: string;
   counterparty: string;
   confidenceScore: number;
+  /** Set to true when the local ONNX model overrode the keyword classifier */
+  aiEnhanced?: boolean;
 }
 
 export function classifyTransactions(rawTxns: RawTransaction[]): ClassifiedTransaction[] {

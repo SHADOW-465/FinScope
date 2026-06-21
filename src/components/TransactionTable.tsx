@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Search, Filter, ArrowUpRight, ArrowDownRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Filter, ArrowUpRight, ArrowDownRight, ChevronLeft, ChevronRight, Sparkles, BrainCircuit } from "lucide-react";
 
 interface Transaction {
   date: string;
@@ -14,13 +14,17 @@ interface Transaction {
   counterparty: string;
   confidenceScore: number;
   fileOrigin?: string;
+  /** True when the local ONNX model reclassified this transaction */
+  aiEnhanced?: boolean;
 }
 
 interface TransactionTableProps {
   transactions: Transaction[];
+  /** True while the local AI model is still running inference */
+  aiEnhancing?: boolean;
 }
 
-export default function TransactionTable({ transactions }: TransactionTableProps) {
+export default function TransactionTable({ transactions, aiEnhancing = false }: TransactionTableProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
@@ -101,9 +105,17 @@ export default function TransactionTable({ transactions }: TransactionTableProps
         <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300">
           Transaction Ledger
         </h3>
-        <span className="text-xs text-slate-400 font-medium">
-          Showing {filteredTransactions.length} of {transactions.length} items
-        </span>
+        <div className="flex items-center gap-3">
+          {aiEnhancing && (
+            <span className="flex items-center gap-1.5 text-[10px] text-indigo-400 font-medium animate-pulse">
+              <BrainCircuit className="w-3 h-3" />
+              AI reclassifying…
+            </span>
+          )}
+          <span className="text-xs text-slate-400 font-medium">
+            Showing {filteredTransactions.length} of {transactions.length} items
+          </span>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
@@ -198,7 +210,12 @@ export default function TransactionTable({ transactions }: TransactionTableProps
                     {t.description}
                   </td>
                   <td className="py-3.5 px-4">
-                    <span className={`px-2.5 py-0.5 rounded-full border text-[10px] whitespace-nowrap font-medium ${getCategoryClass(t.category)}`}>
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] whitespace-nowrap font-medium ${getCategoryClass(t.category)}`}>
+                      {t.aiEnhanced && (
+                        <span title="Reclassified by on-device AI">
+                          <Sparkles className="w-2.5 h-2.5 opacity-70" />
+                        </span>
+                      )}
                       {t.category}
                     </span>
                   </td>
