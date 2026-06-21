@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { ArrowUpRight, ShieldAlert, BadgeAlert, Landmark, DollarSign, Wallet, ShieldCheck } from "lucide-react";
+import React from "react";
+import { ArrowUpRight, ShieldAlert, BadgeAlert, Landmark, Wallet, ShieldCheck } from "lucide-react";
 
 interface IncomeSource {
   source: string;
@@ -40,8 +40,6 @@ interface PanelsProps {
 }
 
 export default function Panels({ income, liabilities, bounces, balanceRisks }: PanelsProps) {
-  const [activeTab, setActiveTab] = useState<"income" | "liabilities" | "bounces" | "alerts">("income");
-
   const fmt = (val: number) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -50,82 +48,57 @@ export default function Panels({ income, liabilities, bounces, balanceRisks }: P
     }).format(val);
   };
 
-  const tabs = [
-    { id: "income", name: "Income Streams", count: income.length },
-    { id: "liabilities", name: "EMI Liabilities", count: liabilities.length },
-    { id: "bounces", name: "Bounces & Returns", count: bounces.length, warning: bounces.length > 0 },
-    { id: "alerts", name: "Balance Alerts", count: balanceRisks.length, warning: balanceRisks.some(r => r.risk_type === "Negative Balance") },
-  ];
+  const hasBounces = bounces.length > 0;
+  const hasNegativeBalances = balanceRisks.some(r => r.risk_type === "Negative Balance");
 
   return (
-    <div className="glass-panel rounded-2xl p-6">
-      {/* Tabs Header */}
-      <div className="flex border-b border-slate-800/80 overflow-x-auto pb-px">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center gap-2 px-5 py-3 border-b-2 font-medium text-sm transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === tab.id
-                ? "border-indigo-500 text-indigo-400"
-                : "border-transparent text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            {tab.name}
-            <span
-              className={`text-[10px] px-2 py-0.5 rounded-full ${
-                tab.warning
-                  ? "bg-red-500/20 text-red-400"
-                  : tab.count > 0
-                  ? "bg-slate-800 text-slate-300"
-                  : "bg-slate-900/60 text-slate-500"
-              }`}
-            >
-              {tab.count}
-            </span>
-          </button>
-        ))}
-      </div>
-
-      {/* Tab Contents */}
-      <div className="mt-6 min-h-[220px]">
-        {/* INCOME TAB */}
-        {activeTab === "income" && (
-          <div className="space-y-4 animate-in fade-in duration-200">
-            <p className="text-xs text-slate-400">
-              Identified monthly recurring credits, direct deposits, and salary streams:
+    <div className="space-y-6">
+      {/* 2-Column Grid for Income & EMI Liabilities on Desktop, Stacked on Mobile */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* INCOME STREAMS CARDBOX */}
+        <div className="glass-panel rounded-2xl p-6 flex flex-col justify-between hover:shadow-indigo-500/5 hover:shadow-md transition-all duration-300">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                <ArrowUpRight className="w-5 h-5 text-emerald-400" />
+                Income Streams
+              </h3>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">
+                {income.length} detected
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 leading-normal">
+              Recurring credits, salary deposits, and regular revenue streams:
             </p>
             {income.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-8 bg-slate-900/30 border border-slate-800/80 rounded-xl">
-                <p className="text-sm text-slate-500">No recurring credits detected</p>
+              <div className="flex flex-col items-center justify-center p-8 bg-slate-900/30 border border-slate-800/80 rounded-xl min-h-[150px]">
+                <p className="text-xs text-slate-500">No recurring credits detected</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto max-h-[220px] overflow-y-auto pr-1">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-800/80 text-slate-400 font-semibold">
-                      <th className="py-2.5 px-3">Est. Source Name</th>
-                      <th className="py-2.5 px-3">Cumulative Amount</th>
-                      <th className="py-2.5 px-3">Category</th>
-                      <th className="py-2.5 px-3">Frequency</th>
-                      <th className="py-2.5 px-3 text-right">Confidence</th>
+                    <tr className="border-b border-slate-800/80 text-slate-400 font-semibold sticky top-0 bg-slate-950/80 backdrop-blur-sm z-10">
+                      <th className="py-2.5 px-2">Source Name</th>
+                      <th className="py-2.5 px-2">Amount</th>
+                      <th className="py-2.5 px-2">Freq</th>
+                      <th className="py-2.5 px-2 text-right">Conf</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/40">
                     {income.map((inc, idx) => (
                       <tr key={idx} className="hover:bg-slate-900/20">
-                        <td className="py-3 px-3 font-semibold text-slate-200 flex items-center gap-2">
-                          <ArrowUpRight className="w-4 h-4 text-emerald-400" />
+                        <td className="py-3 px-2 font-semibold text-slate-200 flex items-center gap-1.5 truncate max-w-[130px]" title={inc.source}>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
                           {inc.source}
                         </td>
-                        <td className="py-3 px-3 text-slate-200">{fmt(inc.amount)}</td>
-                        <td className="py-3 px-3">
-                          <span className="bg-emerald-500/10 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/20">
-                            {inc.category}
+                        <td className="py-3 px-2 text-slate-200 whitespace-nowrap font-medium">{fmt(inc.amount)}</td>
+                        <td className="py-3 px-2">
+                          <span className="bg-emerald-500/10 text-emerald-400 text-[9px] px-1.5 py-0.5 rounded-md border border-emerald-500/25">
+                            {inc.frequency}
                           </span>
                         </td>
-                        <td className="py-3 px-3 text-slate-300">{inc.frequency}</td>
-                        <td className="py-3 px-3 text-right text-slate-400 font-medium">
+                        <td className="py-3 px-2 text-right text-slate-400 font-medium">
                           {(inc.confidence * 100).toFixed(0)}%
                         </td>
                       </tr>
@@ -135,41 +108,50 @@ export default function Panels({ income, liabilities, bounces, balanceRisks }: P
               </div>
             )}
           </div>
-        )}
+        </div>
 
-        {/* LIABILITIES TAB */}
-        {activeTab === "liabilities" && (
-          <div className="space-y-4 animate-in fade-in duration-200">
-            <p className="text-xs text-slate-400">
-              Identified loan products, financial institution debits, and regular EMI commitments:
+        {/* EMI LIABILITIES CARDBOX */}
+        <div className="glass-panel rounded-2xl p-6 flex flex-col justify-between hover:shadow-indigo-500/5 hover:shadow-md transition-all duration-300">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                <Landmark className="w-5 h-5 text-amber-400" />
+                EMI Liabilities
+              </h3>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">
+                {liabilities.length} active
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 leading-normal">
+              Active loan products, finance repayments, and regular debt outgoings:
             </p>
             {liabilities.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-8 bg-emerald-950/10 border border-emerald-500/20 rounded-xl text-center">
-                <ShieldCheck className="w-8 h-8 text-emerald-400 mb-2" />
-                <p className="text-sm font-semibold text-slate-200">No active liabilities found</p>
-                <p className="text-xs text-slate-400">No EMI triggers or finance repayments detected.</p>
+              <div className="flex flex-col items-center justify-center p-8 bg-emerald-950/5 border border-emerald-500/15 rounded-xl text-center min-h-[150px]">
+                <ShieldCheck className="w-7 h-7 text-emerald-400 mb-1" />
+                <p className="text-xs font-semibold text-slate-300">No active liabilities found</p>
+                <p className="text-[10px] text-slate-500 mt-0.5">No EMI triggers detected.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto max-h-[220px] overflow-y-auto pr-1">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-800/80 text-slate-400 font-semibold">
-                      <th className="py-2.5 px-3">Detected Lender</th>
-                      <th className="py-2.5 px-3">Monthly EMI Payment</th>
-                      <th className="py-2.5 px-3">Frequency</th>
-                      <th className="py-2.5 px-3 text-right">Confidence</th>
+                    <tr className="border-b border-slate-800/80 text-slate-400 font-semibold sticky top-0 bg-slate-950/80 backdrop-blur-sm z-10">
+                      <th className="py-2.5 px-2">Detected Lender</th>
+                      <th className="py-2.5 px-2">Monthly EMI</th>
+                      <th className="py-2.5 px-2">Freq</th>
+                      <th className="py-2.5 px-2 text-right">Conf</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/40">
                     {liabilities.map((liab, idx) => (
                       <tr key={idx} className="hover:bg-slate-900/20">
-                        <td className="py-3 px-3 font-semibold text-slate-200 flex items-center gap-2">
-                          <Landmark className="w-4 h-4 text-amber-400" />
+                        <td className="py-3 px-2 font-semibold text-slate-200 flex items-center gap-1.5 truncate max-w-[130px]" title={liab.lender}>
+                          <Landmark className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
                           {liab.lender}
                         </td>
-                        <td className="py-3 px-3 text-amber-400 font-bold">{fmt(liab.emi_amount)}</td>
-                        <td className="py-3 px-3 text-slate-300">{liab.frequency}</td>
-                        <td className="py-3 px-3 text-right text-slate-400 font-medium">
+                        <td className="py-3 px-2 text-amber-400 font-bold whitespace-nowrap">{fmt(liab.emi_amount)}</td>
+                        <td className="py-3 px-2 text-slate-300">{liab.frequency}</td>
+                        <td className="py-3 px-2 text-right text-slate-400 font-medium">
                           {(liab.confidence * 100).toFixed(0)}%
                         </td>
                       </tr>
@@ -179,106 +161,138 @@ export default function Panels({ income, liabilities, bounces, balanceRisks }: P
               </div>
             )}
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* BOUNCES TAB */}
-        {activeTab === "bounces" && (
-          <div className="space-y-4 animate-in fade-in duration-200">
-            <p className="text-xs text-slate-400">
-              Cheque returns, failed clearing instructions, and non-sufficient funds (NSF) return charges:
-            </p>
-            {bounces.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-8 bg-emerald-950/10 border border-emerald-500/20 rounded-xl text-center">
-                <ShieldCheck className="w-8 h-8 text-emerald-400 mb-2" />
-                <p className="text-sm font-semibold text-slate-200">Zero Payment Returns Flagged</p>
-                <p className="text-xs text-slate-400">No cheque bounces or return penalty fees found.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-800/80 text-slate-400 font-semibold">
-                      <th className="py-2.5 px-3">Date</th>
-                      <th className="py-2.5 px-3">Narration Description</th>
-                      <th className="py-2.5 px-3">Transaction Amount</th>
-                      <th className="py-2.5 px-3 text-right">Bounce Charge Fee</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/40">
-                    {bounces.map((b, idx) => (
-                      <tr key={idx} className="hover:bg-slate-900/20 bg-red-950/5">
-                        <td className="py-3 px-3 text-slate-300 whitespace-nowrap">{b.date}</td>
-                        <td className="py-3 px-3 font-medium text-red-300 break-words max-w-xs">{b.description}</td>
-                        <td className="py-3 px-3 text-slate-300">{fmt(b.amount)}</td>
-                        <td className="py-3 px-3 text-right text-red-400 font-bold">{fmt(b.charge)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+      {/* BOUNCES & RETURNS CARDBOX (Full Width, Warning highlights if bounces > 0) */}
+      <div className={`glass-panel rounded-2xl p-6 transition-all duration-300 ${
+        hasBounces ? "border-rose-500/25 bg-rose-950/5 shadow-lg shadow-rose-950/10 animate-in fade-in duration-300" : "hover:shadow-indigo-500/5 hover:shadow-md"
+      }`}>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+              {hasBounces ? (
+                <ShieldAlert className="w-5 h-5 text-rose-400 animate-pulse" />
+              ) : (
+                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+              )}
+              Bounces & Payment Returns
+            </h3>
+            <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold ${
+              hasBounces ? "bg-rose-500/25 text-rose-300 animate-pulse" : "bg-slate-800 text-slate-400"
+            }`}>
+              {bounces.length} flagged
+            </span>
           </div>
-        )}
-
-        {/* ALERTS TAB */}
-        {activeTab === "alerts" && (
-          <div className="space-y-4 animate-in fade-in duration-200">
-            <p className="text-xs text-slate-400">
-              Occurrences of negative balances or balance depletion below ₹2,000 threshold:
-            </p>
-            {balanceRisks.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-8 bg-emerald-950/10 border border-emerald-500/20 rounded-xl text-center">
-                <ShieldCheck className="w-8 h-8 text-emerald-400 mb-2" />
-                <p className="text-sm font-semibold text-slate-200">No Balance Alerts Triggered</p>
-                <p className="text-xs text-slate-400">The account maintained healthy reserves throughout.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto max-h-56 overflow-y-auto pr-2">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-800/80 text-slate-400 font-semibold">
-                      <th className="py-2.5 px-3">Date</th>
-                      <th className="py-2.5 px-3">Risk Type</th>
-                      <th className="py-2.5 px-3">Trigger Balance</th>
-                      <th className="py-2.5 px-3">Narration Description</th>
+          <p className="text-xs text-slate-400 leading-normal">
+            Failed clearing transactions, cheque returns, and penalty return charges:
+          </p>
+          {bounces.length === 0 ? (
+            <div className="flex flex-col items-center justify-center p-8 bg-emerald-950/5 border border-emerald-500/15 rounded-xl text-center">
+              <ShieldCheck className="w-8 h-8 text-emerald-400 mb-1" />
+              <p className="text-xs font-semibold text-slate-300">Zero Payment Returns Flagged</p>
+              <p className="text-[10px] text-slate-500">No cheque bounces or return penalty fees found.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto max-h-[300px] overflow-y-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-800/80 text-slate-400 font-semibold sticky top-0 bg-slate-950/80 backdrop-blur-sm z-10">
+                    <th className="py-2.5 px-3">Date</th>
+                    <th className="py-2.5 px-3">Narration Description</th>
+                    <th className="py-2.5 px-3">Transaction Amount</th>
+                    <th className="py-2.5 px-3 text-right">Bounce Charge Fee</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/40">
+                  {bounces.map((b, idx) => (
+                    <tr key={idx} className="hover:bg-slate-900/15 bg-rose-950/5">
+                      <td className="py-3 px-3 text-slate-300 whitespace-nowrap font-mono">{b.date}</td>
+                      <td className="py-3 px-3 font-semibold text-rose-300 max-w-md break-words">{b.description}</td>
+                      <td className="py-3 px-3 text-slate-300 whitespace-nowrap font-medium">{fmt(b.amount)}</td>
+                      <td className="py-3 px-3 text-right text-rose-400 font-bold whitespace-nowrap">{fmt(b.charge)}</td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/40">
-                    {balanceRisks.map((risk, idx) => (
-                      <tr
-                        key={idx}
-                        className={`hover:bg-slate-900/20 ${
-                          risk.risk_type === "Negative Balance" ? "bg-red-950/10" : "bg-amber-950/5"
-                        }`}
-                      >
-                        <td className="py-3 px-3 text-slate-300 whitespace-nowrap">{risk.date}</td>
-                        <td className="py-3 px-3 font-semibold">
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] border ${
-                              risk.risk_type === "Negative Balance"
-                                ? "bg-red-500/10 border-red-500/30 text-red-400 animate-pulse"
-                                : "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                            }`}
-                          >
-                            {risk.risk_type}
-                          </span>
-                        </td>
-                        <td
-                          className={`py-3 px-3 font-bold ${
-                            risk.risk_type === "Negative Balance" ? "text-red-400" : "text-amber-400"
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* BALANCE ALERTS CARDBOX (Full Width) */}
+      <div className={`glass-panel rounded-2xl p-6 transition-all duration-300 ${
+        hasNegativeBalances ? "border-amber-500/20 bg-amber-950/5 animate-in fade-in duration-300" : "hover:shadow-indigo-500/5 hover:shadow-md"
+      }`}>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+              <BadgeAlert className="w-5 h-5 text-amber-400" />
+              Balance Alerts
+            </h3>
+            <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold ${
+              hasNegativeBalances ? "bg-amber-500/20 text-amber-300" : "bg-slate-800 text-slate-400"
+            }`}>
+              {balanceRisks.length} events
+            </span>
+          </div>
+          <p className="text-xs text-slate-400 leading-normal">
+            Occurrences of negative balances or balance depletion below ₹2,000 threshold:
+          </p>
+          {balanceRisks.length === 0 ? (
+            <div className="flex flex-col items-center justify-center p-8 bg-emerald-950/5 border border-emerald-500/15 rounded-xl text-center">
+              <ShieldCheck className="w-8 h-8 text-emerald-400 mb-1" />
+              <p className="text-xs font-semibold text-slate-300">No Balance Alerts Triggered</p>
+              <p className="text-[10px] text-slate-500">The account maintained healthy reserves throughout.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto max-h-[300px] overflow-y-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-800/80 text-slate-400 font-semibold sticky top-0 bg-slate-950/80 backdrop-blur-sm z-10">
+                    <th className="py-2.5 px-3">Date</th>
+                    <th className="py-2.5 px-3">Risk Type</th>
+                    <th className="py-2.5 px-3">Trigger Balance</th>
+                    <th className="py-2.5 px-3">Narration Description</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/40">
+                  {balanceRisks.map((risk, idx) => (
+                    <tr
+                      key={idx}
+                      className={`hover:bg-slate-900/15 ${
+                        risk.risk_type === "Negative Balance" ? "bg-red-950/10" : "bg-amber-950/5"
+                      }`}
+                    >
+                      <td className="py-3 px-3 text-slate-300 whitespace-nowrap font-mono">{risk.date}</td>
+                      <td className="py-3 px-3 font-semibold">
+                        <span
+                          className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold border ${
+                            risk.risk_type === "Negative Balance"
+                              ? "bg-red-500/10 border-red-500/25 text-red-400 animate-pulse"
+                              : "bg-amber-500/10 border-amber-500/25 text-amber-400"
                           }`}
                         >
-                          {fmt(risk.balance)}
-                        </td>
-                        <td className="py-3 px-3 text-slate-400 truncate max-w-xs">{risk.description}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
+                          {risk.risk_type}
+                        </span>
+                      </td>
+                      <td
+                        className={`py-3 px-3 font-bold whitespace-nowrap ${
+                          risk.risk_type === "Negative Balance" ? "text-red-400" : "text-amber-400"
+                        }`}
+                      >
+                        {fmt(risk.balance)}
+                      </td>
+                      <td className="py-3 px-3 text-slate-400 max-w-sm truncate" title={risk.description}>
+                        {risk.description}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

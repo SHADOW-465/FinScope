@@ -209,7 +209,7 @@ export default function Home() {
   return (
     <div className="flex-1 flex flex-col min-h-screen">
       {/* HEADER */}
-      <header className="glass-panel sticky top-0 z-40 px-6 py-4 flex items-center justify-between border-b border-slate-800/80 backdrop-blur-md no-print">
+      <header className="glass-panel sticky top-0 z-40 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800/80 backdrop-blur-md no-print">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/20">
             <Landmark className="w-6 h-6 text-white" />
@@ -225,7 +225,7 @@ export default function Home() {
         </div>
 
         {analysisResult && (
-          <div className="flex items-center gap-2 flex-wrap justify-end">
+          <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full sm:w-auto">
             {/* AI enhancement status */}
             <AIEnhancementBadge progress={classifierProgress} />
 
@@ -383,8 +383,13 @@ export default function Home() {
             {/* Dashboard Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Primary Left Columns */}
-              <div className="lg:col-span-8 space-y-6">
-                <OverviewCards overview={activeReport.overview} metrics={activeReport.metrics} />
+              <div className="lg:col-span-8 space-y-6 order-2 lg:order-1">
+                <OverviewCards
+                  overview={activeReport.overview}
+                  metrics={activeReport.metrics}
+                  bouncesCount={activeReport.bounce_analysis.length}
+                  totalMonthlyEMIs={activeReport.liability_analysis.reduce((sum: number, l: any) => sum + l.emi_amount, 0)}
+                />
 
                 <Charts monthlyAnalysis={activeReport.monthly_analysis} transactions={activeReport.transactions} />
 
@@ -406,7 +411,7 @@ export default function Home() {
               </div>
 
               {/* Sidebar Right Column */}
-              <div className="lg:col-span-4 lg:sticky lg:top-24">
+              <div className="lg:col-span-4 lg:sticky lg:top-24 order-1 lg:order-2">
                 <RiskCard
                   score={activeReport.risk_score.score}
                   level={activeReport.risk_score.risk_level}

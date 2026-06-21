@@ -192,7 +192,7 @@ export default function TransactionTable({ transactions, aiEnhancing = false }: 
               <th className="py-3 px-4 text-right">Debit (Dr)</th>
               <th className="py-3 px-4 text-right">Credit (Cr)</th>
               <th className="py-3 px-4 text-right">Running Balance</th>
-              <th className="py-3 px-4">Source File</th>
+              <th className="py-3 px-4 hidden sm:table-cell">Source File</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800/40">
@@ -203,59 +203,80 @@ export default function TransactionTable({ transactions, aiEnhancing = false }: 
                 </td>
               </tr>
             ) : (
-              paginatedTransactions.map((t, idx) => (
-                <tr key={idx} className="hover:bg-slate-900/20 transition-colors">
-                  <td className="py-3.5 px-4 text-slate-300 whitespace-nowrap">{t.date}</td>
-                  <td className="py-3.5 px-4 font-medium text-slate-200 max-w-sm break-words">
-                    {t.description}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] whitespace-nowrap font-medium ${getCategoryClass(t.category)}`}>
-                      {t.aiEnhanced && (
-                        <span title="Reclassified by on-device AI">
-                          <Sparkles className="w-2.5 h-2.5 opacity-70" />
+              paginatedTransactions.map((t, idx) => {
+                const isBounce = t.category === "Bounce" || 
+                                 /bounce|nsf|return chq|dishonour|ecs rt|chq return|cheque return|chq rtn/i.test(t.description);
+
+                return (
+                  <tr
+                    key={idx}
+                    className={`transition-colors border-l-2 ${
+                      isBounce
+                        ? "bg-rose-950/20 hover:bg-rose-950/30 border-rose-500/80 text-rose-200"
+                        : "hover:bg-slate-900/20 border-transparent"
+                    }`}
+                  >
+                    <td className="py-3.5 px-4 text-slate-300 whitespace-nowrap">{t.date}</td>
+                    <td className="py-3.5 px-4 font-medium text-slate-200 max-w-sm break-words">
+                      <div className="flex items-center flex-wrap gap-1.5">
+                        <span className={isBounce ? "text-rose-200 font-semibold" : ""}>
+                          {t.description}
                         </span>
+                        {isBounce && (
+                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-rose-500/20 border border-rose-500/30 text-rose-400 text-[9px] font-bold">
+                            ⚠️ Bounce
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] whitespace-nowrap font-medium ${getCategoryClass(t.category)}`}>
+                        {t.aiEnhanced && (
+                          <span title="Reclassified by on-device AI">
+                            <Sparkles className="w-2.5 h-2.5 opacity-70" />
+                          </span>
+                        )}
+                        {t.category}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 text-slate-300 font-medium whitespace-nowrap">
+                      {t.counterparty}
+                    </td>
+                    <td className="py-3.5 px-4 text-right text-rose-400 font-semibold">
+                      {t.debit > 0 ? (
+                        <span className="flex items-center justify-end gap-1">
+                          <ArrowDownRight className="w-3.5 h-3.5 text-rose-500/80" />
+                          {fmt(t.debit)}
+                        </span>
+                      ) : (
+                        "-"
                       )}
-                      {t.category}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-slate-300 font-medium whitespace-nowrap">
-                    {t.counterparty}
-                  </td>
-                  <td className="py-3.5 px-4 text-right text-rose-400 font-semibold">
-                    {t.debit > 0 ? (
-                      <span className="flex items-center justify-end gap-1">
-                        <ArrowDownRight className="w-3.5 h-3.5 text-rose-500/80" />
-                        {fmt(t.debit)}
-                      </span>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td className="py-3.5 px-4 text-right text-emerald-400 font-semibold">
-                    {t.credit > 0 ? (
-                      <span className="flex items-center justify-end gap-1">
-                        <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500/80" />
-                        {fmt(t.credit)}
-                      </span>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td className="py-3.5 px-4 text-right text-slate-100 font-bold whitespace-nowrap">
-                    {fmt(t.balance)}
-                  </td>
-                  <td className="py-3.5 px-4 text-slate-400 whitespace-nowrap max-w-[150px] truncate" title={t.fileOrigin || "N/A"}>
-                    {t.fileOrigin ? (
-                      <span className="px-2 py-0.5 rounded-md bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-400">
-                        {t.fileOrigin}
-                      </span>
-                    ) : (
-                      <span className="text-slate-600">-</span>
-                    )}
-                  </td>
-                </tr>
-              ))
+                    </td>
+                    <td className="py-3.5 px-4 text-right text-emerald-400 font-semibold">
+                      {t.credit > 0 ? (
+                        <span className="flex items-center justify-end gap-1">
+                          <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500/80" />
+                          {fmt(t.credit)}
+                        </span>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td className="py-3.5 px-4 text-right text-slate-100 font-bold whitespace-nowrap">
+                      {fmt(t.balance)}
+                    </td>
+                    <td className="py-3.5 px-4 text-slate-400 whitespace-nowrap max-w-[150px] truncate hidden sm:table-cell" title={t.fileOrigin || "N/A"}>
+                      {t.fileOrigin ? (
+                        <span className="px-2 py-0.5 rounded-md bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-400">
+                          {t.fileOrigin}
+                        </span>
+                      ) : (
+                        <span className="text-slate-600">-</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
