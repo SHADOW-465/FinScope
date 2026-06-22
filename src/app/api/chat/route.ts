@@ -35,13 +35,19 @@ ${contextText}
 - Highlight specific figures, ratios (e.g. debt service, cash retention, EMI burden), and flags (e.g. cheque returns, low balance occurrences).
 - If asked about loan repayment capacity (e.g., "repay a ₹10 lakh loan"), compute the DSCR (Debt Service Coverage Ratio) or debt ratio, and provide a clear, reasoned recommendation.`;
 
+    let activeApiKey = api_key;
+    let activeProvider = provider || "gemini";
+
+    if ((!activeApiKey || activeApiKey.trim() === "") && process.env.NVIDIA_API_KEY) {
+      activeApiKey = process.env.NVIDIA_API_KEY;
+      activeProvider = "nvidia";
+    }
+
     // 1. If API Key is provided, use LLM
-    if (api_key && api_key.trim() !== "") {
-      const activeProvider = provider || "gemini";
-      
+    if (activeApiKey && activeApiKey.trim() !== "") {
       if (activeProvider === "gemini") {
         try {
-          const genAI = new GoogleGenerativeAI(api_key);
+          const genAI = new GoogleGenerativeAI(activeApiKey);
           const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
           
           const result = await model.generateContent([
@@ -56,15 +62,26 @@ ${contextText}
         }
       } 
       
-      if (activeProvider === "groq" || activeProvider === "openai") {
+      if (activeProvider === "groq" || activeProvider === "openai" || activeProvider === "nvidia") {
         try {
+          let baseURL = undefined;
+          let model = "gpt-4o-mini";
+
+          if (activeProvider === "groq") {
+            baseURL = "https://api.groq.com/openai/v1";
+            model = "llama3-8b-8192";
+          } else if (activeProvider === "nvidia") {
+            baseURL = "https://integrate.api.nvidia.com/v1";
+            model = "meta/llama-3.1-70b-instruct";
+          }
+
           const openai = new OpenAI({
-            apiKey: api_key,
-            baseURL: activeProvider === "groq" ? "https://api.groq.com/openai/v1" : undefined
+            apiKey: activeApiKey,
+            baseURL: baseURL
           });
           
           const chatCompletion = await openai.chat.completions.create({
-            model: activeProvider === "groq" ? "llama3-8b-8192" : "gpt-4o-mini",
+            model: model,
             messages: [
               { role: "system", content: systemPrompt },
               { role: "user", content: message }
@@ -73,8 +90,8 @@ ${contextText}
           
           return NextResponse.json({ response: chatCompletion.choices[0].message.content || "No response generated." });
         } catch (e: any) {
-          console.error("OpenAI/Groq API call failed:", e);
-          return NextResponse.json({ error: `LLM provider API error: ${e.message}` }, { status: 502 });
+          console.error(`${activeProvider} API call failed:`, e);
+          return NextResponse.json({ error: `${activeProvider} API error: ${e.message}` }, { status: 502 });
         }
       }
     }

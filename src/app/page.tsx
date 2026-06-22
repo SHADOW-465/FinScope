@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Landmark,
   FileText,
@@ -11,9 +11,6 @@ import {
   TrendingUp,
   Sparkles,
   BarChart2,
-  BrainCircuit,
-  CheckCircle2,
-  AlertTriangle,
   Loader2,
 } from "lucide-react";
 import UploadZone from "@/components/UploadZone";
@@ -23,8 +20,6 @@ import Charts from "@/components/Charts";
 import Panels from "@/components/Panels";
 import TransactionTable from "@/components/TransactionTable";
 import ChatAssistant from "@/components/ChatAssistant";
-import { terminateClassifier } from "@/lib/engine/local-classifier";
-import type { LocalClassifierProgress } from "@/lib/engine/local-classifier";
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -40,54 +35,6 @@ interface AnalysisResult {
   reports: Record<string, any>;
 }
 
-// ─── AI Enhancement Status Badge ─────────────────────────────────────────
-
-function AIEnhancementBadge({ progress }: { progress: LocalClassifierProgress | null }) {
-  if (!progress || progress.status === "idle") return null;
-
-  if (progress.status === "loading") {
-    return (
-      <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-xs font-medium">
-        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-        Loading AI model…
-      </div>
-    );
-  }
-
-  if (progress.status === "running") {
-    const pct = progress.total > 0 ? Math.round((progress.processed / progress.total) * 100) : 0;
-    return (
-      <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-xs font-medium">
-        <BrainCircuit className="w-3.5 h-3.5 animate-pulse" />
-        AI enhancing… {pct}% ({progress.processed}/{progress.total})
-      </div>
-    );
-  }
-
-  if (progress.status === "done" && progress.total > 0) {
-    return (
-      <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-emerald-400 text-xs font-medium">
-        <CheckCircle2 className="w-3.5 h-3.5" />
-        AI enhanced {progress.enhanced} transaction{progress.enhanced !== 1 ? "s" : ""}
-      </div>
-    );
-  }
-
-  if (progress.status === "error") {
-    return (
-      <div
-        title={progress.error}
-        className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-xs font-medium cursor-help"
-      >
-        <AlertTriangle className="w-3.5 h-3.5" />
-        AI offline – keyword classifier active
-      </div>
-    );
-  }
-
-  return null;
-}
-
 // ─── Main Page ────────────────────────────────────────────────────────────
 
 export default function Home() {
@@ -95,97 +42,27 @@ export default function Home() {
   const [activeAccountId, setActiveAccountId] = useState<string>("");
   const [isExportingExcel, setIsExportingExcel] = useState(false);
   const [isGlobalLoading, setIsGlobalLoading] = useState(false);
-  const [loadingStage, setLoadingStage] = useState<"parsing" | "ai_enhancing">("parsing");
-
-  /**
-   * Enhanced reports: after the API returns, the local ONNX model runs in the
-   * background and gradually replaces per-account transaction arrays.
-   * We keep this separate from `analysisResult` so the initial results appear
-   * instantly without waiting for the AI model to download or infer.
-   */
-  const [enhancedReports, setEnhancedReports] = useState<Record<string, any>>({});
-  const [classifierProgress, setClassifierProgress] = useState<LocalClassifierProgress | null>(null);
-
-  // We use a ref to abort enhancement if the user clicks Reset mid-flight
-  const enhancementAbortRef = useRef(false);
 
   // ── Process Complete handler ──────────────────────────────────────────
 
-  const handleProcessComplete = useCallback(async (data: AnalysisResult) => {
-    terminateClassifier(); // kill any active background Web Worker run
-    setEnhancedReports({});
-    setClassifierProgress(null);
-    enhancementAbortRef.current = false;
-    setIsGlobalLoading(true);
-    setLoadingStage("ai_enhancing");
-
-    // Local accumulator to merge enhanced data
-    const updatedReports = { ...data.reports };
-
-    try {
-      const { enhanceClassifications } = await import("@/lib/engine/local-classifier");
-
-      for (const accountId of Object.keys(data.reports)) {
-        if (enhancementAbortRef.current) break;
-
-        const report = data.reports[accountId];
-        const enhanced = await enhanceClassifications(
-          report.transactions,
-          (progress) => {
-            if (!enhancementAbortRef.current) {
-              setClassifierProgress(progress);
-            }
-          }
-        );
-
-        if (!enhancementAbortRef.current) {
-          updatedReports[accountId] = { ...report, transactions: enhanced };
-          setEnhancedReports((prev) => ({
-            ...prev,
-            [accountId]: updatedReports[accountId],
-          }));
-        }
-      }
-
-      if (!enhancementAbortRef.current) {
-        setAnalysisResult({ ...data, reports: updatedReports });
-        setActiveAccountId(data.accounts[0]?.id || "");
-        setIsGlobalLoading(false);
-      }
-    } catch (err) {
-      console.warn("[FinScope] Local AI classifier unavailable:", err);
-      setClassifierProgress({
-        status: "error",
-        processed: 0,
-        total: 0,
-        enhanced: 0,
-        error: String(err),
-      });
-
-      if (!enhancementAbortRef.current) {
-        setAnalysisResult(data);
-        setActiveAccountId(data.accounts[0]?.id || "");
-        setIsGlobalLoading(false);
-      }
-    }
+  const handleProcessComplete = useCallback((data: AnalysisResult) => {
+    setAnalysisResult(data);
+    setActiveAccountId(data.accounts[0]?.id || "");
+    setIsGlobalLoading(false);
   }, []);
 
   // ── Reset handler ─────────────────────────────────────────────────────
 
   const handleReset = () => {
-    terminateClassifier(); // kill any active background Web Worker thread
-    enhancementAbortRef.current = true; // abort any in-flight enhancement
     setAnalysisResult(null);
     setActiveAccountId("");
-    setEnhancedReports({});
-    setClassifierProgress(null);
   };
 
-  // ── Derive active report (enhanced if available, else raw API result) ──
+  // ── Derive active report ──
 
   const activeReport =
     analysisResult && activeAccountId
-      ? enhancedReports[activeAccountId] ?? analysisResult.reports[activeAccountId]
+      ? analysisResult.reports[activeAccountId]
       : null;
 
   // ── Excel Export ──────────────────────────────────────────────────────
@@ -242,8 +119,6 @@ export default function Home() {
 
         {analysisResult && (
           <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full sm:w-auto">
-            {/* AI enhancement status */}
-            <AIEnhancementBadge progress={classifierProgress} />
 
             <button
               onClick={handleReset}
@@ -276,72 +151,21 @@ export default function Home() {
         {isGlobalLoading ? (
           <div className="flex flex-col items-center justify-center min-h-[50vh] py-16 animate-in fade-in duration-300">
             <div className="glass-panel max-w-lg w-full rounded-2xl p-8 flex flex-col items-center gap-6 border border-indigo-500/25 bg-slate-950/40 backdrop-blur-md shadow-2xl shadow-indigo-950/20 text-center">
-              {loadingStage === "parsing" ? (
-                <>
-                  <div className="p-4 bg-indigo-500/10 rounded-full animate-pulse">
-                    <Landmark className="w-10 h-10 text-indigo-400" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-black text-white tracking-tight">
-                      Extracting Financial Ledger
-                    </h3>
-                    <p className="text-xs text-slate-400 max-w-sm leading-relaxed mx-auto">
-                      Parsing bank statements, validating IFSC headers, and aggregating transaction histories.
-                    </p>
-                  </div>
-                  {/* Indeterminate loader */}
-                  <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden relative">
-                    <div className="bg-indigo-500 h-full rounded-full w-2/3 absolute top-0 animate-shimmer" />
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="p-4 bg-indigo-500/10 rounded-full animate-pulse">
-                    <BrainCircuit className="w-10 h-10 text-indigo-400" />
-                  </div>
-                  <div className="space-y-2 w-full">
-                    <h3 className="text-xl font-black text-white tracking-tight flex items-center justify-center gap-2">
-                      Running AI Verification
-                      <span className="flex h-2 w-2 relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-                      </span>
-                    </h3>
-                    <p className="text-xs text-slate-400 max-w-sm leading-relaxed mx-auto">
-                      Running on-device DistilBERT NLI model to resolve miscellaneous counterparties.
-                    </p>
-                  </div>
-
-                  {/* Progress Stats */}
-                  <div className="w-full flex items-center justify-between text-xs text-indigo-400 font-bold px-1">
-                    <span>
-                      {classifierProgress ? `${Math.round((classifierProgress.processed / (classifierProgress.total || 1)) * 100)}% Complete` : "Initializing model..."}
-                    </span>
-                    <span>
-                      {classifierProgress ? `${classifierProgress.processed} / ${classifierProgress.total} Items` : ""}
-                    </span>
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden">
-                    <div
-                      className="bg-gradient-to-r from-indigo-500 to-purple-600 h-full rounded-full transition-all duration-300"
-                      style={{
-                        width: classifierProgress
-                          ? `${(classifierProgress.processed / (classifierProgress.total || 1)) * 100}%`
-                          : "0%",
-                      }}
-                    />
-                  </div>
-
-                  {classifierProgress && classifierProgress.enhanced > 0 && (
-                    <div className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full flex items-center gap-1.5">
-                      <Sparkles className="w-3 h-3" />
-                      Enhanced {classifierProgress.enhanced} transaction{classifierProgress.enhanced !== 1 ? "s" : ""}
-                    </div>
-                  )}
-                </>
-              )}
+              <div className="p-4 bg-indigo-500/10 rounded-full animate-pulse">
+                <Landmark className="w-10 h-10 text-indigo-400" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-black text-white tracking-tight">
+                  Extracting Financial Ledger
+                </h3>
+                <p className="text-xs text-slate-400 max-w-sm leading-relaxed mx-auto">
+                  Parsing bank statements, validating IFSC headers, and aggregating transaction histories.
+                </p>
+              </div>
+              {/* Indeterminate loader */}
+              <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden relative">
+                <div className="bg-indigo-500 h-full rounded-full w-2/3 absolute top-0 animate-shimmer" />
+              </div>
             </div>
           </div>
         ) : !analysisResult || !activeReport ? (
@@ -370,7 +194,6 @@ export default function Home() {
             <UploadZone
               onProcessStart={() => {
                 setIsGlobalLoading(true);
-                setLoadingStage("parsing");
               }}
               onProcessComplete={handleProcessComplete}
               onProcessError={() => setIsGlobalLoading(false)}
@@ -404,12 +227,12 @@ export default function Home() {
 
               <div className="glass-panel p-5 rounded-2xl flex items-start gap-4">
                 <div className="p-3 bg-purple-500/10 rounded-xl">
-                  <BrainCircuit className="w-6 h-6 text-purple-400" />
+                  <Sparkles className="w-6 h-6 text-purple-400" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-200">On-Device AI Classifier</h4>
+                  <h4 className="text-sm font-semibold text-slate-200">NVIDIA NIM AI Assistant</h4>
                   <p className="text-xs text-slate-400 mt-1 leading-normal">
-                    DistilBERT ONNX model runs locally in your browser to reclassify ambiguous transactions.
+                    Query customer repayment capacity, income stability, and risk metrics using Llama 3.1.
                   </p>
                 </div>
               </div>
@@ -491,7 +314,6 @@ export default function Home() {
 
                 <TransactionTable
                   transactions={activeReport.transactions}
-                  aiEnhancing={classifierProgress?.status === "loading" || classifierProgress?.status === "running"}
                 />
 
                 <div className="print-page-break" />
@@ -530,7 +352,7 @@ export default function Home() {
       <footer className="py-6 border-t border-slate-900 mt-auto text-center text-xs text-slate-500 no-print">
         <p>
           © {new Date().getFullYear()} FinScope. Deployed on Vercel Free Tier. Powered by
-          In-Memory OCR &amp; PDF Extraction + On-Device DistilBERT AI.
+          In-Memory OCR &amp; PDF Extraction + NVIDIA NIM AI.
         </p>
       </footer>
     </div>

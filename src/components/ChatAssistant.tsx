@@ -224,26 +224,39 @@ I can answer underwriting questions or evaluate repayment capacity. Click a pres
                 <Settings className="w-3.5 h-3.5 text-indigo-400" />
                 AI API Key Configurations
               </h4>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <button
+                  type="button"
                   onClick={() => setProvider("gemini")}
-                  className={`px-3 py-1.5 rounded-xl border text-xs font-medium transition-colors cursor-pointer ${
+                  className={`px-2 py-1.5 rounded-xl border text-[10px] font-medium transition-colors cursor-pointer ${
                     provider === "gemini"
                       ? "bg-indigo-600/15 border-indigo-500/40 text-indigo-300"
                       : "bg-slate-900 border-slate-800 text-slate-400"
                   }`}
                 >
-                  Google Gemini (Free)
+                  Gemini
                 </button>
                 <button
+                  type="button"
                   onClick={() => setProvider("groq")}
-                  className={`px-3 py-1.5 rounded-xl border text-xs font-medium transition-colors cursor-pointer ${
+                  className={`px-2 py-1.5 rounded-xl border text-[10px] font-medium transition-colors cursor-pointer ${
                     provider === "groq"
                       ? "bg-indigo-600/15 border-indigo-500/40 text-indigo-300"
                       : "bg-slate-900 border-slate-800 text-slate-400"
                   }`}
                 >
-                  Groq LLAMA3 (Fast)
+                  Groq
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setProvider("nvidia")}
+                  className={`px-2 py-1.5 rounded-xl border text-[10px] font-medium transition-colors cursor-pointer ${
+                    provider === "nvidia"
+                      ? "bg-indigo-600/15 border-indigo-500/40 text-indigo-300"
+                      : "bg-slate-900 border-slate-800 text-slate-400"
+                  }`}
+                >
+                  NVIDIA NIM
                 </button>
               </div>
               <div className="space-y-1.5">
@@ -255,6 +268,8 @@ I can answer underwriting questions or evaluate repayment capacity. Click a pres
                   placeholder={
                     provider === "gemini"
                       ? "Enter Gemini API Key..."
+                      : provider === "nvidia"
+                      ? "Enter NVIDIA API Key..."
                       : "Enter Groq API Key..."
                   }
                   value={apiKey}
@@ -262,17 +277,19 @@ I can answer underwriting questions or evaluate repayment capacity. Click a pres
                   className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs focus:outline-none focus:border-indigo-500 transition-colors"
                 />
                 <p className="text-[9px] text-slate-500 leading-normal">
-                  Your key is saved locally in your browser and sent with queries. Leave blank to run our local rule-based heuristic analyst.
+                  Your key is saved locally in your browser and sent with queries. Leave blank to run the server-side environment key or fallback heuristic analyst.
                 </p>
               </div>
               <div className="flex justify-end gap-2 border-t border-slate-900 pt-3">
                 <button
+                  type="button"
                   onClick={() => setShowSettings(false)}
                   className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-xs font-medium cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={handleSaveSettings}
                   className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-xs font-medium text-white cursor-pointer"
                 >
