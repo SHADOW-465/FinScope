@@ -1,4 +1,8 @@
 import { ClassifiedTransaction } from "./classifier";
+import { averageDailyBalance } from "./adb";
+import { detectEMIs } from "./emi-detect";
+import { computeFOIR } from "./foir";
+import type { LoanAsk } from "@/types/domain";
 
 export interface RiskProfile {
   overview: {
@@ -21,6 +25,13 @@ export interface RiskProfile {
     emi_burden: number;
     debt_ratio: number;
     cash_retention: number;
+  };
+  foir: {
+    existing_obligations: number;
+    avg_monthly_income: number;
+    pre_loan_pct: number | null;
+    indicative_new_emi: number;
+    post_loan_pct: number | null;
   };
   risk_score: {
     score: number;
@@ -67,30 +78,29 @@ export function computeRiskProfile(
   accNum: string,
   accHolder: string,
   bankName: string,
-  stmtPeriod: string
+  stmtPeriod: string,
+  loanAsk?: LoanAsk
 ): RiskProfile {
   // 1. Calculate general stats
   let totalCredits = 0;
   let totalDebits = 0;
-  let sumBalances = 0;
-  
+
   const uniqueMonths = new Set<string>();
   const monthlyData: Record<string, { credits: number; debits: number; balances: number[]; count: number }> = {};
-  
+
   txns.forEach(txn => {
     if (txn.transactionType === "CREDIT") {
       totalCredits += txn.credit;
     } else {
       totalDebits += txn.debit;
     }
-    sumBalances += txn.balance;
-    
+
     // Parse month (e.g., "2025-11-19" -> "Nov 2025")
     const dateObj = new Date(txn.date);
     if (!isNaN(dateObj.getTime())) {
       const monthStr = dateObj.toLocaleString("en-US", { month: "short", year: "numeric" });
       uniqueMonths.add(monthStr);
-      
+
       if (!monthlyData[monthStr]) {
         monthlyData[monthStr] = { credits: 0, debits: 0, balances: [], count: 0 };
       }
@@ -105,8 +115,17 @@ export function computeRiskProfile(
   });
 
   const durationMonths = Math.max(1, uniqueMonths.size);
-  const averageBalance = txns.length > 0 ? sumBalances / txns.length : openingBal;
-  
+
+  // Time-weighted Average Daily Balance: carries each day's closing balance
+  // across gaps and averages over calendar days, instead of a mean of
+  // per-transaction balances (which over-weights busy days). See PRD-v2 §E.1.
+  const averageBalance = txns.length > 0
+    ? averageDailyBalance(
+        txns.map(t => ({ date: t.date, balance: t.balance })),
+        { openingBalance: openingBal }
+      )
+    : openingBal;
+
   // 2. Monthly analysis rollup
   const monthly_analysis = Object.entries(monthlyData).map(([month, data]) => {
     return {
@@ -137,7 +156,7 @@ export function computeRiskProfile(
       incomeMap[key].conf = Math.max(incomeMap[key].conf, txn.confidenceScore);
     }
   });
-  
+
   const income_analysis = Object.entries(incomeMap).map(([source, data]) => ({
     source,
     amount: Math.round(data.total * 100) / 100,
@@ -146,36 +165,25 @@ export function computeRiskProfile(
     confidence: data.conf
   }));
 
-  // 4. Liability analysis (active EMIs / loans)
-  const liabilityMap: Record<string, { total: number; count: number; conf: number }> = {};
-  txns.forEach(txn => {
-    if (txn.transactionType === "DEBIT" && txn.category === "EMI Payment") {
-      const lender = txn.counterparty;
-      if (!liabilityMap[lender]) {
-        liabilityMap[lender] = { total: 0, count: 0, conf: txn.confidenceScore };
-      }
-      liabilityMap[lender].total += txn.debit;
-      liabilityMap[lender].count++;
-      liabilityMap[lender].conf = Math.max(liabilityMap[lender].conf, txn.confidenceScore);
-    }
-  });
-
-  const liability_analysis = Object.entries(liabilityMap).map(([lender, data]) => ({
-    lender,
-    // Average monthly EMI amount paid to this lender
-    emi_amount: Math.round((data.total / Math.max(1, data.count)) * 100) / 100,
+  // 4. Liability analysis — detect recurring obligations by behaviour
+  // (payee + near-equal amount + monthly cadence), not by category string.
+  // See PRD-v2 §E.3.
+  const detectedObligations = detectEMIs(txns);
+  const liability_analysis = detectedObligations.map(o => ({
+    lender: o.payee,
+    emi_amount: o.emiAmount,
     frequency: "Monthly",
-    confidence: data.conf
+    confidence: o.confidence
   }));
 
   // 5. Bounce Analysis
   const bounce_analysis: RiskProfile["bounce_analysis"] = [];
   txns.forEach(txn => {
     const descLower = txn.description.toLowerCase();
-    const isBounce = descLower.includes("bounce") || 
-                     (descLower.includes("nsf") && !descLower.includes("transfer")) || 
+    const isBounce = descLower.includes("bounce") ||
+                     (descLower.includes("nsf") && !descLower.includes("transfer")) ||
                      (descLower.includes("return") && descLower.includes("chg")) ||
-                     descLower.includes("dishonour") || 
+                     descLower.includes("dishonour") ||
                      descLower.includes("ecs rt") ||
                      descLower.includes("chq return") ||
                      descLower.includes("cheque return") ||
@@ -183,7 +191,7 @@ export function computeRiskProfile(
                      descLower.includes("cheque rtn") ||
                      descLower.includes("inw chq rt") ||
                      (descLower.includes("chq") && descLower.includes("return"));
-                     
+
     if (txn.transactionType === "DEBIT" && isBounce) {
       bounce_analysis.push({
         date: txn.date,
@@ -218,7 +226,7 @@ export function computeRiskProfile(
   // 7. Calculate Financial metrics
   const avg_monthly_banking = durationMonths > 0 ? averageBalance : openingBal;
   const net_cash_flow = totalCredits - totalDebits;
-  
+
   // Income stability: frequency and distribution of credits
   let income_stability = 100;
   if (monthly_analysis.length > 0) {
@@ -226,16 +234,33 @@ export function computeRiskProfile(
     const activeRatio = activeMonths / monthly_analysis.length;
     income_stability = activeRatio * 100;
   }
-  
+
   const expense_ratio = totalCredits > 0 ? Math.min(100, (totalDebits / totalCredits) * 100) : 100;
-  
+
   const totalMonthlyIncome = totalCredits / durationMonths;
   const totalMonthlyEMIs = liability_analysis.reduce((sum, l) => sum + l.emi_amount, 0);
   const emi_burden = totalMonthlyIncome > 0 ? Math.min(100, (totalMonthlyEMIs / totalMonthlyIncome) * 100) : (totalMonthlyEMIs > 0 ? 100 : 0);
-  
+
+  // Retained for back-compat in the UI; intentionally NOT part of the score —
+  // EMI/avg-balance is not a standard ratio (PRD-v2 §E.2).
   const debt_ratio = averageBalance > 0 ? Math.min(100, (totalMonthlyEMIs / averageBalance) * 100) : (totalMonthlyEMIs > 0 ? 100 : 0);
-  
+
   const cash_retention = totalCredits > 0 ? Math.max(0, Math.min(100, (net_cash_flow / totalCredits) * 100)) : 0;
+
+  // FOIR — fixed-obligation-to-income ratio, pre/post the requested loan.
+  // loanAsk is optional; when absent, post-loan FOIR equals pre-loan FOIR.
+  const foirBreakdown = computeFOIR({
+    existingMonthlyObligations: totalMonthlyEMIs,
+    avgMonthlyIncome: totalMonthlyIncome,
+    loanAsk
+  });
+  const foir = {
+    existing_obligations: Math.round(totalMonthlyEMIs * 100) / 100,
+    avg_monthly_income: Math.round(totalMonthlyIncome * 100) / 100,
+    pre_loan_pct: foirBreakdown.preLoanFOIRPct,
+    indicative_new_emi: foirBreakdown.indicativeNewEMI,
+    post_loan_pct: foirBreakdown.postLoanFOIRPct
+  };
 
   // 8. Compute Underwriting Risk Score (0-100)
   // Income Stability: 20%
@@ -244,26 +269,26 @@ export function computeRiskProfile(
   // Debt Burden: 20%
   // Cash Flow Consistency: 15%
   // Negative Balances: 10%
-  
+
   // a. Income Stability score
   const incomeStabilityScore = income_stability; // 0 to 100
-  
+
   // b. Average Balance score (100 if average balance is >= 30,000 INR, scaling down)
   const averageBalanceScore = Math.min(100, Math.max(0, (averageBalance / 30000) * 100));
-  
+
   // c. Cheque Bounces score
   let chequeBouncesScore = 100;
   if (bounce_analysis.length === 1) chequeBouncesScore = 70;
   else if (bounce_analysis.length === 2) chequeBouncesScore = 40;
   else if (bounce_analysis.length >= 3) chequeBouncesScore = 0;
-  
+
   // d. Debt Burden score (Inverse of EMI Burden: 100 if EMI burden is 0%, 0 if EMI burden >= 60%)
   const debtBurdenScore = Math.max(0, 100 - (emi_burden / 60) * 100);
-  
+
   // e. Cash Flow Consistency score (Percentage of months with net positive flow)
   const positiveMonthsCount = monthly_analysis.filter(m => m.net_flow > 0).length;
   const cashFlowConsistencyScore = monthly_analysis.length > 0 ? (positiveMonthsCount / monthly_analysis.length) * 100 : 100;
-  
+
   // f. Negative Balances score
   const negativeBalanceEvents = balance_risks.filter(r => r.risk_type === "Negative Balance").length;
   let negativeBalancesScore = 100;
@@ -317,6 +342,7 @@ export function computeRiskProfile(
       debt_ratio: Math.round(debt_ratio * 100) / 100,
       cash_retention: Math.round(cash_retention * 100) / 100
     },
+    foir,
     risk_score: {
       score,
       risk_level,
