@@ -8,558 +8,558 @@
       "file_type": "code",
       "source_file": "eslint.config.mjs",
       "source_location": "L1",
-      "id": "eslint_config_mjs",
-      "community": 9,
-      "norm_label": "eslint.config.mjs"
+      "community": 13,
+      "norm_label": "eslint.config.mjs",
+      "id": "eslint_config_mjs"
     },
     {
       "label": "next-env.d.ts",
       "file_type": "code",
       "source_file": "next-env.d.ts",
       "source_location": "L1",
-      "id": "next_env_d_ts",
-      "community": 10,
-      "norm_label": "next-env.d.ts"
+      "community": 14,
+      "norm_label": "next-env.d.ts",
+      "id": "next_env_d_ts"
     },
     {
       "label": "next.config.ts",
       "file_type": "code",
       "source_file": "next.config.ts",
       "source_location": "L1",
-      "id": "next_config_ts",
-      "community": 11,
-      "norm_label": "next.config.ts"
+      "community": 15,
+      "norm_label": "next.config.ts",
+      "id": "next_config_ts"
     },
     {
       "label": "postcss.config.mjs",
       "file_type": "code",
       "source_file": "postcss.config.mjs",
       "source_location": "L1",
-      "id": "postcss_config_mjs",
-      "community": 12,
-      "norm_label": "postcss.config.mjs"
+      "community": 16,
+      "norm_label": "postcss.config.mjs",
+      "id": "postcss_config_mjs"
     },
     {
       "label": "test_accuracy.ts",
       "file_type": "code",
       "source_file": "test_accuracy.ts",
       "source_location": "L1",
-      "id": "test_accuracy_ts",
       "community": 2,
-      "norm_label": "test_accuracy.ts"
+      "norm_label": "test_accuracy.ts",
+      "id": "test_accuracy_ts"
     },
     {
       "label": "checkAccuracy()",
       "file_type": "code",
       "source_file": "test_accuracy.ts",
       "source_location": "L8",
-      "id": "finscope_test_accuracy_checkaccuracy",
       "community": 2,
-      "norm_label": "checkaccuracy()"
+      "norm_label": "checkaccuracy()",
+      "id": "finscope_test_accuracy_checkaccuracy"
     },
     {
       "label": "test_search_values.ts",
       "file_type": "code",
       "source_file": "test_search_values.ts",
       "source_location": "L1",
-      "id": "test_search_values_ts",
-      "community": 7,
-      "norm_label": "test_search_values.ts"
+      "community": 9,
+      "norm_label": "test_search_values.ts",
+      "id": "test_search_values_ts"
     },
     {
       "label": "searchValues()",
       "file_type": "code",
       "source_file": "test_search_values.ts",
       "source_location": "L4",
-      "id": "finscope_test_search_values_searchvalues",
-      "community": 7,
-      "norm_label": "searchvalues()"
+      "community": 9,
+      "norm_label": "searchvalues()",
+      "id": "finscope_test_search_values_searchvalues"
     },
     {
       "label": "layout.tsx",
       "file_type": "code",
       "source_file": "src/app/layout.tsx",
       "source_location": "L1",
-      "id": "src_app_layout_tsx",
       "community": 0,
-      "norm_label": "layout.tsx"
+      "norm_label": "layout.tsx",
+      "id": "src_app_layout_tsx"
     },
     {
       "label": "RootLayout()",
       "file_type": "code",
       "source_file": "src/app/layout.tsx",
       "source_location": "L20",
-      "id": "app_layout_rootlayout",
       "community": 0,
-      "norm_label": "rootlayout()"
+      "norm_label": "rootlayout()",
+      "id": "app_layout_rootlayout"
     },
     {
       "label": "page.tsx",
       "file_type": "code",
       "source_file": "src/app/page.tsx",
       "source_location": "L1",
-      "id": "src_app_page_tsx",
-      "community": 4,
-      "norm_label": "page.tsx"
+      "community": 5,
+      "norm_label": "page.tsx",
+      "id": "src_app_page_tsx"
     },
     {
       "label": "handleProcessComplete()",
       "file_type": "code",
       "source_file": "src/app/page.tsx",
       "source_location": "L18",
-      "id": "app_page_handleprocesscomplete",
-      "community": 4,
-      "norm_label": "handleprocesscomplete()"
+      "community": 5,
+      "norm_label": "handleprocesscomplete()",
+      "id": "app_page_handleprocesscomplete"
     },
     {
       "label": "handleReset()",
       "file_type": "code",
       "source_file": "src/app/page.tsx",
-      "source_location": "L25",
-      "id": "app_page_handlereset",
-      "community": 4,
-      "norm_label": "handlereset()"
+      "source_location": "L56",
+      "community": 5,
+      "norm_label": "handlereset()",
+      "id": "app_page_handlereset"
     },
     {
       "label": "handleExportExcel()",
       "file_type": "code",
       "source_file": "src/app/page.tsx",
-      "source_location": "L32",
-      "id": "app_page_handleexportexcel",
-      "community": 4,
-      "norm_label": "handleexportexcel()"
+      "source_location": "L70",
+      "community": 5,
+      "norm_label": "handleexportexcel()",
+      "id": "app_page_handleexportexcel"
     },
     {
       "label": "handlePrint()",
       "file_type": "code",
       "source_file": "src/app/page.tsx",
-      "source_location": "L65",
-      "id": "app_page_handleprint",
-      "community": 4,
-      "norm_label": "handleprint()"
+      "source_location": "L98",
+      "community": 5,
+      "norm_label": "handleprint()",
+      "id": "app_page_handleprint"
     },
     {
       "label": "route.ts",
       "file_type": "code",
       "source_file": "src/app/api/chat/route.ts",
       "source_location": "L1",
-      "id": "src_app_api_chat_route_ts",
-      "community": 6,
-      "norm_label": "route.ts"
+      "community": 8,
+      "norm_label": "route.ts",
+      "id": "src_app_api_chat_route_ts"
     },
     {
       "label": "POST()",
       "file_type": "code",
       "source_file": "src/app/api/chat/route.ts",
       "source_location": "L6",
-      "id": "chat_route_post",
-      "community": 6,
-      "norm_label": "post()"
+      "community": 8,
+      "norm_label": "post()",
+      "id": "chat_route_post"
     },
     {
       "label": "generateLocalResponse()",
       "file_type": "code",
       "source_file": "src/app/api/chat/route.ts",
-      "source_location": "L102",
-      "id": "chat_route_generatelocalresponse",
-      "community": 6,
-      "norm_label": "generatelocalresponse()"
+      "source_location": "L119",
+      "community": 8,
+      "norm_label": "generatelocalresponse()",
+      "id": "chat_route_generatelocalresponse"
     },
     {
       "label": "route.ts",
       "file_type": "code",
       "source_file": "src/app/api/export/route.ts",
       "source_location": "L1",
-      "id": "src_app_api_export_route_ts",
-      "community": 8,
-      "norm_label": "route.ts"
+      "community": 10,
+      "norm_label": "route.ts",
+      "id": "src_app_api_export_route_ts"
     },
     {
       "label": "POST()",
       "file_type": "code",
       "source_file": "src/app/api/export/route.ts",
       "source_location": "L5",
-      "id": "export_route_post",
-      "community": 8,
-      "norm_label": "post()"
+      "community": 10,
+      "norm_label": "post()",
+      "id": "export_route_post"
     },
     {
       "label": "route.ts",
       "file_type": "code",
       "source_file": "src/app/api/process/route.ts",
       "source_location": "L1",
-      "id": "src_app_api_process_route_ts",
       "community": 2,
-      "norm_label": "route.ts"
+      "norm_label": "route.ts",
+      "id": "src_app_api_process_route_ts"
     },
     {
       "label": "POST()",
       "file_type": "code",
       "source_file": "src/app/api/process/route.ts",
-      "source_location": "L11",
-      "id": "process_route_post",
+      "source_location": "L8",
       "community": 2,
-      "norm_label": "post()"
+      "norm_label": "post()",
+      "id": "process_route_post"
     },
     {
       "label": "Charts.tsx",
       "file_type": "code",
       "source_file": "src/components/Charts.tsx",
       "source_location": "L1",
-      "id": "src_components_charts_tsx",
       "community": 0,
-      "norm_label": "charts.tsx"
+      "norm_label": "charts.tsx",
+      "id": "src_components_charts_tsx"
     },
     {
       "label": "Charts()",
       "file_type": "code",
       "source_file": "src/components/Charts.tsx",
       "source_location": "L34",
-      "id": "components_charts_charts",
       "community": 0,
-      "norm_label": "charts()"
+      "norm_label": "charts()",
+      "id": "components_charts_charts"
     },
     {
       "label": "ChatAssistant.tsx",
       "file_type": "code",
       "source_file": "src/components/ChatAssistant.tsx",
       "source_location": "L1",
-      "id": "src_components_chatassistant_tsx",
-      "community": 5,
-      "norm_label": "chatassistant.tsx"
+      "community": 6,
+      "norm_label": "chatassistant.tsx",
+      "id": "src_components_chatassistant_tsx"
     },
     {
       "label": "handleSaveSettings()",
       "file_type": "code",
       "source_file": "src/components/ChatAssistant.tsx",
       "source_location": "L47",
-      "id": "components_chatassistant_handlesavesettings",
-      "community": 5,
-      "norm_label": "handlesavesettings()"
+      "community": 6,
+      "norm_label": "handlesavesettings()",
+      "id": "components_chatassistant_handlesavesettings"
     },
     {
       "label": "handleSend()",
       "file_type": "code",
       "source_file": "src/components/ChatAssistant.tsx",
       "source_location": "L65",
-      "id": "components_chatassistant_handlesend",
-      "community": 5,
-      "norm_label": "handlesend()"
+      "community": 6,
+      "norm_label": "handlesend()",
+      "id": "components_chatassistant_handlesend"
     },
     {
       "label": "parseInlineFormatting()",
       "file_type": "code",
       "source_file": "src/components/ChatAssistant.tsx",
       "source_location": "L116",
-      "id": "components_chatassistant_parseinlineformatting",
-      "community": 5,
-      "norm_label": "parseinlineformatting()"
+      "community": 6,
+      "norm_label": "parseinlineformatting()",
+      "id": "components_chatassistant_parseinlineformatting"
     },
     {
       "label": "OverviewCards.tsx",
       "file_type": "code",
       "source_file": "src/components/OverviewCards.tsx",
       "source_location": "L1",
-      "id": "src_components_overviewcards_tsx",
       "community": 0,
-      "norm_label": "overviewcards.tsx"
+      "norm_label": "overviewcards.tsx",
+      "id": "src_components_overviewcards_tsx"
     },
     {
       "label": "fmt()",
       "file_type": "code",
       "source_file": "src/components/OverviewCards.tsx",
-      "source_location": "L32",
-      "id": "components_overviewcards_fmt",
+      "source_location": "L39",
       "community": 0,
-      "norm_label": "fmt()"
+      "norm_label": "fmt()",
+      "id": "components_overviewcards_fmt"
     },
     {
       "label": "Panels.tsx",
       "file_type": "code",
       "source_file": "src/components/Panels.tsx",
       "source_location": "L1",
-      "id": "src_components_panels_tsx",
       "community": 0,
-      "norm_label": "panels.tsx"
+      "norm_label": "panels.tsx",
+      "id": "src_components_panels_tsx"
     },
     {
       "label": "fmt()",
       "file_type": "code",
       "source_file": "src/components/Panels.tsx",
-      "source_location": "L45",
-      "id": "components_panels_fmt",
+      "source_location": "L44",
       "community": 0,
-      "norm_label": "fmt()"
+      "norm_label": "fmt()",
+      "id": "components_panels_fmt"
     },
     {
       "label": "RiskCard.tsx",
       "file_type": "code",
       "source_file": "src/components/RiskCard.tsx",
       "source_location": "L1",
-      "id": "src_components_riskcard_tsx",
       "community": 0,
-      "norm_label": "riskcard.tsx"
+      "norm_label": "riskcard.tsx",
+      "id": "src_components_riskcard_tsx"
     },
     {
       "label": "RiskCard()",
       "file_type": "code",
       "source_file": "src/components/RiskCard.tsx",
       "source_location": "L15",
-      "id": "components_riskcard_riskcard",
       "community": 0,
-      "norm_label": "riskcard()"
+      "norm_label": "riskcard()",
+      "id": "components_riskcard_riskcard"
     },
     {
       "label": "TransactionTable.tsx",
       "file_type": "code",
       "source_file": "src/components/TransactionTable.tsx",
       "source_location": "L1",
-      "id": "src_components_transactiontable_tsx",
       "community": 0,
-      "norm_label": "transactiontable.tsx"
+      "norm_label": "transactiontable.tsx",
+      "id": "src_components_transactiontable_tsx"
     },
     {
       "label": "fmt()",
       "file_type": "code",
       "source_file": "src/components/TransactionTable.tsx",
-      "source_location": "L32",
-      "id": "components_transactiontable_fmt",
+      "source_location": "L37",
       "community": 0,
-      "norm_label": "fmt()"
+      "norm_label": "fmt()",
+      "id": "components_transactiontable_fmt"
     },
     {
       "label": "getCategoryClass()",
       "file_type": "code",
       "source_file": "src/components/TransactionTable.tsx",
-      "source_location": "L77",
-      "id": "components_transactiontable_getcategoryclass",
+      "source_location": "L82",
       "community": 0,
-      "norm_label": "getcategoryclass()"
+      "norm_label": "getcategoryclass()",
+      "id": "components_transactiontable_getcategoryclass"
     },
     {
       "label": "UploadZone.tsx",
       "file_type": "code",
       "source_file": "src/components/UploadZone.tsx",
       "source_location": "L1",
-      "id": "src_components_uploadzone_tsx",
-      "community": 3,
-      "norm_label": "uploadzone.tsx"
+      "community": 4,
+      "norm_label": "uploadzone.tsx",
+      "id": "src_components_uploadzone_tsx"
     },
     {
       "label": "handleDrag()",
       "file_type": "code",
       "source_file": "src/components/UploadZone.tsx",
-      "source_location": "L20",
-      "id": "components_uploadzone_handledrag",
-      "community": 3,
-      "norm_label": "handledrag()"
+      "source_location": "L22",
+      "community": 4,
+      "norm_label": "handledrag()",
+      "id": "components_uploadzone_handledrag"
     },
     {
       "label": "handleDrop()",
       "file_type": "code",
       "source_file": "src/components/UploadZone.tsx",
-      "source_location": "L30",
-      "id": "components_uploadzone_handledrop",
-      "community": 3,
-      "norm_label": "handledrop()"
+      "source_location": "L32",
+      "community": 4,
+      "norm_label": "handledrop()",
+      "id": "components_uploadzone_handledrop"
     },
     {
       "label": "handleFileChange()",
       "file_type": "code",
       "source_file": "src/components/UploadZone.tsx",
-      "source_location": "L48",
-      "id": "components_uploadzone_handlefilechange",
-      "community": 3,
-      "norm_label": "handlefilechange()"
+      "source_location": "L50",
+      "community": 4,
+      "norm_label": "handlefilechange()",
+      "id": "components_uploadzone_handlefilechange"
     },
     {
       "label": "removeFile()",
       "file_type": "code",
       "source_file": "src/components/UploadZone.tsx",
-      "source_location": "L58",
-      "id": "components_uploadzone_removefile",
-      "community": 3,
-      "norm_label": "removefile()"
+      "source_location": "L60",
+      "community": 4,
+      "norm_label": "removefile()",
+      "id": "components_uploadzone_removefile"
     },
     {
       "label": "triggerFileInput()",
       "file_type": "code",
       "source_file": "src/components/UploadZone.tsx",
-      "source_location": "L62",
-      "id": "components_uploadzone_triggerfileinput",
-      "community": 3,
-      "norm_label": "triggerfileinput()"
+      "source_location": "L64",
+      "community": 4,
+      "norm_label": "triggerfileinput()",
+      "id": "components_uploadzone_triggerfileinput"
     },
     {
       "label": "handleProcess()",
       "file_type": "code",
       "source_file": "src/components/UploadZone.tsx",
-      "source_location": "L66",
-      "id": "components_uploadzone_handleprocess",
-      "community": 3,
-      "norm_label": "handleprocess()"
+      "source_location": "L68",
+      "community": 4,
+      "norm_label": "handleprocess()",
+      "id": "components_uploadzone_handleprocess"
     },
     {
       "label": "classifier.ts",
       "file_type": "code",
       "source_file": "src/lib/engine/classifier.ts",
       "source_location": "L1",
-      "id": "src_lib_engine_classifier_ts",
       "community": 0,
-      "norm_label": "classifier.ts"
+      "norm_label": "classifier.ts",
+      "id": "src_lib_engine_classifier_ts"
     },
     {
       "label": "classifyTransactions()",
       "file_type": "code",
       "source_file": "src/lib/engine/classifier.ts",
-      "source_location": "L9",
-      "id": "engine_classifier_classifytransactions",
+      "source_location": "L11",
       "community": 2,
-      "norm_label": "classifytransactions()"
+      "norm_label": "classifytransactions()",
+      "id": "engine_classifier_classifytransactions"
     },
     {
       "label": "cleanCounterpartyName()",
       "file_type": "code",
       "source_file": "src/lib/engine/classifier.ts",
-      "source_location": "L185",
-      "id": "engine_classifier_cleancounterpartyname",
+      "source_location": "L191",
       "community": 0,
-      "norm_label": "cleancounterpartyname()"
+      "norm_label": "cleancounterpartyname()",
+      "id": "engine_classifier_cleancounterpartyname"
     },
     {
       "label": "risk.ts",
       "file_type": "code",
       "source_file": "src/lib/engine/risk.ts",
       "source_location": "L1",
-      "id": "src_lib_engine_risk_ts",
       "community": 2,
-      "norm_label": "risk.ts"
+      "norm_label": "risk.ts",
+      "id": "src_lib_engine_risk_ts"
     },
     {
       "label": "computeRiskProfile()",
       "file_type": "code",
       "source_file": "src/lib/engine/risk.ts",
       "source_location": "L63",
-      "id": "engine_risk_computeriskprofile",
       "community": 2,
-      "norm_label": "computeriskprofile()"
+      "norm_label": "computeriskprofile()",
+      "id": "engine_risk_computeriskprofile"
     },
     {
       "label": "detector.ts",
       "file_type": "code",
       "source_file": "src/lib/parser/detector.ts",
       "source_location": "L1",
-      "id": "src_lib_parser_detector_ts",
       "community": 2,
-      "norm_label": "detector.ts"
+      "norm_label": "detector.ts",
+      "id": "src_lib_parser_detector_ts"
     },
     {
       "label": "detectBank()",
       "file_type": "code",
       "source_file": "src/lib/parser/detector.ts",
       "source_location": "L1",
-      "id": "parser_detector_detectbank",
       "community": 2,
-      "norm_label": "detectbank()"
+      "norm_label": "detectbank()",
+      "id": "parser_detector_detectbank"
     },
     {
       "label": "extractors.ts",
       "file_type": "code",
       "source_file": "src/lib/parser/extractors.ts",
       "source_location": "L1",
-      "id": "src_lib_parser_extractors_ts",
       "community": 1,
-      "norm_label": "extractors.ts"
+      "norm_label": "extractors.ts",
+      "id": "src_lib_parser_extractors_ts"
     },
     {
       "label": "parseAmount()",
       "file_type": "code",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L21",
-      "id": "parser_extractors_parseamount",
+      "source_location": "L22",
       "community": 1,
-      "norm_label": "parseamount()"
+      "norm_label": "parseamount()",
+      "id": "parser_extractors_parseamount"
     },
     {
       "label": "cleanDate()",
       "file_type": "code",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L30",
-      "id": "parser_extractors_cleandate",
+      "source_location": "L31",
       "community": 1,
-      "norm_label": "cleandate()"
+      "norm_label": "cleandate()",
+      "id": "parser_extractors_cleandate"
     },
     {
       "label": "parseStatementText()",
       "file_type": "code",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L78",
-      "id": "parser_extractors_parsestatementtext",
+      "source_location": "L79",
       "community": 1,
-      "norm_label": "parsestatementtext()"
+      "norm_label": "parsestatementtext()",
+      "id": "parser_extractors_parsestatementtext"
     },
     {
       "label": "parseBankOfBaroda()",
       "file_type": "code",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L122",
-      "id": "parser_extractors_parsebankofbaroda",
+      "source_location": "L123",
       "community": 1,
-      "norm_label": "parsebankofbaroda()"
+      "norm_label": "parsebankofbaroda()",
+      "id": "parser_extractors_parsebankofbaroda"
     },
     {
       "label": "preprocessICICILines()",
       "file_type": "code",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L224",
-      "id": "parser_extractors_preprocessicicilines",
+      "source_location": "L226",
       "community": 1,
-      "norm_label": "preprocessicicilines()"
+      "norm_label": "preprocessicicilines()",
+      "id": "parser_extractors_preprocessicicilines"
     },
     {
       "label": "parseICICI()",
       "file_type": "code",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L266",
-      "id": "parser_extractors_parseicici",
+      "source_location": "L268",
       "community": 1,
-      "norm_label": "parseicici()"
+      "norm_label": "parseicici()",
+      "id": "parser_extractors_parseicici"
     },
     {
       "label": "parseIndusInd()",
       "file_type": "code",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L481",
-      "id": "parser_extractors_parseindusind",
+      "source_location": "L486",
       "community": 1,
-      "norm_label": "parseindusind()"
+      "norm_label": "parseindusind()",
+      "id": "parser_extractors_parseindusind"
     },
     {
       "label": "parseCanaraBank()",
       "file_type": "code",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L615",
-      "id": "parser_extractors_parsecanarabank",
+      "source_location": "L621",
       "community": 1,
-      "norm_label": "parsecanarabank()"
+      "norm_label": "parsecanarabank()",
+      "id": "parser_extractors_parsecanarabank"
     },
     {
       "label": "parseGeneric()",
       "file_type": "code",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L754",
-      "id": "parser_extractors_parsegeneric",
+      "source_location": "L930",
       "community": 1,
-      "norm_label": "parsegeneric()"
+      "norm_label": "parsegeneric()",
+      "id": "parser_extractors_parsegeneric"
     },
     {
       "label": "pdf-parse.d.ts",
       "file_type": "code",
       "source_file": "src/types/pdf-parse.d.ts",
       "source_location": "L1",
-      "id": "src_types_pdf_parse_d_ts",
       "community": 0,
-      "norm_label": "pdf-parse.d.ts"
+      "norm_label": "pdf-parse.d.ts",
+      "id": "src_types_pdf_parse_d_ts"
     },
     {
       "label": "AGENTS.md",
@@ -570,9 +570,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "agents_md",
       "community": 0,
-      "norm_label": "agents.md"
+      "norm_label": "agents.md",
+      "id": "agents_md"
     },
     {
       "label": "CLAUDE.md",
@@ -583,9 +583,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "claude_md",
-      "community": 13,
-      "norm_label": "claude.md"
+      "community": 17,
+      "norm_label": "claude.md",
+      "id": "claude_md"
     },
     {
       "label": "README.md",
@@ -596,9 +596,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_md",
-      "community": 4,
-      "norm_label": "readme.md"
+      "community": 5,
+      "norm_label": "readme.md",
+      "id": "readme_md"
     },
     {
       "label": "05-versions-space.pdf",
@@ -609,9 +609,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "05-versions-space_pdf",
-      "community": 14,
-      "norm_label": "05-versions-space.pdf"
+      "community": 18,
+      "norm_label": "05-versions-space.pdf",
+      "id": "05-versions-space_pdf"
     },
     {
       "label": "file.svg",
@@ -622,9 +622,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "file_svg",
-      "community": 15,
-      "norm_label": "file.svg"
+      "community": 19,
+      "norm_label": "file.svg",
+      "id": "file_svg"
     },
     {
       "label": "globe.svg",
@@ -635,9 +635,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "globe_svg",
-      "community": 16,
-      "norm_label": "globe.svg"
+      "community": 20,
+      "norm_label": "globe.svg",
+      "id": "globe_svg"
     },
     {
       "label": "next.svg",
@@ -648,9 +648,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "next_svg",
-      "community": 17,
-      "norm_label": "next.svg"
+      "community": 21,
+      "norm_label": "next.svg",
+      "id": "next_svg"
     },
     {
       "label": "vercel.svg",
@@ -661,9 +661,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "vercel_svg",
-      "community": 18,
-      "norm_label": "vercel.svg"
+      "community": 22,
+      "norm_label": "vercel.svg",
+      "id": "vercel_svg"
     },
     {
       "label": "window.svg",
@@ -674,9 +674,371 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "window_svg",
-      "community": 19,
-      "norm_label": "window.svg"
+      "community": 23,
+      "norm_label": "window.svg",
+      "id": "window_svg"
+    },
+    {
+      "label": "getSourceType()",
+      "file_type": "code",
+      "source_file": "src/components/Panels.tsx",
+      "source_location": "L56",
+      "id": "components_panels_getsourcetype",
+      "community": 0,
+      "norm_label": "getsourcetype()"
+    },
+    {
+      "label": "classifier.worker.ts",
+      "file_type": "code",
+      "source_file": "src/lib/engine/classifier.worker.ts",
+      "source_location": "L1",
+      "id": "src_lib_engine_classifier_worker_ts",
+      "community": 11,
+      "norm_label": "classifier.worker.ts"
+    },
+    {
+      "label": "getClassifier()",
+      "file_type": "code",
+      "source_file": "src/lib/engine/classifier.worker.ts",
+      "source_location": "L9",
+      "id": "engine_classifier_worker_getclassifier",
+      "community": 11,
+      "norm_label": "getclassifier()"
+    },
+    {
+      "label": "local-classifier.ts",
+      "file_type": "code",
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": "L1",
+      "id": "src_lib_engine_local_classifier_ts",
+      "community": 7,
+      "norm_label": "local-classifier.ts"
+    },
+    {
+      "label": "terminateClassifier()",
+      "file_type": "code",
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": "L93",
+      "id": "engine_local_classifier_terminateclassifier",
+      "community": 7,
+      "norm_label": "terminateclassifier()"
+    },
+    {
+      "label": "needsEnhancement()",
+      "file_type": "code",
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": "L106",
+      "id": "engine_local_classifier_needsenhancement",
+      "community": 7,
+      "norm_label": "needsenhancement()"
+    },
+    {
+      "label": "enhanceClassifications()",
+      "file_type": "code",
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": "L122",
+      "id": "engine_local_classifier_enhanceclassifications",
+      "community": 7,
+      "norm_label": "enhanceclassifications()"
+    },
+    {
+      "label": "nextConfig",
+      "file_type": "code",
+      "source_file": "next.config.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "next_config_nextconfig",
+      "community": 24,
+      "norm_label": "nextconfig"
+    },
+    {
+      "label": "Turbopack Config",
+      "file_type": "code",
+      "source_file": "next.config.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "next_config_turbopack",
+      "community": 25,
+      "norm_label": "turbopack config"
+    },
+    {
+      "label": "Webpack Config",
+      "file_type": "code",
+      "source_file": "next.config.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "next_config_webpack",
+      "community": 26,
+      "norm_label": "webpack config"
+    },
+    {
+      "label": "Home Component",
+      "file_type": "code",
+      "source_file": "src/app/page.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "page_home",
+      "community": 3,
+      "norm_label": "home component"
+    },
+    {
+      "label": "AIEnhancementBadge",
+      "file_type": "code",
+      "source_file": "src/app/page.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "page_ai_enhancement_badge",
+      "community": 27,
+      "norm_label": "aienhancementbadge"
+    },
+    {
+      "label": "POST Chat Handler",
+      "file_type": "code",
+      "source_file": "src/app/api/chat/route.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "route_post",
+      "community": 12,
+      "norm_label": "post chat handler"
+    },
+    {
+      "label": "generateLocalResponse",
+      "file_type": "code",
+      "source_file": "src/app/api/chat/route.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "route_generatelocalresponse",
+      "community": 28,
+      "norm_label": "generatelocalresponse"
+    },
+    {
+      "label": "POST Process Handler",
+      "file_type": "code",
+      "source_file": "src/app/api/process/route.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "route_post_process",
+      "community": 3,
+      "norm_label": "post process handler"
+    },
+    {
+      "label": "ChatAssistant",
+      "file_type": "code",
+      "source_file": "src/components/ChatAssistant.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "chatassistant_default",
+      "community": 12,
+      "norm_label": "chatassistant"
+    },
+    {
+      "label": "OverviewCards",
+      "file_type": "code",
+      "source_file": "src/components/OverviewCards.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "overviewcards_default",
+      "community": 29,
+      "norm_label": "overviewcards"
+    },
+    {
+      "label": "Panels Component",
+      "file_type": "code",
+      "source_file": "src/components/Panels.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "panels_default",
+      "community": 30,
+      "norm_label": "panels component"
+    },
+    {
+      "label": "TransactionTable",
+      "file_type": "code",
+      "source_file": "src/components/TransactionTable.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "transactiontable_default",
+      "community": 3,
+      "norm_label": "transactiontable"
+    },
+    {
+      "label": "UploadZone",
+      "file_type": "code",
+      "source_file": "src/components/UploadZone.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "uploadzone_default",
+      "community": 31,
+      "norm_label": "uploadzone"
+    },
+    {
+      "label": "classifyTransactions",
+      "file_type": "code",
+      "source_file": "src/lib/engine/classifier.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "classifier_classifytransactions",
+      "community": 3,
+      "norm_label": "classifytransactions"
+    },
+    {
+      "label": "cleanCounterpartyName",
+      "file_type": "code",
+      "source_file": "src/lib/engine/classifier.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "classifier_cleancounterpartyname",
+      "community": 32,
+      "norm_label": "cleancounterpartyname"
+    },
+    {
+      "label": "Worker onmessage Handler",
+      "file_type": "code",
+      "source_file": "src/lib/engine/classifier.worker.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "classifier_worker_onmessage",
+      "community": 3,
+      "norm_label": "worker onmessage handler"
+    },
+    {
+      "label": "enhanceClassifications",
+      "file_type": "code",
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "local_classifier_enhanceclassifications",
+      "community": 3,
+      "norm_label": "enhanceclassifications"
+    },
+    {
+      "label": "needsEnhancement",
+      "file_type": "code",
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "local_classifier_needsenhancement",
+      "community": 33,
+      "norm_label": "needsenhancement"
+    },
+    {
+      "label": "computeRiskProfile",
+      "file_type": "code",
+      "source_file": "src/lib/engine/risk.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "risk_computeriskprofile",
+      "community": 3,
+      "norm_label": "computeriskprofile"
+    },
+    {
+      "label": "parseStatementText",
+      "file_type": "code",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "extractors_parsestatementtext",
+      "community": 3,
+      "norm_label": "parsestatementtext"
+    },
+    {
+      "label": "pdf-parse Types",
+      "file_type": "code",
+      "source_file": "src/types/pdf-parse.d.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "pdf_parse_types",
+      "community": 34,
+      "norm_label": "pdf-parse types"
+    },
+    {
+      "label": "Developer & Agent Manual",
+      "file_type": "document",
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "agents_manual",
+      "community": 35,
+      "norm_label": "developer & agent manual"
+    },
+    {
+      "label": "On-Device AI Classifier Architecture",
+      "file_type": "rationale",
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "agents_onnx_architecture",
+      "community": 3,
+      "norm_label": "on-device ai classifier architecture"
     }
   ],
   "links": [
@@ -687,9 +1049,9 @@
       "source_file": "test_accuracy.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_accuracy_ts",
-      "target": "parser_detector_detectbank",
-      "confidence_score": 1.0
+      "target": "parser_detector_detectbank"
     },
     {
       "relation": "imports",
@@ -698,9 +1060,9 @@
       "source_file": "test_accuracy.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_accuracy_ts",
-      "target": "parser_extractors_parsestatementtext",
-      "confidence_score": 1.0
+      "target": "parser_extractors_parsestatementtext"
     },
     {
       "relation": "contains",
@@ -708,9 +1070,9 @@
       "source_file": "test_accuracy.ts",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_accuracy_ts",
-      "target": "finscope_test_accuracy_checkaccuracy",
-      "confidence_score": 1.0
+      "target": "finscope_test_accuracy_checkaccuracy"
     },
     {
       "relation": "references",
@@ -719,8 +1081,8 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "test_accuracy_ts"
+      "source": "test_accuracy_ts",
+      "target": "agents_md"
     },
     {
       "relation": "calls",
@@ -751,8 +1113,8 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "finscope_test_accuracy_checkaccuracy"
+      "source": "finscope_test_accuracy_checkaccuracy",
+      "target": "agents_md"
     },
     {
       "relation": "contains",
@@ -760,9 +1122,9 @@
       "source_file": "test_search_values.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_search_values_ts",
-      "target": "finscope_test_search_values_searchvalues",
-      "confidence_score": 1.0
+      "target": "finscope_test_search_values_searchvalues"
     },
     {
       "relation": "contains",
@@ -770,29 +1132,29 @@
       "source_file": "src/app/layout.tsx",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_layout_tsx",
-      "target": "app_layout_rootlayout",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_app_layout_tsx"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
       "target": "app_layout_rootlayout"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "src_app_layout_tsx",
+      "target": "agents_md"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "app_layout_rootlayout",
+      "target": "agents_md"
     },
     {
       "relation": "contains",
@@ -800,39 +1162,39 @@
       "source_file": "src/app/page.tsx",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_page_tsx",
-      "target": "app_page_handleprocesscomplete",
-      "confidence_score": 1.0
+      "target": "app_page_handleprocesscomplete"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/page.tsx",
-      "source_location": "L25",
+      "source_location": "L56",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_page_tsx",
-      "target": "app_page_handlereset",
-      "confidence_score": 1.0
+      "target": "app_page_handlereset"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/page.tsx",
-      "source_location": "L32",
+      "source_location": "L70",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_page_tsx",
-      "target": "app_page_handleexportexcel",
-      "confidence_score": 1.0
+      "target": "app_page_handleexportexcel"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/page.tsx",
-      "source_location": "L65",
+      "source_location": "L98",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_page_tsx",
-      "target": "app_page_handleprint",
-      "confidence_score": 1.0
+      "target": "app_page_handleprint"
     },
     {
       "relation": "references",
@@ -841,8 +1203,8 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_app_page_tsx"
+      "source": "src_app_page_tsx",
+      "target": "agents_md"
     },
     {
       "relation": "references",
@@ -851,8 +1213,8 @@
       "source_file": "README.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "readme_md",
-      "target": "src_app_page_tsx"
+      "source": "src_app_page_tsx",
+      "target": "readme_md"
     },
     {
       "relation": "references",
@@ -861,8 +1223,8 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "app_page_handleprint"
+      "source": "app_page_handleprint",
+      "target": "agents_md"
     },
     {
       "relation": "references",
@@ -871,8 +1233,8 @@
       "source_file": "README.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "readme_md",
-      "target": "app_page_handleprint"
+      "source": "app_page_handleprint",
+      "target": "readme_md"
     },
     {
       "relation": "contains",
@@ -880,30 +1242,30 @@
       "source_file": "src/app/api/chat/route.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_api_chat_route_ts",
-      "target": "chat_route_post",
-      "confidence_score": 1.0
+      "target": "chat_route_post"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/api/chat/route.ts",
-      "source_location": "L102",
+      "source_location": "L119",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_api_chat_route_ts",
-      "target": "chat_route_generatelocalresponse",
-      "confidence_score": 1.0
+      "target": "chat_route_generatelocalresponse"
     },
     {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/app/api/chat/route.ts",
-      "source_location": "L83",
+      "source_location": "L100",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "chat_route_post",
-      "target": "chat_route_generatelocalresponse",
-      "confidence_score": 1.0
+      "target": "chat_route_generatelocalresponse"
     },
     {
       "relation": "contains",
@@ -911,9 +1273,9 @@
       "source_file": "src/app/api/export/route.ts",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_api_export_route_ts",
-      "target": "export_route_post",
-      "confidence_score": 1.0
+      "target": "export_route_post"
     },
     {
       "relation": "imports",
@@ -922,9 +1284,9 @@
       "source_file": "src/app/api/process/route.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_api_process_route_ts",
-      "target": "parser_detector_detectbank",
-      "confidence_score": 1.0
+      "target": "parser_detector_detectbank"
     },
     {
       "relation": "imports",
@@ -933,9 +1295,9 @@
       "source_file": "src/app/api/process/route.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_api_process_route_ts",
-      "target": "parser_extractors_parsestatementtext",
-      "confidence_score": 1.0
+      "target": "parser_extractors_parsestatementtext"
     },
     {
       "relation": "imports",
@@ -944,9 +1306,9 @@
       "source_file": "src/app/api/process/route.ts",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_api_process_route_ts",
-      "target": "engine_classifier_classifytransactions",
-      "confidence_score": 1.0
+      "target": "engine_classifier_classifytransactions"
     },
     {
       "relation": "imports",
@@ -955,19 +1317,19 @@
       "source_file": "src/app/api/process/route.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_api_process_route_ts",
-      "target": "engine_risk_computeriskprofile",
-      "confidence_score": 1.0
+      "target": "engine_risk_computeriskprofile"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/api/process/route.ts",
-      "source_location": "L11",
+      "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app_api_process_route_ts",
-      "target": "process_route_post",
-      "confidence_score": 1.0
+      "target": "process_route_post"
     },
     {
       "relation": "references",
@@ -976,8 +1338,8 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_app_api_process_route_ts"
+      "source": "src_app_api_process_route_ts",
+      "target": "agents_md"
     },
     {
       "relation": "calls",
@@ -996,7 +1358,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/app/api/process/route.ts",
-      "source_location": "L61",
+      "source_location": "L58",
       "weight": 1.0,
       "source": "process_route_post",
       "target": "parser_extractors_parsestatementtext"
@@ -1007,7 +1369,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/app/api/process/route.ts",
-      "source_location": "L153",
+      "source_location": "L150",
       "weight": 1.0,
       "source": "process_route_post",
       "target": "engine_classifier_classifytransactions"
@@ -1018,7 +1380,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "src/app/api/process/route.ts",
-      "source_location": "L156",
+      "source_location": "L153",
       "weight": 1.0,
       "source": "process_route_post",
       "target": "engine_risk_computeriskprofile"
@@ -1030,8 +1392,8 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "process_route_post"
+      "source": "process_route_post",
+      "target": "agents_md"
     },
     {
       "relation": "contains",
@@ -1039,29 +1401,29 @@
       "source_file": "src/components/Charts.tsx",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_charts_tsx",
-      "target": "components_charts_charts",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_components_charts_tsx"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
       "target": "components_charts_charts"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "src_components_charts_tsx",
+      "target": "agents_md"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_charts_charts",
+      "target": "agents_md"
     },
     {
       "relation": "contains",
@@ -1069,9 +1431,9 @@
       "source_file": "src/components/ChatAssistant.tsx",
       "source_location": "L47",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_chatassistant_tsx",
-      "target": "components_chatassistant_handlesavesettings",
-      "confidence_score": 1.0
+      "target": "components_chatassistant_handlesavesettings"
     },
     {
       "relation": "contains",
@@ -1079,9 +1441,9 @@
       "source_file": "src/components/ChatAssistant.tsx",
       "source_location": "L65",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_chatassistant_tsx",
-      "target": "components_chatassistant_handlesend",
-      "confidence_score": 1.0
+      "target": "components_chatassistant_handlesend"
     },
     {
       "relation": "contains",
@@ -1089,39 +1451,49 @@
       "source_file": "src/components/ChatAssistant.tsx",
       "source_location": "L116",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_chatassistant_tsx",
-      "target": "components_chatassistant_parseinlineformatting",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_components_chatassistant_tsx"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
       "target": "components_chatassistant_parseinlineformatting"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "src_components_chatassistant_tsx",
+      "target": "agents_md"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "components_chatassistant_parseinlineformatting",
+      "target": "agents_md"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/OverviewCards.tsx",
-      "source_location": "L32",
+      "source_location": "L39",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_overviewcards_tsx",
+      "target": "components_overviewcards_fmt"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
       "weight": 1.0,
       "source": "src_components_overviewcards_tsx",
-      "target": "components_overviewcards_fmt",
-      "confidence_score": 1.0
+      "target": "agents_md"
     },
     {
       "relation": "references",
@@ -1130,27 +1502,37 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_components_overviewcards_tsx"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
-      "target": "components_overviewcards_fmt"
+      "source": "components_overviewcards_fmt",
+      "target": "agents_md"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/Panels.tsx",
-      "source_location": "L45",
+      "source_location": "L44",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_panels_tsx",
+      "target": "components_panels_fmt"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
       "weight": 1.0,
       "source": "src_components_panels_tsx",
-      "target": "components_panels_fmt",
+      "target": "agents_md"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Panels.tsx",
+      "source_location": "L56",
+      "weight": 1.0,
+      "source": "src_components_panels_tsx",
+      "target": "components_panels_getsourcetype",
       "confidence_score": 1.0
     },
     {
@@ -1160,18 +1542,8 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_components_panels_tsx"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
-      "target": "components_panels_fmt"
+      "source": "components_panels_fmt",
+      "target": "agents_md"
     },
     {
       "relation": "contains",
@@ -1179,49 +1551,19 @@
       "source_file": "src/components/RiskCard.tsx",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_riskcard_tsx",
-      "target": "components_riskcard_riskcard",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_components_riskcard_tsx"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
       "target": "components_riskcard_riskcard"
     },
     {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/TransactionTable.tsx",
-      "source_location": "L32",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
       "weight": 1.0,
-      "source": "src_components_transactiontable_tsx",
-      "target": "components_transactiontable_fmt",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/TransactionTable.tsx",
-      "source_location": "L77",
-      "weight": 1.0,
-      "source": "src_components_transactiontable_tsx",
-      "target": "components_transactiontable_getcategoryclass",
-      "confidence_score": 1.0
+      "source": "src_components_riskcard_tsx",
+      "target": "agents_md"
     },
     {
       "relation": "references",
@@ -1230,78 +1572,38 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_components_transactiontable_tsx"
+      "source": "components_riskcard_riskcard",
+      "target": "agents_md"
     },
     {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/TransactionTable.tsx",
+      "source_location": "L37",
       "weight": 1.0,
-      "source": "agents_md",
+      "confidence_score": 1.0,
+      "source": "src_components_transactiontable_tsx",
+      "target": "components_transactiontable_fmt"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/TransactionTable.tsx",
+      "source_location": "L82",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_transactiontable_tsx",
       "target": "components_transactiontable_getcategoryclass"
     },
     {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/UploadZone.tsx",
-      "source_location": "L20",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
       "weight": 1.0,
-      "source": "src_components_uploadzone_tsx",
-      "target": "components_uploadzone_handledrag",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/UploadZone.tsx",
-      "source_location": "L30",
-      "weight": 1.0,
-      "source": "src_components_uploadzone_tsx",
-      "target": "components_uploadzone_handledrop",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/UploadZone.tsx",
-      "source_location": "L48",
-      "weight": 1.0,
-      "source": "src_components_uploadzone_tsx",
-      "target": "components_uploadzone_handlefilechange",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/UploadZone.tsx",
-      "source_location": "L58",
-      "weight": 1.0,
-      "source": "src_components_uploadzone_tsx",
-      "target": "components_uploadzone_removefile",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/UploadZone.tsx",
-      "source_location": "L62",
-      "weight": 1.0,
-      "source": "src_components_uploadzone_tsx",
-      "target": "components_uploadzone_triggerfileinput",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/UploadZone.tsx",
-      "source_location": "L66",
-      "weight": 1.0,
-      "source": "src_components_uploadzone_tsx",
-      "target": "components_uploadzone_handleprocess",
-      "confidence_score": 1.0
+      "source": "src_components_transactiontable_tsx",
+      "target": "agents_md"
     },
     {
       "relation": "references",
@@ -1310,38 +1612,78 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_components_uploadzone_tsx"
+      "source": "components_transactiontable_getcategoryclass",
+      "target": "agents_md"
     },
     {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/UploadZone.tsx",
+      "source_location": "L22",
       "weight": 1.0,
-      "source": "agents_md",
+      "confidence_score": 1.0,
+      "source": "src_components_uploadzone_tsx",
+      "target": "components_uploadzone_handledrag"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/UploadZone.tsx",
+      "source_location": "L32",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_uploadzone_tsx",
+      "target": "components_uploadzone_handledrop"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/UploadZone.tsx",
+      "source_location": "L50",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_uploadzone_tsx",
+      "target": "components_uploadzone_handlefilechange"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/UploadZone.tsx",
+      "source_location": "L60",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_uploadzone_tsx",
+      "target": "components_uploadzone_removefile"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/UploadZone.tsx",
+      "source_location": "L64",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_uploadzone_tsx",
+      "target": "components_uploadzone_triggerfileinput"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/UploadZone.tsx",
+      "source_location": "L68",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_uploadzone_tsx",
       "target": "components_uploadzone_handleprocess"
     },
     {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/engine/classifier.ts",
-      "source_location": "L9",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
       "weight": 1.0,
-      "source": "src_lib_engine_classifier_ts",
-      "target": "engine_classifier_classifytransactions",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/engine/classifier.ts",
-      "source_location": "L185",
-      "weight": 1.0,
-      "source": "src_lib_engine_classifier_ts",
-      "target": "engine_classifier_cleancounterpartyname",
-      "confidence_score": 1.0
+      "source": "src_components_uploadzone_tsx",
+      "target": "agents_md"
     },
     {
       "relation": "references",
@@ -1350,18 +1692,48 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_lib_engine_classifier_ts"
+      "source": "components_uploadzone_handleprocess",
+      "target": "agents_md"
     },
     {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/engine/classifier.ts",
+      "source_location": "L11",
       "weight": 1.0,
-      "source": "agents_md",
+      "confidence_score": 1.0,
+      "source": "src_lib_engine_classifier_ts",
+      "target": "engine_classifier_classifytransactions"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/engine/classifier.ts",
+      "source_location": "L191",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_engine_classifier_ts",
       "target": "engine_classifier_cleancounterpartyname"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "src_lib_engine_classifier_ts",
+      "target": "agents_md"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "engine_classifier_cleancounterpartyname",
+      "target": "agents_md"
     },
     {
       "relation": "contains",
@@ -1369,29 +1741,29 @@
       "source_file": "src/lib/engine/risk.ts",
       "source_location": "L63",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_lib_engine_risk_ts",
-      "target": "engine_risk_computeriskprofile",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_lib_engine_risk_ts"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
       "target": "engine_risk_computeriskprofile"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "src_lib_engine_risk_ts",
+      "target": "agents_md"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "engine_risk_computeriskprofile",
+      "target": "agents_md"
     },
     {
       "relation": "contains",
@@ -1399,119 +1771,19 @@
       "source_file": "src/lib/parser/detector.ts",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_lib_parser_detector_ts",
-      "target": "parser_detector_detectbank",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_lib_parser_detector_ts"
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
       "target": "parser_detector_detectbank"
     },
     {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L21",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
       "weight": 1.0,
-      "source": "src_lib_parser_extractors_ts",
-      "target": "parser_extractors_parseamount",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L30",
-      "weight": 1.0,
-      "source": "src_lib_parser_extractors_ts",
-      "target": "parser_extractors_cleandate",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L78",
-      "weight": 1.0,
-      "source": "src_lib_parser_extractors_ts",
-      "target": "parser_extractors_parsestatementtext",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L122",
-      "weight": 1.0,
-      "source": "src_lib_parser_extractors_ts",
-      "target": "parser_extractors_parsebankofbaroda",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L224",
-      "weight": 1.0,
-      "source": "src_lib_parser_extractors_ts",
-      "target": "parser_extractors_preprocessicicilines",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L266",
-      "weight": 1.0,
-      "source": "src_lib_parser_extractors_ts",
-      "target": "parser_extractors_parseicici",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L481",
-      "weight": 1.0,
-      "source": "src_lib_parser_extractors_ts",
-      "target": "parser_extractors_parseindusind",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L615",
-      "weight": 1.0,
-      "source": "src_lib_parser_extractors_ts",
-      "target": "parser_extractors_parsecanarabank",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L754",
-      "weight": 1.0,
-      "source": "src_lib_parser_extractors_ts",
-      "target": "parser_extractors_parsegeneric",
-      "confidence_score": 1.0
+      "source": "src_lib_parser_detector_ts",
+      "target": "agents_md"
     },
     {
       "relation": "references",
@@ -1520,171 +1792,97 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_lib_parser_extractors_ts"
+      "source": "parser_detector_detectbank",
+      "target": "agents_md"
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L159",
+      "source_location": "L22",
       "weight": 1.0,
-      "source": "parser_extractors_parsebankofbaroda",
-      "target": "parser_extractors_parseamount",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "src_lib_parser_extractors_ts",
+      "target": "parser_extractors_parseamount"
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L563",
+      "source_location": "L31",
       "weight": 1.0,
-      "source": "parser_extractors_parseindusind",
-      "target": "parser_extractors_parseamount",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "src_lib_parser_extractors_ts",
+      "target": "parser_extractors_cleandate"
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L637",
+      "source_location": "L79",
       "weight": 1.0,
-      "source": "parser_extractors_parsecanarabank",
-      "target": "parser_extractors_parseamount",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "src_lib_parser_extractors_ts",
+      "target": "parser_extractors_parsestatementtext"
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L768",
+      "source_location": "L123",
       "weight": 1.0,
-      "source": "parser_extractors_parsegeneric",
-      "target": "parser_extractors_parseamount",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "src_lib_parser_extractors_ts",
+      "target": "parser_extractors_parsebankofbaroda"
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L154",
+      "source_location": "L226",
       "weight": 1.0,
-      "source": "parser_extractors_parsebankofbaroda",
-      "target": "parser_extractors_cleandate",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "src_lib_parser_extractors_ts",
+      "target": "parser_extractors_preprocessicicilines"
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L532",
+      "source_location": "L268",
       "weight": 1.0,
-      "source": "parser_extractors_parseindusind",
-      "target": "parser_extractors_cleandate",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "src_lib_parser_extractors_ts",
+      "target": "parser_extractors_parseicici"
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L660",
+      "source_location": "L486",
       "weight": 1.0,
-      "source": "parser_extractors_parsecanarabank",
-      "target": "parser_extractors_cleandate",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "src_lib_parser_extractors_ts",
+      "target": "parser_extractors_parseindusind"
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L763",
+      "source_location": "L621",
       "weight": 1.0,
-      "source": "parser_extractors_parsegeneric",
-      "target": "parser_extractors_cleandate",
-      "confidence_score": 1.0
+      "confidence_score": 1.0,
+      "source": "src_lib_parser_extractors_ts",
+      "target": "parser_extractors_parsecanarabank"
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L92",
+      "source_location": "L930",
       "weight": 1.0,
-      "source": "parser_extractors_parsestatementtext",
-      "target": "parser_extractors_parsebankofbaroda",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L94",
-      "weight": 1.0,
-      "source": "parser_extractors_parsestatementtext",
-      "target": "parser_extractors_parseicici",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L96",
-      "weight": 1.0,
-      "source": "parser_extractors_parsestatementtext",
-      "target": "parser_extractors_parseindusind",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L98",
-      "weight": 1.0,
-      "source": "parser_extractors_parsestatementtext",
-      "target": "parser_extractors_parsecanarabank",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L100",
-      "weight": 1.0,
-      "source": "parser_extractors_parsestatementtext",
-      "target": "parser_extractors_parsegeneric",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/parser/extractors.ts",
-      "source_location": "L294",
-      "weight": 1.0,
-      "source": "parser_extractors_parseicici",
-      "target": "parser_extractors_preprocessicicilines",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "AGENTS.md",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "agents_md",
+      "confidence_score": 1.0,
+      "source": "src_lib_parser_extractors_ts",
       "target": "parser_extractors_parsegeneric"
     },
     {
@@ -1694,10 +1892,335 @@
       "source_file": "AGENTS.md",
       "source_location": null,
       "weight": 1.0,
-      "source": "agents_md",
-      "target": "src_types_pdf_parse_d_ts"
+      "source": "src_lib_parser_extractors_ts",
+      "target": "agents_md"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L160",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_parseamount",
+      "target": "parser_extractors_parsebankofbaroda"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L568",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_parseamount",
+      "target": "parser_extractors_parseindusind"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L659",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_parseamount",
+      "target": "parser_extractors_parsecanarabank"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L944",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_parseamount",
+      "target": "parser_extractors_parsegeneric"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L155",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_cleandate",
+      "target": "parser_extractors_parsebankofbaroda"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L537",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_cleandate",
+      "target": "parser_extractors_parseindusind"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L660",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_cleandate",
+      "target": "parser_extractors_parsecanarabank"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L939",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_cleandate",
+      "target": "parser_extractors_parsegeneric"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L93",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_parsestatementtext",
+      "target": "parser_extractors_parsebankofbaroda"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L95",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_parsestatementtext",
+      "target": "parser_extractors_parseicici"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L97",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_parsestatementtext",
+      "target": "parser_extractors_parseindusind"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L99",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_parsestatementtext",
+      "target": "parser_extractors_parsecanarabank"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L101",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_parsestatementtext",
+      "target": "parser_extractors_parsegeneric"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/parser/extractors.ts",
+      "source_location": "L296",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "parser_extractors_preprocessicicilines",
+      "target": "parser_extractors_parseicici"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "parser_extractors_parsegeneric",
+      "target": "agents_md"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "AGENTS.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "src_types_pdf_parse_d_ts",
+      "target": "agents_md"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/engine/classifier.worker.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_lib_engine_classifier_worker_ts",
+      "target": "engine_classifier_worker_getclassifier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": "L93",
+      "weight": 1.0,
+      "source": "src_lib_engine_local_classifier_ts",
+      "target": "engine_local_classifier_terminateclassifier",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": "L106",
+      "weight": 1.0,
+      "source": "src_lib_engine_local_classifier_ts",
+      "target": "engine_local_classifier_needsenhancement",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": "L122",
+      "weight": 1.0,
+      "source": "src_lib_engine_local_classifier_ts",
+      "target": "engine_local_classifier_enhanceclassifications",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": "L127",
+      "weight": 1.0,
+      "source": "engine_local_classifier_terminateclassifier",
+      "target": "engine_local_classifier_enhanceclassifications",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/app/page.tsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "page_home",
+      "target": "agents_onnx_architecture"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/app/page.tsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "page_home",
+      "target": "route_post_process"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/components/ChatAssistant.tsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "route_post",
+      "target": "chatassistant_default"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/app/api/process/route.ts",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "route_post_process",
+      "target": "risk_computeriskprofile"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/app/api/process/route.ts",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "route_post_process",
+      "target": "extractors_parsestatementtext"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/app/api/process/route.ts",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "route_post_process",
+      "target": "classifier_classifytransactions"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/components/TransactionTable.tsx",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "transactiontable_default",
+      "target": "local_classifier_enhanceclassifications"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "classifier_classifytransactions",
+      "target": "local_classifier_enhanceclassifications"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "classifier_worker_onmessage",
+      "target": "local_classifier_enhanceclassifications"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "src/lib/engine/local-classifier.ts",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "local_classifier_enhanceclassifications",
+      "target": "agents_onnx_architecture"
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "7884632edf03221fb76f610d037e9df2291c308d"
+  "built_at_commit": "7b0d6ae481f0d0cdb1c210c1d53709f21616af6b"
 }
