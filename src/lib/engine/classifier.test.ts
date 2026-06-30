@@ -118,4 +118,16 @@ describe("classifyTransactions", () => {
     const result = classifyTransactions([]);
     expect(result).toEqual([]);
   });
+
+  it("does not classify a 'PREMIUM' description as EMI (whole-word match regression)", () => {
+    // "premium" contains the substring "emi"; the EMI branch must use a
+    // whole-word match so insurance premiums fall through to Insurance.
+    const txn = makeTxn({
+      transactionType: "DEBIT",
+      description: "HDFC ERGO HEALTH INSURANCE PREMIUM",
+      debit: 4500,
+    });
+    const [result] = classifyTransactions([txn]);
+    expect(result.category).toBe("Insurance");
+  });
 });

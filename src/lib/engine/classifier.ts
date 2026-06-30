@@ -100,8 +100,8 @@ export function classifyTransactions(rawTxns: RawTransaction[]): ClassifiedTrans
     } else {
       // DEBIT CATEGORIZATION
       if (
-        descLower.includes("emi") || 
-        descLower.includes("loan") || 
+        /\bemi\b/.test(descLower) || // whole-word: avoid matching "premium", "chemistry", etc.
+        descLower.includes("loan") ||
         descLower.includes("lending") || 
         descLower.includes("bajaj") || 
         descLower.includes("finance") || 
