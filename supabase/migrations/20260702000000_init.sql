@@ -68,6 +68,14 @@ create table public.documents (
   case_id uuid not null references public.applicant_cases(id) on delete cascade,
   org_id uuid not null references public.organizations(id) on delete cascade,
   bank_name text,
+  -- Account-group identity: statements from several bank accounts can live in
+  -- one case; these fields let the dashboard rebuild each ledger separately.
+  account_key text,
+  account_holder text,
+  account_number text,
+  statement_period text,
+  opening_balance numeric(14,2),
+  closing_balance numeric(14,2),
   file_path text,
   sha256 text,
   page_count int,
@@ -86,6 +94,9 @@ create table public.transactions (
   document_id uuid not null references public.documents(id) on delete cascade,
   case_id uuid not null references public.applicant_cases(id) on delete cascade,
   org_id uuid not null references public.organizations(id) on delete cascade,
+  -- Preserves the stable ledger order (date -> file -> row) computed at
+  -- parse time, so rebuilding a case can't scramble intra-day balances.
+  seq int not null default 0,
   date date not null,
   raw_desc text not null default '',
   normalized_desc text,
@@ -129,6 +140,7 @@ create table public.metrics (
   id uuid primary key default gen_random_uuid(),
   case_id uuid not null references public.applicant_cases(id) on delete cascade,
   org_id uuid not null references public.organizations(id) on delete cascade,
+  account_key text,
   metric_id text not null,
   value numeric,
   unit text,
@@ -144,6 +156,7 @@ create table public.risk_results (
   id uuid primary key default gen_random_uuid(),
   case_id uuid not null references public.applicant_cases(id) on delete cascade,
   org_id uuid not null references public.organizations(id) on delete cascade,
+  account_key text,
   overall_score int not null check (overall_score between 0 and 100),
   component_scores jsonb not null default '{}'::jsonb,
   triggered_rules text[] not null default '{}',

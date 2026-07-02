@@ -7,9 +7,11 @@ interface UploadZoneProps {
   onProcessStart: () => void;
   onProcessComplete: (data: any) => void;
   onProcessError: () => void;
+  /** When set, the analysis is persisted against this applicant case. */
+  caseId?: string;
 }
 
-export default function UploadZone({ onProcessStart, onProcessComplete, onProcessError }: UploadZoneProps) {
+export default function UploadZone({ onProcessStart, onProcessComplete, onProcessError, caseId }: UploadZoneProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -77,6 +79,9 @@ export default function UploadZone({ onProcessStart, onProcessComplete, onProces
     });
     if (password.trim()) {
       formData.append("password", password);
+    }
+    if (caseId) {
+      formData.append("caseId", caseId);
     }
 
     try {

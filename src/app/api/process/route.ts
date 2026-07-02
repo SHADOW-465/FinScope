@@ -223,6 +223,12 @@ export async function POST(req: NextRequest) {
               case_id: caseId,
               org_id: caseOrgId,
               bank_name: group.bankName,
+              account_key: key,
+              account_holder: groupAccountHolder,
+              account_number: groupAccountNumber,
+              statement_period: groupStatementPeriod,
+              opening_balance: groupOpeningBalance,
+              closing_balance: groupClosingBalance,
               file_path: null,
               sha256: null,
               page_count: null,
@@ -241,10 +247,11 @@ export async function POST(req: NextRequest) {
 
         const documentIdByLocalFileIndex = group.files.map((fObj: any) => documentIdByFileIndex[fObj.index]);
 
-        const txnRows = classifiedTransactions.map((t: any) => ({
+        const txnRows = classifiedTransactions.map((t: any, seq: number) => ({
           document_id: documentIdByLocalFileIndex[t.fileIndex] ?? documentIdByLocalFileIndex[0],
           case_id: caseId,
           org_id: caseOrgId,
+          seq,
           date: t.date,
           raw_desc: t.description,
           normalized_desc: null,
@@ -268,6 +275,7 @@ export async function POST(req: NextRequest) {
         const { error: riskErr } = await supabase.from("risk_results").insert({
           case_id: caseId,
           org_id: caseOrgId,
+          account_key: key,
           overall_score: riskProfile.risk_score.score,
           component_scores: riskProfile.risk_score.breakdown,
           triggered_rules: policyEvaluation ? policyEvaluation.triggeredRules.map((r) => r.id) : [],
@@ -286,6 +294,7 @@ export async function POST(req: NextRequest) {
         ].map((m) => ({
           case_id: caseId,
           org_id: caseOrgId,
+          account_key: key,
           metric_id: m.metric_id,
           value: m.value,
           unit: m.unit,
