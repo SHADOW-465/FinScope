@@ -8,6 +8,7 @@
  * {@link PolicyInput} from whatever metrics source they have.
  */
 import type { ProductType } from "@/types/domain";
+import type { RiskProfile } from "@/lib/engine/risk";
 
 export type RuleOperator = "<=" | ">=" | "<" | ">";
 export type RuleSeverity = "hard" | "soft";
@@ -168,4 +169,22 @@ export const DEFAULT_POLICIES: Record<ProductType, LenderPolicy> = {
 
 export function getDefaultPolicy(productType: ProductType): LenderPolicy {
   return DEFAULT_POLICIES[productType];
+}
+
+/** Maps a computed RiskProfile into the shape the policy engine reads. */
+export function policyInputFromRiskProfile(profile: RiskProfile): PolicyInput {
+  const negativeBalanceEvents = profile.balance_risks.filter(
+    (r) => r.risk_type === "Negative Balance"
+  ).length;
+
+  return {
+    postLoanFOIRPct: profile.foir.post_loan_pct,
+    preLoanFOIRPct: profile.foir.pre_loan_pct,
+    averageBalance: profile.overview.averageBalance,
+    bounceCount: profile.bounce_analysis.length,
+    negativeBalanceEvents,
+    incomeStability: profile.metrics.income_stability,
+    overallScore: profile.risk_score.score,
+    emiBurden: profile.metrics.emi_burden,
+  };
 }

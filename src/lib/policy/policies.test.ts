@@ -2,8 +2,11 @@
 import {
   evaluatePolicy,
   getDefaultPolicy,
+  policyInputFromRiskProfile,
   type PolicyInput,
 } from "@/lib/policy/policies";
+import { computeRiskProfile } from "@/lib/engine/risk";
+import type { ClassifiedTransaction } from "@/lib/engine/classifier";
 import type { ProductType } from "@/types/domain";
 
 const goodInput: PolicyInput = {
@@ -71,5 +74,46 @@ describe("evaluatePolicy", () => {
     // Gold is collateral-backed: its FOIR rule is advisory, not blocking.
     const goldFoir = getDefaultPolicy("gold").rules.find((r) => r.id === "max_foir");
     expect(goldFoir?.severity).toBe("soft");
+  });
+});
+
+describe("policyInputFromRiskProfile", () => {
+  it("maps a computed RiskProfile into a PolicyInput the engine can evaluate", () => {
+    function ctx(p: {
+      date: string;
+      transactionType: "CREDIT" | "DEBIT";
+      debit?: number;
+      credit?: number;
+      balance?: number;
+      category?: string;
+      counterparty?: string;
+    }): ClassifiedTransaction {
+      return {
+        date: p.date,
+        description: "x",
+        debit: p.debit ?? 0,
+        credit: p.credit ?? 0,
+        balance: p.balance ?? 0,
+        transactionType: p.transactionType,
+        category: p.category ?? "Miscellaneous",
+        counterparty: p.counterparty ?? "Unknown",
+        confidenceScore: 0.7,
+      };
+    }
+
+    const txns = [
+      ctx({ date: "2025-01-01", transactionType: "CREDIT", credit: 100000, balance: 100000 }),
+      ctx({ date: "2025-02-01", transactionType: "CREDIT", credit: 100000, balance: 200000 }),
+    ];
+    const profile = computeRiskProfile(txns, 0, 200000, "a", "h", "Bank", "p");
+    const input = policyInputFromRiskProfile(profile);
+
+    expect(input.averageBalance).toBe(profile.overview.averageBalance);
+    expect(input.postLoanFOIRPct).toBe(profile.foir.post_loan_pct);
+    expect(input.bounceCount).toBe(0);
+    expect(input.negativeBalanceEvents).toBe(0);
+
+    const evaluation = evaluatePolicy(input, getDefaultPolicy("personal"));
+    expect(evaluation.verdict).toBe("pass");
   });
 });
