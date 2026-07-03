@@ -10,6 +10,7 @@ import Panels from "@/components/Panels";
 import TransactionTable from "@/components/TransactionTable";
 import ChatAssistant from "@/components/ChatAssistant";
 import UnderwritingPanel from "@/components/UnderwritingPanel";
+import AISummaryCard from "@/components/AISummaryCard";
 import type { CaseStatus, ProductType } from "@/types/domain";
 
 interface CaseInfo {
@@ -281,6 +282,7 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
                 integrity={activeReport.integrity}
                 loanAskLabel={loanAskLabel}
               />
+              <AISummaryCard report={activeReport} caseId={caseInfo.id} />
               <RiskCard
                 score={activeReport.risk_score.score}
                 level={activeReport.risk_score.risk_level}
