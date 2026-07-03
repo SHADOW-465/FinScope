@@ -119,6 +119,32 @@ describe("classifyTransactions", () => {
     expect(result).toEqual([]);
   });
 
+  it("extracts the payee from RTGS/CMS narrations, not the date or ref codes", () => {
+    const rtgs = makeTxn({
+      transactionType: "CREDIT",
+      description: "03/Nov/2 025 RTGS- CNRBR5202511036 9199906-SREE BALAJI ENTERPRISES- 120027384488 -CNRB0002",
+      credit: 5000000,
+    });
+    const cms = makeTxn({
+      transactionType: "CREDIT",
+      description: "21/Nov/2 025 CMS/ CMS5411393794/G ODREJ FINANCE LIMITED",
+      credit: 2500000,
+    });
+    const [r1, r2] = classifyTransactions([rtgs, cms]);
+    expect(r1.counterparty).toBe("Sree Balaji Enterprises");
+    expect(r2.counterparty).toBe("G Odrej Finance Limited");
+  });
+
+  it("classifies DD cancellations as Refund/Reversal, not income", () => {
+    const txn = makeTxn({
+      transactionType: "CREDIT",
+      description: "15/Nov/2 025 DD Cancln 515960",
+      credit: 3200000,
+    });
+    const [result] = classifyTransactions([txn]);
+    expect(result.category).toBe("Refund/Reversal");
+  });
+
   it("does not classify a 'PREMIUM' description as EMI (whole-word match regression)", () => {
     // "premium" contains the substring "emi"; the EMI branch must use a
     // whole-word match so insurance premiums fall through to Insurance.

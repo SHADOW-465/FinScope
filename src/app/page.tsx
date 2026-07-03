@@ -22,6 +22,7 @@ import TransactionTable from "@/components/TransactionTable";
 import ChatAssistant from "@/components/ChatAssistant";
 import UnderwritingPanel from "@/components/UnderwritingPanel";
 import AISummaryCard from "@/components/AISummaryCard";
+import VerdictBar from "@/components/VerdictBar";
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -299,6 +300,9 @@ export default function Home() {
                 </div>
               </div>
             )}
+
+            {/* Decision hero: the answer first, evidence below */}
+            <VerdictBar report={activeReport} />
 
             {/* Dashboard Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

@@ -19,6 +19,7 @@ export interface RiskProfile {
   };
   metrics: {
     avg_monthly_banking: number;
+    avg_monthly_income: number;
     net_cash_flow: number;
     income_stability: number;
     expense_ratio: number;
@@ -237,7 +238,13 @@ export function computeRiskProfile(
 
   const expense_ratio = totalCredits > 0 ? Math.min(100, (totalDebits / totalCredits) * 100) : 100;
 
-  const totalMonthlyIncome = totalCredits / durationMonths;
+  // Income = credits classified as income (salary/business/transfers), NOT
+  // total credits — transfer churn inflates total credits absurdly on active
+  // accounts and poisons FOIR/EMI-burden downstream.
+  // ponytail: falls back to total credits when nothing was classified as
+  // income; refine per-category weighting when a real statement demands it.
+  const classifiedIncome = income_analysis.reduce((sum, s) => sum + s.amount, 0);
+  const totalMonthlyIncome = (classifiedIncome > 0 ? classifiedIncome : totalCredits) / durationMonths;
   const totalMonthlyEMIs = liability_analysis.reduce((sum, l) => sum + l.emi_amount, 0);
   const emi_burden = totalMonthlyIncome > 0 ? Math.min(100, (totalMonthlyEMIs / totalMonthlyIncome) * 100) : (totalMonthlyEMIs > 0 ? 100 : 0);
 
@@ -335,6 +342,7 @@ export function computeRiskProfile(
     },
     metrics: {
       avg_monthly_banking: Math.round(avg_monthly_banking * 100) / 100,
+      avg_monthly_income: Math.round(totalMonthlyIncome * 100) / 100,
       net_cash_flow: Math.round(net_cash_flow * 100) / 100,
       income_stability: Math.round(income_stability * 100) / 100,
       expense_ratio: Math.round(expense_ratio * 100) / 100,

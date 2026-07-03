@@ -79,4 +79,18 @@ describe("computeRiskProfile integration", () => {
     // (8500 + 8884.88) / 100000 * 100 ≈ 17.38
     expect(r.foir.post_loan_pct).toBeCloseTo(17.38, 1);
   });
+
+  it("computes income from income-classified credits only, not total credits", () => {
+    const txns = [
+      // Real income: 2 months' salary.
+      ctx({ date: "2025-01-01", transactionType: "CREDIT", credit: 50000, balance: 50000, category: "Salary", counterparty: "Employer" }),
+      ctx({ date: "2025-02-01", transactionType: "CREDIT", credit: 50000, balance: 100000, category: "Salary", counterparty: "Employer" }),
+      // Churn: a huge non-income credit (e.g. self-transfer / refund).
+      ctx({ date: "2025-01-15", transactionType: "CREDIT", credit: 900000, balance: 950000, category: "Miscellaneous", counterparty: "Self" }),
+    ];
+    const r = computeRiskProfile(txns, 0, 100000, "a", "h", "Bank", "p");
+    // 100000 classified income over 2 months, NOT (100000+900000)/2.
+    expect(r.metrics.avg_monthly_income).toBe(50000);
+    expect(r.foir.avg_monthly_income).toBe(50000);
+  });
 });

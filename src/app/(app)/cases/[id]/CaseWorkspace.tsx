@@ -11,6 +11,7 @@ import TransactionTable from "@/components/TransactionTable";
 import ChatAssistant from "@/components/ChatAssistant";
 import UnderwritingPanel from "@/components/UnderwritingPanel";
 import AISummaryCard from "@/components/AISummaryCard";
+import VerdictBar from "@/components/VerdictBar";
 import type { CaseStatus, ProductType } from "@/types/domain";
 
 interface CaseInfo {
@@ -211,6 +212,9 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
               constitute a credit decision; the lending decision rests with a qualified human underwriter.
             </p>
           </div>
+
+          {/* Decision hero: the answer first, evidence below */}
+          <VerdictBar report={activeReport} />
 
           {/* Account switcher */}
           {data.accounts.length > 1 && (

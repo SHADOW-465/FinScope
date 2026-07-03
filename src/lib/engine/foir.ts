@@ -41,6 +41,23 @@ export function indicativeEMI(
   return Math.round(emi * 100) / 100;
 }
 
+/**
+ * Inverse of {@link indicativeEMI}: the largest principal whose EMI fits the
+ * given monthly budget. P = EMI * ((1+r)^n - 1) / (r * (1+r)^n); at r == 0,
+ * P = EMI * n. Returns 0 for non-positive budget or tenure.
+ */
+export function maxLoanForEMI(
+  monthlyEMIBudget: number,
+  annualRatePct: number,
+  tenureMonths: number
+): number {
+  if (monthlyEMIBudget <= 0 || tenureMonths <= 0) return 0;
+  const r = annualRatePct / 12 / 100;
+  if (r === 0) return Math.round(monthlyEMIBudget * tenureMonths * 100) / 100;
+  const power = Math.pow(1 + r, tenureMonths);
+  return Math.round(((monthlyEMIBudget * (power - 1)) / (r * power)) * 100) / 100;
+}
+
 // ---------------------------------------------------------------------------
 // computeFOIR
 // ---------------------------------------------------------------------------

@@ -1,5 +1,18 @@
 /// <reference types="vitest/globals" />
-import { indicativeEMI, computeFOIR } from "@/lib/engine/foir";
+import { indicativeEMI, computeFOIR, maxLoanForEMI } from "@/lib/engine/foir";
+
+describe("maxLoanForEMI", () => {
+  it("is the inverse of indicativeEMI (roundtrip)", () => {
+    const emi = indicativeEMI(500000, 14, 36);
+    expect(maxLoanForEMI(emi, 14, 36)).toBeCloseTo(500000, 0);
+  });
+
+  it("handles zero rate and guards non-positive inputs", () => {
+    expect(maxLoanForEMI(10000, 0, 12)).toBe(120000);
+    expect(maxLoanForEMI(0, 14, 36)).toBe(0);
+    expect(maxLoanForEMI(10000, 14, 0)).toBe(0);
+  });
+});
 
 // ---------------------------------------------------------------------------
 // indicativeEMI
