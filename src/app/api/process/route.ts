@@ -36,6 +36,19 @@ export async function POST(req: NextRequest) {
     let caseOrgId: string | null = null;
     let loanAsk: LoanAsk | undefined = undefined;
 
+    // Case-less (ephemeral) uploads can pass the loan ask directly so FOIR
+    // and the policy verdict still compute without auth.
+    const formProductType = formData.get("productType") as string | null;
+    const formAmount = Number(formData.get("requestedAmount"));
+    const formTenure = Number(formData.get("tenureMonths"));
+    if (!caseId && formProductType && formAmount > 0 && Number.isInteger(formTenure) && formTenure > 0) {
+      loanAsk = {
+        productType: formProductType as ProductType,
+        requestedAmount: formAmount,
+        tenureMonths: formTenure,
+      };
+    }
+
     if (caseId) {
       supabase = await createSupabaseServerClient();
       const { data: caseRow, error: caseErr } = await supabase

@@ -9,10 +9,24 @@ interface UploadZoneProps {
   onProcessError: () => void;
   /** When set, the analysis is persisted against this applicant case. */
   caseId?: string;
+  /** Show loan-ask inputs (used on the case-less "/" flow to enable FOIR/policy). */
+  showLoanAsk?: boolean;
 }
 
-export default function UploadZone({ onProcessStart, onProcessComplete, onProcessError, caseId }: UploadZoneProps) {
+const PRODUCT_OPTIONS: Array<[string, string]> = [
+  ["personal", "Personal Loan"],
+  ["vehicle", "Vehicle Finance"],
+  ["gold", "Gold Loan"],
+  ["msme", "MSME / Business Loan"],
+  ["lap", "Loan Against Property"],
+  ["working_capital", "Working Capital"],
+];
+
+export default function UploadZone({ onProcessStart, onProcessComplete, onProcessError, caseId, showLoanAsk }: UploadZoneProps) {
   const [files, setFiles] = useState<File[]>([]);
+  const [productType, setProductType] = useState("personal");
+  const [requestedAmount, setRequestedAmount] = useState("");
+  const [tenureMonths, setTenureMonths] = useState("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -82,6 +96,11 @@ export default function UploadZone({ onProcessStart, onProcessComplete, onProces
     }
     if (caseId) {
       formData.append("caseId", caseId);
+    }
+    if (showLoanAsk && Number(requestedAmount) > 0 && Number(tenureMonths) > 0) {
+      formData.append("productType", productType);
+      formData.append("requestedAmount", requestedAmount);
+      formData.append("tenureMonths", tenureMonths);
     }
 
     try {
@@ -200,6 +219,52 @@ export default function UploadZone({ onProcessStart, onProcessComplete, onProces
               </div>
             ))}
           </div>
+
+          {/* Loan Ask (optional, enables FOIR + policy verdict) */}
+          {showLoanAsk && (
+            <div className="border-t border-slate-800/80 pt-5 pb-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Loan Product</label>
+                <select
+                  value={productType}
+                  onChange={(e) => setProductType(e.target.value)}
+                  className="mt-1 w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500"
+                  disabled={isProcessing}
+                >
+                  {PRODUCT_OPTIONS.map(([v, l]) => (
+                    <option key={v} value={v}>{l}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Requested Amount (₹)</label>
+                <input
+                  type="number"
+                  min={1}
+                  placeholder="e.g. 500000"
+                  value={requestedAmount}
+                  onChange={(e) => setRequestedAmount(e.target.value)}
+                  className="mt-1 w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500"
+                  disabled={isProcessing}
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Tenure (months)</label>
+                <input
+                  type="number"
+                  min={1}
+                  placeholder="e.g. 36"
+                  value={tenureMonths}
+                  onChange={(e) => setTenureMonths(e.target.value)}
+                  className="mt-1 w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500"
+                  disabled={isProcessing}
+                />
+              </div>
+              <p className="sm:col-span-3 text-[10px] text-slate-500 -mt-1">
+                Optional — fill these to compute post-loan FOIR and the lender-policy verdict.
+              </p>
+            </div>
+          )}
 
           {/* Password Prompt */}
           <div className="border-t border-slate-800/80 pt-5 flex flex-col md:flex-row md:items-center justify-between gap-4">

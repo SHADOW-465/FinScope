@@ -20,6 +20,8 @@ import Charts from "@/components/Charts";
 import Panels from "@/components/Panels";
 import TransactionTable from "@/components/TransactionTable";
 import ChatAssistant from "@/components/ChatAssistant";
+import UnderwritingPanel from "@/components/UnderwritingPanel";
+import AISummaryCard from "@/components/AISummaryCard";
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -192,6 +194,7 @@ export default function Home() {
 
             {/* Drag & Drop Area */}
             <UploadZone
+              showLoanAsk
               onProcessStart={() => {
                 setIsGlobalLoading(true);
               }}
@@ -328,7 +331,13 @@ export default function Home() {
               </div>
 
               {/* Sidebar Right Column */}
-              <div className="lg:col-span-4 lg:sticky lg:top-24 order-1 lg:order-2">
+              <div className="lg:col-span-4 lg:sticky lg:top-24 order-1 lg:order-2 space-y-4">
+                <UnderwritingPanel
+                  foir={activeReport.foir}
+                  policy={activeReport.policy}
+                  integrity={activeReport.integrity}
+                />
+                <AISummaryCard report={activeReport} />
                 <RiskCard
                   score={activeReport.risk_score.score}
                   level={activeReport.risk_score.risk_level}
