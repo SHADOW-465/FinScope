@@ -62,7 +62,7 @@ export function analyzeLayout(tokens: TextToken[]): LayoutRegion[] {
   const headerRegion = buildRegion("header", headerTokens);
   if (headerRegion) regions.push(headerRegion);
 
-  const bodyRegion = buildRegion("table_region", bodyTokens);
+  const bodyRegion = buildRegion("table", bodyTokens);
   if (bodyRegion) regions.push(bodyRegion);
 
   const footerRegion = buildRegion("footer", footerTokens);

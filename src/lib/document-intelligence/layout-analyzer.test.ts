@@ -26,7 +26,7 @@ describe("Layout Analyzer Engine", () => {
     expect(regions.length).toBe(3);
     
     const header = regions.find(r => r.type === "header");
-    const body = regions.find(r => r.type === "table_region");
+    const body = regions.find(r => r.type === "table");
     const footer = regions.find(r => r.type === "footer");
 
     expect(header).toBeDefined();
