@@ -16,6 +16,14 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return out;
 }
 
+function cleanNumber(val: any): number {
+  if (typeof val === "number") return val;
+  if (!val) return 0;
+  const cleaned = String(val).replace(/,/g, "").trim();
+  const parsed = parseFloat(cleaned);
+  return isNaN(parsed) ? 0 : parsed;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -132,17 +140,17 @@ export async function POST(req: NextRequest) {
           const ocrResult = await performGroqOCR(images);
           
           parsedData = {
-            accountNumber: ocrResult.accountNumber,
-            accountHolder: ocrResult.accountHolder,
-            statementPeriod: ocrResult.statementPeriod,
-            openingBalance: ocrResult.openingBalance,
-            closingBalance: ocrResult.closingBalance,
+            accountNumber: String(ocrResult.accountNumber || "Unknown"),
+            accountHolder: String(ocrResult.accountHolder || "Unknown"),
+            statementPeriod: String(ocrResult.statementPeriod || ""),
+            openingBalance: cleanNumber(ocrResult.openingBalance),
+            closingBalance: cleanNumber(ocrResult.closingBalance),
             transactions: ocrResult.transactions.map((t) => ({
-              date: t.date,
-              description: t.description,
-              debit: t.debit,
-              credit: t.credit,
-              balance: t.balance,
+              date: String(t.date || ""),
+              description: String(t.description || ""),
+              debit: cleanNumber(t.debit),
+              credit: cleanNumber(t.credit),
+              balance: cleanNumber(t.balance),
             })),
           };
           bankName = ocrResult.bankName || "GENERIC";

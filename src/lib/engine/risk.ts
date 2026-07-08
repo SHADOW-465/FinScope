@@ -90,10 +90,14 @@ export function computeRiskProfile(
   const monthlyData: Record<string, { credits: number; debits: number; balances: number[]; count: number }> = {};
 
   txns.forEach(txn => {
+    const cred = Number(txn.credit) || 0;
+    const deb = Number(txn.debit) || 0;
+    const bal = Number(txn.balance) || 0;
+
     if (txn.transactionType === "CREDIT") {
-      totalCredits += txn.credit;
+      totalCredits += cred;
     } else {
-      totalDebits += txn.debit;
+      totalDebits += deb;
     }
 
     // Parse month (e.g., "2025-11-19" -> "Nov 2025")
@@ -106,11 +110,11 @@ export function computeRiskProfile(
         monthlyData[monthStr] = { credits: 0, debits: 0, balances: [], count: 0 };
       }
       if (txn.transactionType === "CREDIT") {
-        monthlyData[monthStr].credits += txn.credit;
+        monthlyData[monthStr].credits += cred;
       } else {
-        monthlyData[monthStr].debits += txn.debit;
+        monthlyData[monthStr].debits += deb;
       }
-      monthlyData[monthStr].balances.push(txn.balance);
+      monthlyData[monthStr].balances.push(bal);
       monthlyData[monthStr].count++;
     }
   });
@@ -152,7 +156,7 @@ export function computeRiskProfile(
       if (!incomeMap[key]) {
         incomeMap[key] = { total: 0, category: txn.category, count: 0, conf: txn.confidenceScore };
       }
-      incomeMap[key].total += txn.credit;
+      incomeMap[key].total += Number(txn.credit) || 0;
       incomeMap[key].count++;
       incomeMap[key].conf = Math.max(incomeMap[key].conf, txn.confidenceScore);
     }
@@ -194,11 +198,12 @@ export function computeRiskProfile(
                      (descLower.includes("chq") && descLower.includes("return"));
 
     if (txn.transactionType === "DEBIT" && isBounce) {
+      const deb = Number(txn.debit) || 0;
       bounce_analysis.push({
         date: txn.date,
         description: txn.description,
-        amount: txn.debit,
-        charge: txn.debit // Heuristic charge value
+        amount: deb,
+        charge: deb // Heuristic charge value
       });
     }
   });
@@ -207,17 +212,18 @@ export function computeRiskProfile(
   const balance_risks: RiskProfile["balance_risks"] = [];
   const lowBalanceThreshold = 2000.0;
   txns.forEach(txn => {
-    if (txn.balance < 0) {
+    const bal = Number(txn.balance) || 0;
+    if (bal < 0) {
       balance_risks.push({
         date: txn.date,
-        balance: txn.balance,
+        balance: bal,
         description: txn.description,
         risk_type: "Negative Balance"
       });
-    } else if (txn.balance < lowBalanceThreshold) {
+    } else if (bal < lowBalanceThreshold) {
       balance_risks.push({
         date: txn.date,
-        balance: txn.balance,
+        balance: bal,
         description: txn.description,
         risk_type: "Low Balance"
       });
