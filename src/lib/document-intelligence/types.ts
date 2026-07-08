@@ -82,3 +82,8 @@ export interface TableDetectorResult {
   tables: TableRegion[];
   confidence: number;
 }
+
+export interface OCRProvider {
+  name: string;
+  performOCR(base64Images: string[]): Promise<any>;
+}
