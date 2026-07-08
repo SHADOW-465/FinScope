@@ -55,7 +55,7 @@ export default function VerdictBar({ report }: { report: any }) {
   const printFlags = flags.filter(f => !f.includes("balance mismatch"));
 
   return (
-    <div className="glass-panel rounded-2xl p-5 grid grid-cols-1 md:grid-cols-3 gap-5 border border-slate-700/60">
+    <div className="glass-panel rounded-2xl p-5 grid grid-cols-1 md:grid-cols-3 gap-5 border-slate-700/60">
       {/* Verdict */}
       <div className={`rounded-xl border p-4 flex items-center gap-3 ${V.cls}`}>
         <VIcon className="w-8 h-8 flex-shrink-0" />

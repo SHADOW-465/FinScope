@@ -75,7 +75,7 @@ export default function UnderwritingPanel({ foir, policy, integrity, loanAskLabe
       {/* Statement Integrity — deliberately separate from the risk score */}
       {integrity && integrity.status !== "ok" && (
         <div
-          className={`glass-panel rounded-2xl p-4 border flex items-start gap-3 no-print ${
+          className={`glass-panel rounded-2xl p-4 flex items-start gap-3 no-print ${
             integrity.status === "fail"
               ? "border-red-500/40 bg-red-950/20"
               : "border-amber-500/40 bg-amber-950/10"
@@ -97,7 +97,7 @@ export default function UnderwritingPanel({ foir, policy, integrity, loanAskLabe
         </div>
       )}
       {integrity && integrity.status === "ok" && (
-        <div className="glass-panel rounded-2xl p-4 border border-emerald-500/20 bg-emerald-950/5 flex items-center gap-3 no-print">
+        <div className="glass-panel rounded-2xl p-4 border-emerald-500/20 bg-emerald-950/5 flex items-center gap-3 no-print">
           <FileCheck2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
           <p className="text-xs text-slate-300">
             <span className="font-bold text-emerald-300">Statement integrity verified.</span>{" "}

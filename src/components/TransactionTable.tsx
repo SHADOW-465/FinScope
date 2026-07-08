@@ -213,10 +213,10 @@ export default function TransactionTable({ transactions, aiEnhancing = false }: 
                 return (
                   <tr
                     key={idx}
-                    className={`transition-colors border-l-2 ${
+                    className={`transition-colors ${
                       isBounce
-                        ? "bg-rose-950/20 hover:bg-rose-950/30 border-rose-500/80 text-rose-200"
-                        : "hover:bg-slate-900/20 border-transparent"
+                        ? "bg-rose-950/20 hover:bg-rose-950/30 text-rose-200"
+                        : "hover:bg-slate-900/20"
                     }`}
                   >
                     <td className="py-3.5 px-4 text-slate-300 whitespace-nowrap">{t.originalDate || t.date}</td>

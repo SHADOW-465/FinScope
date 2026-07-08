@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-08T07:47:00Z",
+  "title": "Design System: FinScope",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Indigo Accent", "canonical": "#6366f1", "tonalRamp": ["#1e1b4b", "#312e81", "#3730a3", "#4338ca", "#4f46e5", "#6366f1", "#818cf8", "#a5b4fc"] },
+      "neutral-bg": { "role": "neutral", "displayName": "Obsidian Dark", "canonical": "#030712", "tonalRamp": ["#020617", "#030712", "#0f172a", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8"] },
+      "card-bg": { "role": "neutral", "displayName": "Card Fill", "canonical": "rgba(15, 23, 42, 0.65)", "tonalRamp": ["rgba(15, 23, 42, 0.9)", "rgba(15, 23, 42, 0.8)", "rgba(15, 23, 42, 0.7)", "rgba(15, 23, 42, 0.65)", "rgba(15, 23, 42, 0.5)", "rgba(15, 23, 42, 0.4)", "rgba(15, 23, 42, 0.3)", "rgba(15, 23, 42, 0.2)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display Heading", "purpose": "Hero headers and page main title." },
+      "body": { "displayName": "Body Text", "purpose": "Narration text and detailed ledger items." }
+    },
+    "shadows": [
+      { "name": "interactive-focus", "value": "0 8px 32px 0 rgba(99, 102, 241, 0.05)", "purpose": "Subtle elevation indicator on element hover." }
+    ],
+    "motion": [
+      { "name": "standard-duration", "value": "200ms", "purpose": "Standard duration for micro-interactions." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Standard action triggers.",
+      "html": "<button class=\"ds-btn-primary\">Run Underwriting Engine</button>",
+      "css": ".ds-btn-primary { background: #6366f1; color: #f8fafc; padding: 10px 24px; border: none; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 200ms ease; } .ds-btn-primary:hover { background: #4f46e5; }"
+    },
+    {
+      "name": "Card Container",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Dashboard card layout container.",
+      "html": "<div class=\"ds-card\"><h4 class=\"ds-card-title\">Card Header</h4><p class=\"ds-card-body\">This is standard card content.</p></div>",
+      "css": ".ds-card { background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(51, 65, 85, 0.4); border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); } .ds-card-title { color: #f8fafc; font-size: 14px; font-weight: bold; margin-bottom: 8px; } .ds-card-body { color: #cbd5e1; font-size: 12px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Clinical Vault",
+    "overview": "FinScope adopts a clinical, expert, and high-reliability aesthetic designed to evoke trust, security, and precision. It utilizes a dark mode base layer coupled with subtle glassmorphic panels and crisp neon indicators for alerts and risk categorization.",
+    "keyCharacteristics": [
+      "Dark obsidian base with radial indigo-purple backdrop flows.",
+      "Translucent, high-contrast glass panels for structured data representation.",
+      "Strict WCAG AA contrast compliance across all text sizes."
+    ],
+    "rules": [
+      { "name": "The Restrained Glow Rule", "body": "Glow and backdrop filter blurs must only be used on major panel wrappers and structural regions. Never apply blur or glow to utility text, input boundaries, or transaction records.", "section": "colors" },
+      { "name": "The Flat-By-Default Rule", "body": "Panel surfaces remain flat and border-only. Interactive cards elevate slightly on hover to signify clickability.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do maintain a strict 4.5:1 contrast ratio for all secondary metrics and indicators.",
+      "Do allow column text and cards to wrap naturally on smaller resolutions.",
+      "Do preserve the sticky RiskCard sidebar behavior so it guides the underwriter scrolling through transactions."
+    ],
+    "donts": [
+      "Don't use side-stripe borders (border-left or border-right) to call out specific transaction categories. Use background tints or inline warning icons instead.",
+      "Don't use fluid typography in dashboard panels; use fixed layouts that don't overlap when resized.",
+      "Don't use cream, linen, or beige tones for panel card backgrounds."
+    ]
+  }
+}

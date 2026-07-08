@@ -171,7 +171,7 @@ export default function OverviewCards({
             }`}
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase truncate">
+              <span className="text-[10px] font-bold text-slate-400 tracking-wider uppercase leading-snug">
                 {stat.title}
               </span>
               <div className={`p-2 rounded-lg flex-shrink-0 ${stat.iconBg}`}>
