@@ -1,18 +1,25 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { Landmark, Loader2, CheckCircle2, XCircle, AlertCircle, Printer } from "lucide-react";
+import { Landmark, Loader2, CheckCircle2, XCircle, AlertCircle, Printer, FileText } from "lucide-react";
 import UploadZone from "@/components/UploadZone";
-import RiskCard from "@/components/RiskCard";
-import OverviewCards from "@/components/OverviewCards";
-import Charts from "@/components/Charts";
-import Panels from "@/components/Panels";
-import TransactionTable from "@/components/TransactionTable";
 import ChatAssistant from "@/components/ChatAssistant";
-import UnderwritingPanel from "@/components/UnderwritingPanel";
-import AISummaryCard from "@/components/AISummaryCard";
-import VerdictBar from "@/components/VerdictBar";
 import type { CaseStatus, ProductType } from "@/types/domain";
+
+// Import new Credit Memorandum components
+import ReportCover from "@/components/report/ReportCover";
+import ExecutiveSummary from "@/components/report/ExecutiveSummary";
+import BorrowerSnapshot from "@/components/report/BorrowerSnapshot";
+import IncomeIntelligence from "@/components/report/IncomeIntelligence";
+import CashFlowIntelligence from "@/components/report/CashFlowIntelligence";
+import ExpenseIntelligence from "@/components/report/ExpenseIntelligence";
+import DebtObligationAnalysis from "@/components/report/DebtObligationAnalysis";
+import FinancialBehaviourAnalysis from "@/components/report/FinancialBehaviourAnalysis";
+import RiskAssessment from "@/components/report/RiskAssessment";
+import AICreditOpinion from "@/components/report/AICreditOpinion";
+import SupportingEvidence from "@/components/report/SupportingEvidence";
+import AnomaliesPage from "@/components/report/AnomaliesPage";
+import AppendixPage from "@/components/report/AppendixPage";
 
 interface CaseInfo {
   id: string;
@@ -56,6 +63,9 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
   const [isDeciding, setIsDeciding] = useState(false);
   const [decisionError, setDecisionError] = useState<string | null>(null);
 
+  // Active page tab for screen navigation
+  const [activeTab, setActiveTab] = useState<number>(0);
+
   const handleProcessComplete = useCallback((result: AnalysisData) => {
     setData(result);
     setActiveAccountId(result.accounts[0]?.id || "");
@@ -92,17 +102,33 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
   };
   const decided = decisionStyles[status];
 
+  const tabs = [
+    { id: 0, label: "0.0 Cover Page" },
+    { id: 1, label: "1.0 Executive Summary" },
+    { id: 2, label: "2.0 Borrower Snapshot" },
+    { id: 3, label: "3.0 Income Intelligence" },
+    { id: 4, label: "4.0 Cash Flow" },
+    { id: 5, label: "5.0 Expense Profile" },
+    { id: 6, label: "6.0 Debt & Obligation" },
+    { id: 7, label: "7.0 Behaviour Analysis" },
+    { id: 8, label: "8.0 Risk Assessment" },
+    { id: 9, label: "9.0 AI Credit Opinion" },
+    { id: 10, label: "10.0 Supporting Evidence" },
+    { id: 11, label: "11.0 Anomalies & Audits" },
+    { id: 12, label: "12.0 Technical Appendix" }
+  ];
+
   return (
     <div className="space-y-6">
       {/* Case header */}
-      <div className="glass-panel rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="glass-panel rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 no-print">
         <div>
           <h2 className="text-xl font-black text-white tracking-tight">{caseInfo.applicantName}</h2>
           <p className="text-xs text-slate-400 mt-1">
             {loanAskLabel}
           </p>
         </div>
-        <div className="flex items-center gap-2 flex-wrap no-print">
+        <div className="flex items-center gap-2 flex-wrap">
           {decided && (
             <span className={`px-3 py-1.5 rounded-full text-xs font-bold border ${decided.badge}`}>
               {decided.label}
@@ -115,7 +141,7 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
                 className="px-4 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5" />
-                Print / PDF
+                Print Memorandum
               </button>
               <button
                 onClick={() => handleDecision("approved")}
@@ -153,7 +179,7 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
       )}
 
       {isProcessing && (
-        <div className="flex flex-col items-center justify-center min-h-[40vh] py-16 animate-in fade-in duration-300">
+        <div className="flex flex-col items-center justify-center min-h-[40vh] py-16 animate-in fade-in duration-300 no-print">
           <div className="glass-panel max-w-lg w-full rounded-2xl p-8 flex flex-col items-center gap-6 border border-indigo-500/25 text-center">
             <div className="p-4 bg-indigo-500/10 rounded-full animate-pulse">
               <Landmark className="w-10 h-10 text-indigo-400" />
@@ -171,7 +197,7 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
 
       {!data || !activeReport ? (
         /* No analysis yet: upload statements into this case */
-        <div className={`space-y-8 py-6 ${isProcessing ? "hidden" : ""}`}>
+        <div className={`space-y-8 py-6 no-print ${isProcessing ? "hidden" : ""}`}>
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <h3 className="text-2xl font-black text-white tracking-tight">Upload bank statements</h3>
             <p className="text-sm text-slate-400">
@@ -187,40 +213,11 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
           />
         </div>
       ) : !isProcessing ? (
-        /* Dashboard */
-        <div className="space-y-6">
-          {/* Print header */}
-          <div className="hidden print:block border-b-2 border-slate-900 pb-4 mb-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-2xl font-bold">FinScope Underwriting Report</h1>
-                <p className="text-sm text-slate-600">
-                  {caseInfo.applicantName} — {loanAskLabel}
-                </p>
-                <p className="text-sm text-slate-600">Generated: {new Date().toLocaleDateString("en-IN")}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-bold">Risk Score: {activeReport.risk_score.score} / 100</p>
-                <p className="text-xs font-semibold uppercase">{activeReport.risk_score.risk_level}</p>
-                {activeReport.policy && (
-                  <p className="text-xs font-semibold uppercase mt-1">
-                    Policy: {activeReport.policy.verdict === "pass" ? "Meets policy" : activeReport.policy.verdict === "review" ? "Manual review" : "Fails policy"}
-                  </p>
-                )}
-              </div>
-            </div>
-            <p className="text-[10px] text-slate-500 mt-3">
-              This report is an evidence-backed recommendation generated by FinScope. It does not
-              constitute a credit decision; the lending decision rests with a qualified human underwriter.
-            </p>
-          </div>
-
-          {/* Decision hero: the answer first, evidence below */}
-          <VerdictBar report={activeReport} />
-
-          {/* Account switcher */}
+        /* Underwriting Report Memorandum Container */
+        <div>
+          {/* Multi-Account Switcher (Screen Only) */}
           {data.accounts.length > 1 && (
-            <div className="glass-panel rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-indigo-500/20 no-print">
+            <div className="glass-panel rounded-2xl p-4 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-indigo-500/20 no-print">
               <div className="space-y-1">
                 <h3 className="text-sm font-bold text-white">Multiple Accounts Detected</h3>
                 <p className="text-xs text-slate-400">Select an account to view its underwriting profile:</p>
@@ -231,7 +228,10 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
                   return (
                     <button
                       key={acc.id}
-                      onClick={() => setActiveAccountId(acc.id)}
+                      onClick={() => {
+                        setActiveAccountId(acc.id);
+                        setActiveTab(0); // Reset to cover page on switcher change
+                      }}
                       className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center gap-2 ${
                         isActive
                           ? "bg-indigo-600/15 border-indigo-500/40 text-indigo-300"
@@ -252,56 +252,236 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div className="lg:col-span-8 space-y-6 order-2 lg:order-1">
-              <OverviewCards
-                overview={activeReport.overview}
-                metrics={activeReport.metrics}
-                bouncesCount={activeReport.bounce_analysis.length}
-                totalMonthlyEMIs={activeReport.liability_analysis.reduce(
-                  (sum: number, l: any) => sum + l.emi_amount,
-                  0
-                )}
-              />
-
-              <Charts monthlyAnalysis={activeReport.monthly_analysis} transactions={activeReport.transactions} />
-
-              <div className="print-page-break" />
-
-              <TransactionTable transactions={activeReport.transactions} />
-
-              <div className="print-page-break" />
-
-              <Panels
-                income={activeReport.income_analysis}
-                liabilities={activeReport.liability_analysis}
-                bounces={activeReport.bounce_analysis}
-                balanceRisks={activeReport.balance_risks}
-                durationMonths={activeReport.overview.durationMonths}
-              />
+          {/* Grid Layout (Screen Only) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start no-print">
+            {/* Table of Contents Navigation Sidebar */}
+            <div className="lg:col-span-3 glass-panel rounded-2xl p-4 space-y-1.5 lg:sticky lg:top-6">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2 px-2">
+                Memorandum Index
+              </span>
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+                      isActive
+                        ? "bg-indigo-600/15 text-indigo-300 font-bold border-l-2 border-indigo-500 pl-2.5"
+                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                    }`}
+                  >
+                    <FileText className="w-3.5 h-3.5 shrink-0" />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            <div className="lg:col-span-4 lg:sticky lg:top-24 order-1 lg:order-2 space-y-4">
-              <UnderwritingPanel
+            {/* Main Interactive Screen Content */}
+            <div className="lg:col-span-9 glass-panel rounded-2xl p-8 min-h-[70vh]">
+              {activeTab === 0 && (
+                <ReportCover caseInfo={caseInfo} overview={activeReport.overview} />
+              )}
+              {activeTab === 1 && (
+                <ExecutiveSummary
+                  overview={activeReport.overview}
+                  metrics={activeReport.metrics}
+                  foir={activeReport.foir}
+                  riskScore={activeReport.risk_score}
+                  policy={activeReport.policy}
+                  bouncesCount={activeReport.bounce_analysis.length}
+                  negativeBalancesCount={activeReport.balance_risks.filter(
+                    (r: any) => r.risk_type === "Negative Balance"
+                  ).length}
+                />
+              )}
+              {activeTab === 2 && (
+                <BorrowerSnapshot
+                  overview={activeReport.overview}
+                  transactionsCount={activeReport.transactions.length}
+                  integrity={activeReport.integrity}
+                />
+              )}
+              {activeTab === 3 && (
+                <IncomeIntelligence
+                  overview={activeReport.overview}
+                  metrics={activeReport.metrics}
+                  incomeAnalysis={activeReport.income_analysis}
+                />
+              )}
+              {activeTab === 4 && (
+                <CashFlowIntelligence
+                  overview={activeReport.overview}
+                  metrics={activeReport.metrics}
+                  monthlyAnalysis={activeReport.monthly_analysis}
+                />
+              )}
+              {activeTab === 5 && (
+                <ExpenseIntelligence
+                  overview={activeReport.overview}
+                  transactions={activeReport.transactions}
+                />
+              )}
+              {activeTab === 6 && (
+                <DebtObligationAnalysis
+                  overview={activeReport.overview}
+                  metrics={activeReport.metrics}
+                  foir={activeReport.foir}
+                  liabilityAnalysis={activeReport.liability_analysis}
+                />
+              )}
+              {activeTab === 7 && (
+                <FinancialBehaviourAnalysis
+                  overview={activeReport.overview}
+                  transactions={activeReport.transactions}
+                  bouncesCount={activeReport.bounce_analysis.length}
+                  negativeBalancesCount={activeReport.balance_risks.filter(
+                    (r: any) => r.risk_type === "Negative Balance"
+                  ).length}
+                />
+              )}
+              {activeTab === 8 && (
+                <RiskAssessment
+                  overview={activeReport.overview}
+                  riskScore={activeReport.risk_score}
+                />
+              )}
+              {activeTab === 9 && (
+                <AICreditOpinion
+                  overview={activeReport.overview}
+                  metrics={activeReport.metrics}
+                  riskScore={activeReport.risk_score}
+                  caseId={caseInfo.id}
+                  bouncesCount={activeReport.bounce_analysis.length}
+                />
+              )}
+              {activeTab === 10 && (
+                <SupportingEvidence
+                  overview={activeReport.overview}
+                  transactions={activeReport.transactions}
+                />
+              )}
+              {activeTab === 11 && (
+                <AnomaliesPage
+                  overview={activeReport.overview}
+                  bounceAnalysis={activeReport.bounce_analysis}
+                  balanceRisks={activeReport.balance_risks}
+                  transactions={activeReport.transactions}
+                />
+              )}
+              {activeTab === 12 && (
+                <AppendixPage
+                  overview={activeReport.overview}
+                  integrity={activeReport.integrity}
+                  transactions={activeReport.transactions}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Sequential Printable Version (Print Only) */}
+          <div className="hidden print:block space-y-12">
+            <div className="print-page">
+              <ReportCover caseInfo={caseInfo} overview={activeReport.overview} />
+            </div>
+            <div className="print-page">
+              <ExecutiveSummary
+                overview={activeReport.overview}
+                metrics={activeReport.metrics}
                 foir={activeReport.foir}
+                riskScore={activeReport.risk_score}
                 policy={activeReport.policy}
-                integrity={activeReport.integrity}
-                loanAskLabel={loanAskLabel}
-              />
-              <AISummaryCard report={activeReport} caseId={caseInfo.id} />
-              <RiskCard
-                score={activeReport.risk_score.score}
-                level={activeReport.risk_score.risk_level}
-                breakdown={activeReport.risk_score.breakdown}
                 bouncesCount={activeReport.bounce_analysis.length}
-                emiBurden={activeReport.metrics.emi_burden}
                 negativeBalancesCount={activeReport.balance_risks.filter(
                   (r: any) => r.risk_type === "Negative Balance"
                 ).length}
               />
             </div>
+            <div className="print-page">
+              <BorrowerSnapshot
+                overview={activeReport.overview}
+                transactionsCount={activeReport.transactions.length}
+                integrity={activeReport.integrity}
+              />
+            </div>
+            <div className="print-page">
+              <IncomeIntelligence
+                overview={activeReport.overview}
+                metrics={activeReport.metrics}
+                incomeAnalysis={activeReport.income_analysis}
+              />
+            </div>
+            <div className="print-page">
+              <CashFlowIntelligence
+                overview={activeReport.overview}
+                metrics={activeReport.metrics}
+                monthlyAnalysis={activeReport.monthly_analysis}
+              />
+            </div>
+            <div className="print-page">
+              <ExpenseIntelligence
+                overview={activeReport.overview}
+                transactions={activeReport.transactions}
+              />
+            </div>
+            <div className="print-page">
+              <DebtObligationAnalysis
+                overview={activeReport.overview}
+                metrics={activeReport.metrics}
+                foir={activeReport.foir}
+                liabilityAnalysis={activeReport.liability_analysis}
+              />
+            </div>
+            <div className="print-page">
+              <FinancialBehaviourAnalysis
+                overview={activeReport.overview}
+                transactions={activeReport.transactions}
+                bouncesCount={activeReport.bounce_analysis.length}
+                negativeBalancesCount={activeReport.balance_risks.filter(
+                  (r: any) => r.risk_type === "Negative Balance"
+                ).length}
+              />
+            </div>
+            <div className="print-page">
+              <RiskAssessment
+                overview={activeReport.overview}
+                riskScore={activeReport.risk_score}
+              />
+            </div>
+            <div className="print-page">
+              <AICreditOpinion
+                overview={activeReport.overview}
+                metrics={activeReport.metrics}
+                riskScore={activeReport.risk_score}
+                caseId={caseInfo.id}
+                bouncesCount={activeReport.bounce_analysis.length}
+              />
+            </div>
+            <div className="print-page">
+              <SupportingEvidence
+                overview={activeReport.overview}
+                transactions={activeReport.transactions}
+              />
+            </div>
+            <div className="print-page">
+              <AnomaliesPage
+                overview={activeReport.overview}
+                bounceAnalysis={activeReport.bounce_analysis}
+                balanceRisks={activeReport.balance_risks}
+                transactions={activeReport.transactions}
+              />
+            </div>
+            <div className="print-page">
+              <AppendixPage
+                overview={activeReport.overview}
+                integrity={activeReport.integrity}
+                transactions={activeReport.transactions}
+              />
+            </div>
           </div>
 
+          {/* Floating AI Chat Assistant (Screen Only) */}
           <ChatAssistant analysisData={activeReport} />
         </div>
       ) : null}
