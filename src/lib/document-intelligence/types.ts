@@ -122,3 +122,17 @@ export interface Transaction {
   raw_text: string;
   confidence: number;
 }
+
+export interface ValidationAnomaly {
+  type: "balance_mismatch" | "chronological_jump" | "negative_balance";
+  message: string;
+  transactionIndex?: number;
+  expectedValue?: number;
+  actualValue?: number;
+}
+
+export interface LedgerValidationResult {
+  valid: boolean;
+  anomalies: ValidationAnomaly[];
+  mathematicalScore: number;
+}
