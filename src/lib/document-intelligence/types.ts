@@ -96,3 +96,29 @@ export interface TextToken {
   confidence: number;
   readingOrder: number;
 }
+
+export interface RawTransaction {
+  dateText: string;
+  descriptionText: string;
+  amountText: string;
+  balanceText: string;
+  confidence: number;
+}
+
+export interface FieldConfidence<T> {
+  value: T;
+  confidence: number;
+}
+
+export interface Transaction {
+  date: FieldConfidence<string>;
+  value_date?: FieldConfidence<string>;
+  description: FieldConfidence<string>;
+  withdrawal: FieldConfidence<number>;
+  deposit: FieldConfidence<number>;
+  balance: FieldConfidence<number>;
+  reference: FieldConfidence<string>;
+  channel: FieldConfidence<string>;
+  raw_text: string;
+  confidence: number;
+}
