@@ -168,3 +168,11 @@ export interface LedgerObservability {
   overallDurationMs: number;
   finalScore: number;
 }
+
+export type RegionType = "header" | "footer" | "logo" | "table_region" | "summary";
+
+export interface LayoutRegion {
+  type: RegionType;
+  boundingBox: BoundingBox;
+  confidence: number;
+}
