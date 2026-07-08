@@ -50,3 +50,23 @@ export interface NormalizationResult {
   skewAngle: number;
   rotationAngle: number;
 }
+
+export interface BoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export type RegionType = "header" | "footer" | "table" | "summary" | "logo" | "watermark" | "unknown";
+
+export interface LayoutRegion {
+  type: RegionType;
+  boundingBox: BoundingBox;
+  confidence: number;
+}
+
+export interface DocumentLayout {
+  regions: LayoutRegion[];
+  confidence: number;
+}
