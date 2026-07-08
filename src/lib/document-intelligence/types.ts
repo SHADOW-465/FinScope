@@ -142,3 +142,14 @@ export interface LedgerConfidence {
   reconciliationScore: number;
   overallConfidenceScore: number;
 }
+
+export interface BankTemplate {
+  bankName: string;
+  detectorRegex: RegExp;
+  columnMap: {
+    dateRelativeX: [number, number];
+    descriptionRelativeX: [number, number];
+    amountRelativeX: [number, number];
+    balanceRelativeX: [number, number];
+  };
+}
