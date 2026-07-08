@@ -52,6 +52,8 @@ export default function VerdictBar({ report }: { report: any }) {
   if (foir?.post_loan_pct !== null && foir?.post_loan_pct > maxFoirPct)
     flags.push(`Post-loan FOIR ${foir.post_loan_pct.toFixed(1)}% exceeds ${maxFoirPct}% limit`);
 
+  const printFlags = flags.filter(f => !f.includes("balance mismatch"));
+
   return (
     <div className="glass-panel rounded-2xl p-5 grid grid-cols-1 md:grid-cols-3 gap-5 border border-slate-700/60">
       {/* Verdict */}
@@ -81,8 +83,8 @@ export default function VerdictBar({ report }: { report: any }) {
         </div>
       </div>
 
-      {/* Red flags */}
-      <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-4 flex items-start gap-3">
+      {/* Red flags (Screen) */}
+      <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-4 flex items-start gap-3 print:hidden">
         {flags.length === 0 ? (
           <>
             <ShieldCheck className="w-8 h-8 text-emerald-400 flex-shrink-0" />
@@ -96,6 +98,28 @@ export default function VerdictBar({ report }: { report: any }) {
             <Flag className="w-8 h-8 text-rose-400 flex-shrink-0" />
             <ul className="text-[11px] text-rose-200 space-y-1">
               {flags.slice(0, 4).map((f, i) => (
+                <li key={i} className="font-semibold">• {f}</li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+
+      {/* Red flags (Print) */}
+      <div className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-4 hidden print:flex items-start gap-3">
+        {printFlags.length === 0 ? (
+          <>
+            <ShieldCheck className="w-8 h-8 text-emerald-400 flex-shrink-0" />
+            <div>
+              <p className="text-base font-black tracking-tight text-emerald-300">Clean file</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">No bounces or policy breaches detected</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <Flag className="w-8 h-8 text-rose-400 flex-shrink-0" />
+            <ul className="text-[11px] text-rose-200 space-y-1">
+              {printFlags.slice(0, 4).map((f, i) => (
                 <li key={i} className="font-semibold">• {f}</li>
               ))}
             </ul>
