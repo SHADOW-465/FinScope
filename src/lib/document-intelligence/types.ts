@@ -176,3 +176,11 @@ export interface LayoutRegion {
   boundingBox: BoundingBox;
   confidence: number;
 }
+
+export interface TableRegion {
+  boundingBox: BoundingBox;
+  pageNumber: number;
+  confidence: number;
+}
+
+export type ParserErrorCategory = "recoverable" | "retryable" | "fatal" | "manual_review";
