@@ -153,3 +153,18 @@ export interface BankTemplate {
     balanceRelativeX: [number, number];
   };
 }
+
+export interface StageTelemetry {
+  stageName: string;
+  durationMs: number;
+  confidence?: number;
+  success: boolean;
+  warnings: string[];
+  failures: string[];
+}
+
+export interface LedgerObservability {
+  telemetry: StageTelemetry[];
+  overallDurationMs: number;
+  finalScore: number;
+}
