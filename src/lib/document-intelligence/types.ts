@@ -22,3 +22,11 @@ export interface DocumentMetadata {
   processing_strategy: ProcessingStrategy;
   pageDetails?: PageMetadata[];
 }
+
+export interface DocumentProfile {
+  id: string;
+  pdf_type: PDFType;
+  confidence: number;
+  reasons: string[];
+  recommendedStrategy: ProcessingStrategy;
+}
