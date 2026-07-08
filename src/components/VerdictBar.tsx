@@ -40,7 +40,7 @@ export default function VerdictBar({ report }: { report: any }) {
   // Red flags, worst first. Empty list = clean file.
   const flags: string[] = [];
   if (integrity && integrity.status !== "ok")
-    flags.push(`${integrity.balanceBreaks.length} balance mismatch(es) — possible tampering`);
+    flags.push(`${integrity.balanceBreaks.length} balance mismatch(es) — possible tampering or parsing error`);
   if (policy)
     policy.triggeredRules
       .filter((r: any) => r.severity === "hard")

@@ -66,13 +66,13 @@ export function checkStatementIntegrity(
         // First row is the anchor — nothing to reconcile it against.
         continue;
       }
-      prevBalance = opts.openingBalance;
+      prevBalance = Number(opts.openingBalance) || 0;
     } else {
-      prevBalance = txns[i - 1].balance;
+      prevBalance = Number(txns[i - 1].balance) || 0;
     }
 
-    const expected = prevBalance + (t.credit ?? 0) - (t.debit ?? 0);
-    const actual = t.balance;
+    const expected = prevBalance + (Number(t.credit) || 0) - (Number(t.debit) || 0);
+    const actual = Number(t.balance) || 0;
     const delta = round2(actual - expected);
     checked++;
 
