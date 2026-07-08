@@ -30,3 +30,9 @@ export interface DocumentProfile {
   reasons: string[];
   recommendedStrategy: ProcessingStrategy;
 }
+
+export interface DecryptionResult {
+  success: boolean;
+  error?: string;
+  decryptedBuffer?: Buffer;
+}
