@@ -136,3 +136,9 @@ export interface LedgerValidationResult {
   anomalies: ValidationAnomaly[];
   mathematicalScore: number;
 }
+
+export interface LedgerConfidence {
+  averageTransactionConfidence: number;
+  reconciliationScore: number;
+  overallConfidenceScore: number;
+}
