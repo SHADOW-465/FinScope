@@ -79,20 +79,35 @@ export async function POST(req: NextRequest) {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      // Configure pdf-parse options (including password support if needed)
-      const options: any = {};
-      if (password) {
-        options.ownerPassword = password;
-        options.userPassword = password;
-      }
-
       let pdfData;
       try {
-        pdfData = await pdfParser(buffer, options);
+        if (password) {
+          // pdf-parse doesn't forward custom parameters to getDocument by default,
+          // but we can pass a DocumentInitParameters object as the first argument,
+          // which is directly passed to PDFJS.getDocument().
+          pdfData = await pdfParser({ data: buffer, password } as any);
+        } else {
+          pdfData = await pdfParser(buffer);
+        }
       } catch (err: any) {
         console.error(`Error parsing PDF ${file.name}:`, err);
+        const isPasswordRequired = err.name === "PasswordException" || 
+                                   err.message?.toLowerCase().includes("password") ||
+                                   err.message?.toLowerCase().includes("decrypt");
+        
+        if (isPasswordRequired) {
+          return NextResponse.json(
+            { 
+              error: `Password protected PDF: Failed to decrypt ${file.name}. Please enter the correct password.`,
+              code: "PASSWORD_REQUIRED",
+              fileName: file.name
+            },
+            { status: 422 }
+          );
+        }
+        
         return NextResponse.json(
-          { error: `Failed to decrypt/parse PDF ${file.name}. Please check the password.` },
+          { error: `Failed to parse PDF ${file.name}: ${err.message || err}` },
           { status: 422 }
         );
       }

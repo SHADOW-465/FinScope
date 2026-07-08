@@ -151,7 +151,7 @@ export default function Home() {
 
       {/* MAIN CONTAINER */}
       <main className="flex-grow max-w-[96%] xl:max-w-[98%] 2xl:max-w-[1700px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col justify-center">
-        {isGlobalLoading ? (
+        {isGlobalLoading && (
           <div className="flex flex-col items-center justify-center min-h-[50vh] py-16 animate-in fade-in duration-300">
             <div className="glass-panel max-w-lg w-full rounded-2xl p-8 flex flex-col items-center gap-6 border border-indigo-500/25 bg-slate-950/40 backdrop-blur-md shadow-2xl shadow-indigo-950/20 text-center">
               <div className="p-4 bg-indigo-500/10 rounded-full animate-pulse">
@@ -171,9 +171,11 @@ export default function Home() {
               </div>
             </div>
           </div>
-        ) : !analysisResult || !activeReport ? (
+        )}
+
+        {!analysisResult || !activeReport ? (
           /* UPLOAD & PROMPT STATE */
-          <div className="space-y-12 py-10 animate-in fade-in duration-300">
+          <div className={`space-y-12 py-10 animate-in fade-in duration-300 ${isGlobalLoading ? "hidden" : ""}`}>
             {/* Tagline */}
             <div className="text-center max-w-3xl mx-auto space-y-4">
               <span className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-xs font-bold uppercase tracking-widest inline-flex items-center gap-1.5 animate-pulse">

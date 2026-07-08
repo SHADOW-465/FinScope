@@ -152,8 +152,8 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
         </div>
       )}
 
-      {isProcessing ? (
-        <div className="flex flex-col items-center justify-center min-h-[40vh] py-16">
+      {isProcessing && (
+        <div className="flex flex-col items-center justify-center min-h-[40vh] py-16 animate-in fade-in duration-300">
           <div className="glass-panel max-w-lg w-full rounded-2xl p-8 flex flex-col items-center gap-6 border border-indigo-500/25 text-center">
             <div className="p-4 bg-indigo-500/10 rounded-full animate-pulse">
               <Landmark className="w-10 h-10 text-indigo-400" />
@@ -167,9 +167,11 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
             <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
           </div>
         </div>
-      ) : !data || !activeReport ? (
+      )}
+
+      {!data || !activeReport ? (
         /* No analysis yet: upload statements into this case */
-        <div className="space-y-8 py-6">
+        <div className={`space-y-8 py-6 ${isProcessing ? "hidden" : ""}`}>
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <h3 className="text-2xl font-black text-white tracking-tight">Upload bank statements</h3>
             <p className="text-sm text-slate-400">
@@ -184,7 +186,7 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
             onProcessError={() => setIsProcessing(false)}
           />
         </div>
-      ) : (
+      ) : !isProcessing ? (
         /* Dashboard */
         <div className="space-y-6">
           {/* Print header */}
@@ -302,7 +304,7 @@ export default function CaseWorkspace({ caseInfo, initialData }: CaseWorkspacePr
 
           <ChatAssistant analysisData={activeReport} />
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
