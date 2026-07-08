@@ -26,7 +26,11 @@ export async function extractScannedPages(pdfBuffer: Buffer): Promise<string[]> 
   const images: string[] = [];
   PDFJS.disableWorker = true;
 
-  const doc = await PDFJS.getDocument({ data: pdfBuffer });
+  const doc = await PDFJS.getDocument({
+    data: pdfBuffer,
+    nativeImageDecoderSupport: "none",
+    disableFontFace: true,
+  });
   const numPages = doc.numPages;
 
   for (let pageNum = 1; pageNum <= numPages; pageNum++) {
