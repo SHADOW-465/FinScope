@@ -10,19 +10,25 @@ import {
   ShieldCheck,
   TrendingUp,
   Sparkles,
-  BarChart2,
   Loader2,
 } from "lucide-react";
 import UploadZone from "@/components/UploadZone";
-import RiskCard from "@/components/RiskCard";
-import OverviewCards from "@/components/OverviewCards";
-import Charts from "@/components/Charts";
-import Panels from "@/components/Panels";
-import TransactionTable from "@/components/TransactionTable";
 import ChatAssistant from "@/components/ChatAssistant";
-import UnderwritingPanel from "@/components/UnderwritingPanel";
-import AISummaryCard from "@/components/AISummaryCard";
-import VerdictBar from "@/components/VerdictBar";
+
+// Import new Credit Memorandum components
+import ReportCover from "@/components/report/ReportCover";
+import ExecutiveSummary from "@/components/report/ExecutiveSummary";
+import BorrowerSnapshot from "@/components/report/BorrowerSnapshot";
+import IncomeIntelligence from "@/components/report/IncomeIntelligence";
+import CashFlowIntelligence from "@/components/report/CashFlowIntelligence";
+import ExpenseIntelligence from "@/components/report/ExpenseIntelligence";
+import DebtObligationAnalysis from "@/components/report/DebtObligationAnalysis";
+import FinancialBehaviourAnalysis from "@/components/report/FinancialBehaviourAnalysis";
+import RiskAssessment from "@/components/report/RiskAssessment";
+import AICreditOpinion from "@/components/report/AICreditOpinion";
+import SupportingEvidence from "@/components/report/SupportingEvidence";
+import AnomaliesPage from "@/components/report/AnomaliesPage";
+import AppendixPage from "@/components/report/AppendixPage";
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -46,6 +52,9 @@ export default function Home() {
   const [isExportingExcel, setIsExportingExcel] = useState(false);
   const [isGlobalLoading, setIsGlobalLoading] = useState(false);
 
+  // Active page tab for screen navigation
+  const [activeTab, setActiveTab] = useState<number>(0);
+
   // ── Process Complete handler ──────────────────────────────────────────
 
   const handleProcessComplete = useCallback((data: AnalysisResult) => {
@@ -59,6 +68,7 @@ export default function Home() {
   const handleReset = () => {
     setAnalysisResult(null);
     setActiveAccountId("");
+    setActiveTab(0);
   };
 
   // ── Derive active report ──
@@ -100,6 +110,22 @@ export default function Home() {
 
   const handlePrint = () => window.print();
 
+  const tabs = [
+    { id: 0, label: "0.0 Cover Page" },
+    { id: 1, label: "1.0 Executive Summary" },
+    { id: 2, label: "2.0 Borrower Snapshot" },
+    { id: 3, label: "3.0 Income Intelligence" },
+    { id: 4, label: "4.0 Cash Flow" },
+    { id: 5, label: "5.0 Expense Profile" },
+    { id: 6, label: "6.0 Debt & Obligation" },
+    { id: 7, label: "7.0 Behaviour Analysis" },
+    { id: 8, label: "8.0 Risk Assessment" },
+    { id: 9, label: "9.0 AI Credit Opinion" },
+    { id: 10, label: "10.0 Supporting Evidence" },
+    { id: 11, label: "11.0 Anomalies & Audits" },
+    { id: 12, label: "12.0 Technical Appendix" }
+  ];
+
   // ── Render ────────────────────────────────────────────────────────────
 
   return (
@@ -122,7 +148,6 @@ export default function Home() {
 
         {analysisResult && (
           <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full sm:w-auto">
-
             <button
               onClick={handleReset}
               className="px-4 py-2 border border-slate-800 hover:border-slate-700 bg-slate-900/60 hover:bg-slate-900 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
@@ -143,7 +168,7 @@ export default function Home() {
               className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-xl text-xs font-semibold text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-lg shadow-indigo-600/15"
             >
               <Printer className="w-3.5 h-3.5" />
-              Print / PDF
+              Print Memorandum
             </button>
           </div>
         )}
@@ -152,7 +177,7 @@ export default function Home() {
       {/* MAIN CONTAINER */}
       <main className="flex-grow max-w-[96%] xl:max-w-[98%] 2xl:max-w-[1700px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col justify-center">
         {isGlobalLoading && (
-          <div className="flex flex-col items-center justify-center min-h-[50vh] py-16 animate-in fade-in duration-300">
+          <div className="flex flex-col items-center justify-center min-h-[50vh] py-16 animate-in fade-in duration-300 no-print">
             <div className="glass-panel max-w-lg w-full rounded-2xl p-8 flex flex-col items-center gap-6 border border-indigo-500/25 bg-slate-950/40 backdrop-blur-md shadow-2xl shadow-indigo-950/20 text-center">
               <div className="p-4 bg-indigo-500/10 rounded-full animate-pulse">
                 <Landmark className="w-10 h-10 text-indigo-400" />
@@ -175,7 +200,7 @@ export default function Home() {
 
         {!analysisResult || !activeReport ? (
           /* UPLOAD & PROMPT STATE */
-          <div className={`space-y-12 py-10 animate-in fade-in duration-300 ${isGlobalLoading ? "hidden" : ""}`}>
+          <div className={`space-y-12 py-10 animate-in fade-in duration-300 no-print ${isGlobalLoading ? "hidden" : ""}`}>
             {/* Tagline */}
             <div className="text-center max-w-3xl mx-auto space-y-4">
               <span className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-xs font-bold uppercase tracking-widest inline-flex items-center gap-1.5 animate-pulse">
@@ -246,21 +271,7 @@ export default function Home() {
           </div>
         ) : (
           /* ACTIVE DASHBOARD STATE */
-          <div className="space-y-6 animate-in fade-in duration-300">
-            {/* Print Header (Visible ONLY on print media) */}
-            <div className="hidden print:block border-b-2 border-slate-900 pb-4 mb-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h1 className="text-2xl font-bold">FinScope Underwriting Report</h1>
-                  <p className="text-sm text-slate-600">Generated: {new Date().toLocaleDateString("en-IN")}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-bold">Risk Score: {activeReport.risk_score.score} / 100</p>
-                  <p className="text-xs font-semibold uppercase">{activeReport.risk_score.risk_level}</p>
-                </div>
-              </div>
-            </div>
-
+          <div className="space-y-6">
             {/* Account Switcher Bar (Only if multiple accounts are detected) */}
             {analysisResult.accounts && analysisResult.accounts.length > 1 && (
               <div className="glass-panel rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-indigo-500/20 no-print animate-in slide-in-from-top-4 duration-300">
@@ -282,7 +293,10 @@ export default function Home() {
                     return (
                       <button
                         key={acc.id}
-                        onClick={() => setActiveAccountId(acc.id)}
+                        onClick={() => {
+                          setActiveAccountId(acc.id);
+                          setActiveTab(0);
+                        }}
                         className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center gap-2 ${
                           isActive
                             ? "bg-indigo-600/15 border-indigo-500/40 text-indigo-300 shadow-md shadow-indigo-600/5"
@@ -303,56 +317,249 @@ export default function Home() {
               </div>
             )}
 
-            {/* Decision hero: the answer first, evidence below */}
-            <VerdictBar report={activeReport} />
-
-            {/* Dashboard Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              {/* Primary Left Columns */}
-              <div className="lg:col-span-8 space-y-6 order-2 lg:order-1">
-                <OverviewCards
-                  overview={activeReport.overview}
-                  metrics={activeReport.metrics}
-                  bouncesCount={activeReport.bounce_analysis.length}
-                  totalMonthlyEMIs={activeReport.liability_analysis.reduce((sum: number, l: any) => sum + l.emi_amount, 0)}
-                />
-
-                <Charts monthlyAnalysis={activeReport.monthly_analysis} transactions={activeReport.transactions} />
-
-                <div className="print-page-break" />
-
-                <TransactionTable
-                  transactions={activeReport.transactions}
-                />
-
-                <div className="print-page-break" />
-
-                <Panels
-                  income={activeReport.income_analysis}
-                  liabilities={activeReport.liability_analysis}
-                  bounces={activeReport.bounce_analysis}
-                  balanceRisks={activeReport.balance_risks}
-                  durationMonths={activeReport.overview.durationMonths}
-                />
+            {/* Grid Layout (Screen Only) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start no-print">
+              {/* Table of Contents Navigation Sidebar */}
+              <div className="lg:col-span-3 glass-panel rounded-2xl p-4 space-y-1.5 lg:sticky lg:top-6">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-2 px-2">
+                  Memorandum Index
+                </span>
+                {tabs.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-2 cursor-pointer ${
+                        isActive
+                          ? "bg-indigo-600/15 text-indigo-300 font-bold border-l-2 border-indigo-500 pl-2.5"
+                          : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/40"
+                      }`}
+                    >
+                      <FileText className="w-3.5 h-3.5 shrink-0" />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Sidebar Right Column */}
-              <div className="lg:col-span-4 lg:sticky lg:top-24 order-1 lg:order-2 space-y-4">
-                <UnderwritingPanel
-                  foir={activeReport.foir}
-                  policy={activeReport.policy}
-                  integrity={activeReport.integrity}
+              {/* Main Interactive Screen Content */}
+              <div className="lg:col-span-9 glass-panel rounded-2xl p-8 min-h-[70vh]">
+                {activeTab === 0 && (
+                  <ReportCover
+                    caseInfo={{
+                      id: "Direct-Upload-Case",
+                      applicantName: activeReport.overview.accountHolder,
+                      productLabel: "Direct Underwriting Analysis",
+                      requestedAmount: activeReport.overview.totalCredits * 0.3,
+                      tenureMonths: 12
+                    }}
+                    overview={activeReport.overview}
+                  />
+                )}
+                {activeTab === 1 && (
+                  <ExecutiveSummary
+                    overview={activeReport.overview}
+                    metrics={activeReport.metrics}
+                    foir={activeReport.foir}
+                    riskScore={activeReport.risk_score}
+                    policy={activeReport.policy || { verdict: "pass", policyName: "General Credit Guidelines" }}
+                    bouncesCount={activeReport.bounce_analysis.length}
+                    negativeBalancesCount={activeReport.balance_risks.filter(
+                      (r: any) => r.risk_type === "Negative Balance"
+                    ).length}
+                  />
+                )}
+                {activeTab === 2 && (
+                  <BorrowerSnapshot
+                    overview={activeReport.overview}
+                    transactionsCount={activeReport.transactions.length}
+                    integrity={activeReport.integrity}
+                  />
+                )}
+                {activeTab === 3 && (
+                  <IncomeIntelligence
+                    overview={activeReport.overview}
+                    metrics={activeReport.metrics}
+                    incomeAnalysis={activeReport.income_analysis}
+                  />
+                )}
+                {activeTab === 4 && (
+                  <CashFlowIntelligence
+                    overview={activeReport.overview}
+                    metrics={activeReport.metrics}
+                    monthlyAnalysis={activeReport.monthly_analysis}
+                  />
+                )}
+                {activeTab === 5 && (
+                  <ExpenseIntelligence
+                    overview={activeReport.overview}
+                    transactions={activeReport.transactions}
+                  />
+                )}
+                {activeTab === 6 && (
+                  <DebtObligationAnalysis
+                    overview={activeReport.overview}
+                    metrics={activeReport.metrics}
+                    foir={activeReport.foir}
+                    liabilityAnalysis={activeReport.liability_analysis}
+                  />
+                )}
+                {activeTab === 7 && (
+                  <FinancialBehaviourAnalysis
+                    overview={activeReport.overview}
+                    transactions={activeReport.transactions}
+                    bouncesCount={activeReport.bounce_analysis.length}
+                    negativeBalancesCount={activeReport.balance_risks.filter(
+                      (r: any) => r.risk_type === "Negative Balance"
+                    ).length}
+                  />
+                )}
+                {activeTab === 8 && (
+                  <RiskAssessment
+                    overview={activeReport.overview}
+                    riskScore={activeReport.risk_score}
+                  />
+                )}
+                {activeTab === 9 && (
+                  <AICreditOpinion
+                    overview={activeReport.overview}
+                    metrics={activeReport.metrics}
+                    riskScore={activeReport.risk_score}
+                    caseId="Direct-Upload-Case"
+                    bouncesCount={activeReport.bounce_analysis.length}
+                  />
+                )}
+                {activeTab === 10 && (
+                  <SupportingEvidence
+                    overview={activeReport.overview}
+                    transactions={activeReport.transactions}
+                  />
+                )}
+                {activeTab === 11 && (
+                  <AnomaliesPage
+                    overview={activeReport.overview}
+                    bounceAnalysis={activeReport.bounce_analysis}
+                    balanceRisks={activeReport.balance_risks}
+                    transactions={activeReport.transactions}
+                  />
+                )}
+                {activeTab === 12 && (
+                  <AppendixPage
+                    overview={activeReport.overview}
+                    integrity={activeReport.integrity}
+                    transactions={activeReport.transactions}
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Sequential Printable Version (Print Only) */}
+            <div className="hidden print:block space-y-12">
+              <div className="print-page">
+                <ReportCover
+                  caseInfo={{
+                    id: "Direct-Upload-Case",
+                    applicantName: activeReport.overview.accountHolder,
+                    productLabel: "Direct Underwriting Analysis",
+                    requestedAmount: activeReport.overview.totalCredits * 0.3,
+                    tenureMonths: 12
+                  }}
+                  overview={activeReport.overview}
                 />
-                <AISummaryCard report={activeReport} />
-                <RiskCard
-                  score={activeReport.risk_score.score}
-                  level={activeReport.risk_score.risk_level}
-                  breakdown={activeReport.risk_score.breakdown}
+              </div>
+              <div className="print-page">
+                <ExecutiveSummary
+                  overview={activeReport.overview}
+                  metrics={activeReport.metrics}
+                  foir={activeReport.foir}
+                  riskScore={activeReport.risk_score}
+                  policy={activeReport.policy || { verdict: "pass", policyName: "General Credit Guidelines" }}
                   bouncesCount={activeReport.bounce_analysis.length}
-                  emiBurden={activeReport.metrics.emi_burden}
                   negativeBalancesCount={activeReport.balance_risks.filter(
                     (r: any) => r.risk_type === "Negative Balance"
                   ).length}
+                />
+              </div>
+              <div className="print-page">
+                <BorrowerSnapshot
+                  overview={activeReport.overview}
+                  transactionsCount={activeReport.transactions.length}
+                  integrity={activeReport.integrity}
+                />
+              </div>
+              <div className="print-page">
+                <IncomeIntelligence
+                  overview={activeReport.overview}
+                  metrics={activeReport.metrics}
+                  incomeAnalysis={activeReport.income_analysis}
+                />
+              </div>
+              <div className="print-page">
+                <CashFlowIntelligence
+                  overview={activeReport.overview}
+                  metrics={activeReport.metrics}
+                  monthlyAnalysis={activeReport.monthly_analysis}
+                />
+              </div>
+              <div className="print-page">
+                <ExpenseIntelligence
+                  overview={activeReport.overview}
+                  transactions={activeReport.transactions}
+                />
+              </div>
+              <div className="print-page">
+                <DebtObligationAnalysis
+                  overview={activeReport.overview}
+                  metrics={activeReport.metrics}
+                  foir={activeReport.foir}
+                  liabilityAnalysis={activeReport.liability_analysis}
+                />
+              </div>
+              <div className="print-page">
+                <FinancialBehaviourAnalysis
+                  overview={activeReport.overview}
+                  transactions={activeReport.transactions}
+                  bouncesCount={activeReport.bounce_analysis.length}
+                  negativeBalancesCount={activeReport.balance_risks.filter(
+                    (r: any) => r.risk_type === "Negative Balance"
+                  ).length}
+                />
+              </div>
+              <div className="print-page">
+                <RiskAssessment
+                  overview={activeReport.overview}
+                  riskScore={activeReport.risk_score}
+                />
+              </div>
+              <div className="print-page">
+                <AICreditOpinion
+                  overview={activeReport.overview}
+                  metrics={activeReport.metrics}
+                  riskScore={activeReport.risk_score}
+                  caseId="Direct-Upload-Case"
+                  bouncesCount={activeReport.bounce_analysis.length}
+                />
+              </div>
+              <div className="print-page">
+                <SupportingEvidence
+                  overview={activeReport.overview}
+                  transactions={activeReport.transactions}
+                />
+              </div>
+              <div className="print-page">
+                <AnomaliesPage
+                  overview={activeReport.overview}
+                  bounceAnalysis={activeReport.bounce_analysis}
+                  balanceRisks={activeReport.balance_risks}
+                  transactions={activeReport.transactions}
+                />
+              </div>
+              <div className="print-page">
+                <AppendixPage
+                  overview={activeReport.overview}
+                  integrity={activeReport.integrity}
+                  transactions={activeReport.transactions}
                 />
               </div>
             </div>
