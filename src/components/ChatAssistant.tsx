@@ -40,7 +40,18 @@ I can answer underwriting questions or evaluate repayment capacity. Click a pres
     const savedKey = localStorage.getItem("finscope_api_key");
     const savedProvider = localStorage.getItem("finscope_provider");
     if (savedKey) setApiKey(savedKey);
-    if (savedProvider) setProvider(savedProvider);
+    if (savedProvider) {
+      if (savedProvider === "nvidia") {
+        setProvider("groq");
+        localStorage.setItem("finscope_provider", "groq");
+        if (savedKey?.startsWith("nvapi-")) {
+          setApiKey("");
+          localStorage.removeItem("finscope_api_key");
+        }
+      } else {
+        setProvider(savedProvider);
+      }
+    }
   }, []);
 
   // Save settings
@@ -224,7 +235,7 @@ I can answer underwriting questions or evaluate repayment capacity. Click a pres
                 <Settings className="w-3.5 h-3.5 text-indigo-400" />
                 AI API Key Configurations
               </h4>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setProvider("gemini")}
@@ -247,17 +258,6 @@ I can answer underwriting questions or evaluate repayment capacity. Click a pres
                 >
                   Groq
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setProvider("nvidia")}
-                  className={`px-2 py-1.5 rounded-xl border text-[10px] font-medium transition-colors cursor-pointer ${
-                    provider === "nvidia"
-                      ? "bg-indigo-600/15 border-indigo-500/40 text-indigo-300"
-                      : "bg-slate-900 border-slate-800 text-slate-400"
-                  }`}
-                >
-                  NVIDIA NIM
-                </button>
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
@@ -268,8 +268,6 @@ I can answer underwriting questions or evaluate repayment capacity. Click a pres
                   placeholder={
                     provider === "gemini"
                       ? "Enter Gemini API Key..."
-                      : provider === "nvidia"
-                      ? "Enter NVIDIA API Key..."
                       : "Enter Groq API Key..."
                   }
                   value={apiKey}

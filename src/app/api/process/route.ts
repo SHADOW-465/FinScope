@@ -8,6 +8,7 @@ import { computeRiskProfile } from "@/lib/engine/risk";
 import { evaluatePolicy, getDefaultPolicy, policyInputFromRiskProfile } from "@/lib/policy/policies";
 import { createSupabaseServerClient } from "@/lib/db/server";
 import type { LoanAsk, ProductType } from "@/types/domain";
+import { extractScannedPages, performGroqOCR } from "@/lib/parser/ocr";
 
 function chunk<T>(arr: T[], size: number): T[][] {
   const out: T[][] = [];
@@ -112,19 +113,54 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const extractedText = pdfData.text;
-      if (!extractedText || extractedText.trim().length === 0) {
-        return NextResponse.json(
-          { error: `No readable text found in PDF ${file.name}. The file might be scanned or empty.` },
-          { status: 422 }
-        );
+      let parsedData;
+      let bankName;
+      let ocrUsed = false;
+      const extractedText = pdfData.text || "";
+
+      if (extractedText.trim().length < 150) {
+        // Scanned statement PDF - needs OCR!
+        ocrUsed = true;
+        try {
+          const images = await extractScannedPages(buffer);
+          if (images.length === 0) {
+            return NextResponse.json(
+              { error: `No readable text found in PDF ${file.name}, and image extraction failed.` },
+              { status: 422 }
+            );
+          }
+          const ocrResult = await performGroqOCR(images);
+          
+          parsedData = {
+            accountNumber: ocrResult.accountNumber,
+            accountHolder: ocrResult.accountHolder,
+            statementPeriod: ocrResult.statementPeriod,
+            openingBalance: ocrResult.openingBalance,
+            closingBalance: ocrResult.closingBalance,
+            transactions: ocrResult.transactions.map((t) => ({
+              date: t.date,
+              description: t.description,
+              debit: t.debit,
+              credit: t.credit,
+              balance: t.balance,
+            })),
+          };
+          bankName = ocrResult.bankName || "GENERIC";
+        } catch (ocrErr: any) {
+          console.error(`OCR failed for PDF ${file.name}:`, ocrErr);
+          return NextResponse.json(
+            { error: `Failed to perform OCR on scanned PDF ${file.name}: ${ocrErr.message}` },
+            { status: 422 }
+          );
+        }
+      } else {
+        // Native text PDF
+        // Detect Bank
+        bankName = detectBank(extractedText);
+
+        // Parse text to extract transactions & metadata
+        parsedData = parseStatementText(extractedText, bankName);
       }
-
-      // Detect Bank
-      const bankName = detectBank(extractedText);
-
-      // Parse text to extract transactions & metadata
-      const parsedData = parseStatementText(extractedText, bankName);
 
       // Determine unique group key for this account
       let groupKey = `${bankName}_${parsedData.accountNumber}`;
@@ -152,7 +188,8 @@ export async function POST(req: NextRequest) {
       groups.get(groupKey).files.push({
         name: file.name,
         index: idx,
-        parsed: parsedData
+        parsed: parsedData,
+        ocrUsed: ocrUsed
       });
     }
 
@@ -261,7 +298,7 @@ export async function POST(req: NextRequest) {
               sha256: null,
               page_count: null,
               integrity_status: integrityReport.status,
-              ocr_used: false,
+              ocr_used: !!fObj.ocrUsed,
               processing_status: "done",
             })
             .select("id")
