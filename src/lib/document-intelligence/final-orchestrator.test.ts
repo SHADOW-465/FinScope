@@ -27,7 +27,7 @@ describe("Final Architectural Phases", () => {
   it("strategy selector routes optimal pipeline strategy based on profile type", () => {
     const profile: DocumentProfile = {
       id: "test",
-      pdf_type: "native",
+      pdf_type: "digital",
       confidence: 1.0,
       reasons: [],
       recommendedStrategy: "native"

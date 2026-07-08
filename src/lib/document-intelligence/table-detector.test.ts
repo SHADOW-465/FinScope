@@ -52,7 +52,7 @@ describe("Document Table Detector", () => {
     const base64 = createTableTestPNG(100, 100, [20, 50, 80], [50]);
     const result = await detectTables(base64);
     
-    expect(layout => layout.tables).toBeDefined();
+    expect(result.tables).toBeDefined();
     expect(result.tables[0].hasBorders).toBe(true);
     expect(result.tables[0].columnsCount).toBe(3);
   });

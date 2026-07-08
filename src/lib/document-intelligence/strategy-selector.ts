@@ -39,7 +39,7 @@ export class ExtractionStrategyRegistry {
  * @param profile - Classified DocumentProfile
  */
 export function selectStrategy(profile: DocumentProfile): ProcessingStrategy {
-  if (profile.pdf_type === "encrypted" || profile.pdf_type === "unknown") {
+  if (profile.pdf_type === "corrupt" || profile.pdf_type === "unknown") {
     return "unsupported";
   }
 
