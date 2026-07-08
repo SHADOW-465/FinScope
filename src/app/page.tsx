@@ -236,9 +236,9 @@ export default function Home() {
                   <Sparkles className="w-6 h-6 text-purple-400" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-slate-200">NVIDIA NIM AI Assistant</h4>
+                  <h4 className="text-sm font-semibold text-slate-200">Groq Underwriting Assistant</h4>
                   <p className="text-xs text-slate-400 mt-1 leading-normal">
-                    Query customer repayment capacity, income stability, and risk metrics using Llama 3.1.
+                    Query customer repayment capacity, income stability, and risk metrics using Llama 3.
                   </p>
                 </div>
               </div>
@@ -367,7 +367,7 @@ export default function Home() {
       <footer className="py-6 border-t border-slate-900 mt-auto text-center text-xs text-slate-500 no-print">
         <p>
           © {new Date().getFullYear()} FinScope. Deployed on Vercel Free Tier. Powered by
-          In-Memory OCR &amp; PDF Extraction + NVIDIA NIM AI.
+          In-Memory OCR &amp; PDF Extraction + Groq Underwriting AI.
         </p>
       </footer>
     </div>

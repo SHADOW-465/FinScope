@@ -6,7 +6,7 @@ import { createSupabaseServerClient } from "@/lib/db/server";
 
 export const dynamic = "force-dynamic";
 
-const MODEL = "meta/llama-3.1-70b-instruct";
+const MODEL = "llama3-70b-8192";
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,9 +15,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "report with risk_score and foir is required" }, { status: 400 });
     }
 
-    const apiKey = process.env.NVIDIA_API_KEY;
+    const apiKey = process.env.GROK_API_KEY || process.env.GROQ_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: "No AI provider configured (NVIDIA_API_KEY missing)" }, { status: 503 });
+      return NextResponse.json({ error: "No AI provider configured (GROK_API_KEY missing in .env.local)" }, { status: 503 });
     }
 
     const context = buildAIContext(report, report.policy ?? undefined);
@@ -34,7 +34,7 @@ ${report.policy ? `\nPOLICY VERDICT: ${report.policy.verdict} (${report.policy.p
 Respond with ONLY a JSON object, no markdown fences, exactly this shape:
 {"strengths": ["..."], "concerns": ["..."], "recommendation": "${RECOMMENDATIONS.join('" | "')}", "evidence": ["<ids from the lists above that support your statements>"]}`;
 
-    const client = new OpenAI({ apiKey, baseURL: "https://integrate.api.nvidia.com/v1" });
+    const client = new OpenAI({ apiKey, baseURL: "https://api.groq.com/openai/v1" });
 
     const started = Date.now();
     let parsed: unknown = null;

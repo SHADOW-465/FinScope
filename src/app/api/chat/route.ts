@@ -38,9 +38,16 @@ ${contextText}
     let activeApiKey = api_key;
     let activeProvider = provider || "gemini";
 
-    if ((!activeApiKey || activeApiKey.trim() === "") && process.env.NVIDIA_API_KEY) {
-      activeApiKey = process.env.NVIDIA_API_KEY;
-      activeProvider = "nvidia";
+    if (activeProvider === "nvidia") {
+      activeProvider = "groq";
+      if (activeApiKey?.startsWith("nvapi-")) {
+        activeApiKey = "";
+      }
+    }
+
+    if ((!activeApiKey || activeApiKey.trim() === "") && (process.env.GROK_API_KEY || process.env.GROQ_API_KEY)) {
+      activeApiKey = process.env.GROK_API_KEY || process.env.GROQ_API_KEY;
+      activeProvider = "groq";
     }
 
     // 1. If API Key is provided, use LLM
@@ -62,7 +69,7 @@ ${contextText}
         }
       } 
       
-      if (activeProvider === "groq" || activeProvider === "openai" || activeProvider === "nvidia") {
+      if (activeProvider === "groq" || activeProvider === "openai") {
         try {
           let baseURL = undefined;
           let model = "gpt-4o-mini";
@@ -70,9 +77,6 @@ ${contextText}
           if (activeProvider === "groq") {
             baseURL = "https://api.groq.com/openai/v1";
             model = "llama3-8b-8192";
-          } else if (activeProvider === "nvidia") {
-            baseURL = "https://integrate.api.nvidia.com/v1";
-            model = "meta/llama-3.1-70b-instruct";
           }
 
           const openai = new OpenAI({
