@@ -20,6 +20,9 @@ import Charts from "@/components/Charts";
 import Panels from "@/components/Panels";
 import TransactionTable from "@/components/TransactionTable";
 import ChatAssistant from "@/components/ChatAssistant";
+import UnderwritingPanel from "@/components/UnderwritingPanel";
+import AISummaryCard from "@/components/AISummaryCard";
+import VerdictBar from "@/components/VerdictBar";
 
 // ─── Types ────────────────────────────────────────────────────────────────
 
@@ -148,7 +151,7 @@ export default function Home() {
 
       {/* MAIN CONTAINER */}
       <main className="flex-grow max-w-[96%] xl:max-w-[98%] 2xl:max-w-[1700px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col justify-center">
-        {isGlobalLoading ? (
+        {isGlobalLoading && (
           <div className="flex flex-col items-center justify-center min-h-[50vh] py-16 animate-in fade-in duration-300">
             <div className="glass-panel max-w-lg w-full rounded-2xl p-8 flex flex-col items-center gap-6 border border-indigo-500/25 bg-slate-950/40 backdrop-blur-md shadow-2xl shadow-indigo-950/20 text-center">
               <div className="p-4 bg-indigo-500/10 rounded-full animate-pulse">
@@ -168,9 +171,11 @@ export default function Home() {
               </div>
             </div>
           </div>
-        ) : !analysisResult || !activeReport ? (
+        )}
+
+        {!analysisResult || !activeReport ? (
           /* UPLOAD & PROMPT STATE */
-          <div className="space-y-12 py-10 animate-in fade-in duration-300">
+          <div className={`space-y-12 py-10 animate-in fade-in duration-300 ${isGlobalLoading ? "hidden" : ""}`}>
             {/* Tagline */}
             <div className="text-center max-w-3xl mx-auto space-y-4">
               <span className="px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-400 text-xs font-bold uppercase tracking-widest inline-flex items-center gap-1.5 animate-pulse">
@@ -192,6 +197,7 @@ export default function Home() {
 
             {/* Drag & Drop Area */}
             <UploadZone
+              showLoanAsk
               onProcessStart={() => {
                 setIsGlobalLoading(true);
               }}
@@ -297,6 +303,9 @@ export default function Home() {
               </div>
             )}
 
+            {/* Decision hero: the answer first, evidence below */}
+            <VerdictBar report={activeReport} />
+
             {/* Dashboard Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Primary Left Columns */}
@@ -328,7 +337,13 @@ export default function Home() {
               </div>
 
               {/* Sidebar Right Column */}
-              <div className="lg:col-span-4 lg:sticky lg:top-24 order-1 lg:order-2">
+              <div className="lg:col-span-4 lg:sticky lg:top-24 order-1 lg:order-2 space-y-4">
+                <UnderwritingPanel
+                  foir={activeReport.foir}
+                  policy={activeReport.policy}
+                  integrity={activeReport.integrity}
+                />
+                <AISummaryCard report={activeReport} />
                 <RiskCard
                   score={activeReport.risk_score.score}
                   level={activeReport.risk_score.risk_level}

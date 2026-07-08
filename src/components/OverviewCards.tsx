@@ -18,6 +18,7 @@ interface OverviewCardsProps {
   };
   metrics: {
     avg_monthly_banking: number;
+    avg_monthly_income: number;
     net_cash_flow: number;
     income_stability: number;
     expense_ratio: number;
@@ -44,7 +45,8 @@ export default function OverviewCards({
     }).format(val);
   };
 
-  const avgMonthlyIncome = overview.totalCredits / Math.max(1, overview.durationMonths);
+  // Income-classified credits only (engine-computed) — not raw total credits.
+  const avgMonthlyIncome = metrics.avg_monthly_income;
 
   const statItems = [
     {
@@ -59,7 +61,7 @@ export default function OverviewCards({
     {
       title: "Avg Monthly Income",
       value: fmt(avgMonthlyIncome),
-      desc: "Calculated average credits per month",
+      desc: "From income-classified credits per month",
       icon: <BarChart2 className="w-5 h-5 text-indigo-400" />,
       color: "text-indigo-400",
       bgClass: "bg-indigo-500/5 border-indigo-500/10",

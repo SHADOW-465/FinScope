@@ -12,6 +12,9 @@ export function classifyTransactions(rawTxns: RawTransaction[]): ClassifiedTrans
   return rawTxns.map(txn => {
     const desc = txn.description;
     const descLower = desc.toLowerCase();
+    // PDF extraction splits words mid-token ("Cas h Dep") — compact form
+    // catches keywords the spaced form misses.
+    const descCompact = descLower.replace(/\s+/g, "");
     const amount = txn.credit > 0 ? txn.credit : txn.debit;
     
     let category = "Miscellaneous";
@@ -44,9 +47,9 @@ export function classifyTransactions(rawTxns: RawTransaction[]): ClassifiedTrans
         counterparty = cleanCounterpartyName(parts[parts.length - 1]);
       }
     } else {
-      // Generic parsing
-      // Remove numbers, dates, references
-      counterparty = cleanCounterpartyName(desc);
+      // Generic parsing: RTGS/NEFT/CMS narrations embed the payee between
+      // reference codes ("RTGS- CNRBR52...-SREE BALAJI ENTERPRISES- 1200...").
+      counterparty = extractGenericCounterparty(desc);
     }
     
     // Perform Categorization
@@ -70,9 +73,11 @@ export function classifyTransactions(rawTxns: RawTransaction[]): ClassifiedTrans
         category = "Loan Credit";
         confidenceScore = 0.9;
       } else if (
-        descLower.includes("cash deposit") || 
-        descLower.includes("cash dep") || 
-        descLower.includes("self dep")
+        descCompact.includes("cashdeposit") ||
+        descCompact.includes("cashdep") ||
+        descCompact.includes("selfdep") ||
+        descCompact.includes("cshdep") ||
+        descCompact.includes("bydeposit")
       ) {
         category = "Cash Deposit";
         confidenceScore = 0.9;
@@ -89,6 +94,16 @@ export function classifyTransactions(rawTxns: RawTransaction[]): ClassifiedTrans
       } else if (descLower.includes("interest") || descLower.includes("int.rec")) {
         category = "Investment";
         confidenceScore = 0.85;
+      } else if (
+        // Reversals/cancellations are money coming BACK, never income.
+        descLower.includes("cancln") ||
+        descLower.includes("cancel") ||
+        descLower.includes("reversal") ||
+        descLower.includes("rev of") ||
+        descLower.includes("refund")
+      ) {
+        category = "Refund/Reversal";
+        confidenceScore = 0.9;
       } else {
         // Default Credit
         if (amount > 10000) {
@@ -100,8 +115,8 @@ export function classifyTransactions(rawTxns: RawTransaction[]): ClassifiedTrans
     } else {
       // DEBIT CATEGORIZATION
       if (
-        descLower.includes("emi") || 
-        descLower.includes("loan") || 
+        /\bemi\b/.test(descLower) || // whole-word: avoid matching "premium", "chemistry", etc.
+        descLower.includes("loan") ||
         descLower.includes("lending") || 
         descLower.includes("bajaj") || 
         descLower.includes("finance") || 
@@ -188,11 +203,44 @@ export function classifyTransactions(rawTxns: RawTransaction[]): ClassifiedTrans
   });
 }
 
+/**
+ * Pulls the payee name out of bank-mode narrations (RTGS/NEFT/CMS/IMPS):
+ * strips the leading statement date, splits on the code separators, and
+ * keeps the longest mostly-alphabetic segment — names beat reference codes.
+ */
+function extractGenericCounterparty(desc: string): string {
+  // Leading date: "03/Nov/2 025", "03 Nov 2025", "03-11-2025" (parser
+  // line-merges can split the year as "2 025").
+  const stripped = desc.replace(
+    /^\d{1,2}[\/\s\-](?:[A-Za-z]{3}|\d{1,2})[\/\s\-]\d\s?\d{3}\s*/i,
+    ""
+  );
+  let best = "";
+  for (const seg of stripped.split(/[\/\-]/)) {
+    const s = seg.trim();
+    const letters = (s.match(/[A-Za-z]/g) || []).length;
+    const digits = (s.match(/[0-9]/g) || []).length;
+    if (
+      letters >= 4 &&
+      letters > digits * 2 &&
+      !/^(rtgs|neft|imps|cms|upi|inf|trf|bil|ach|nach|dd|chq|mmt|ib|mb)\b/i.test(s) &&
+      s.length > best.length
+    ) {
+      best = s;
+    }
+  }
+  return cleanCounterpartyName(best || stripped);
+}
+
 function cleanCounterpartyName(name: string): string {
   let cleaned = name.trim();
-  
-  // Remove starting dates/refs
+
+  // Remove starting dates/refs — numeric ("03-11-2025") and textual
+  // ("03 Nov 2025" / parser-split "03 Nov 2 025") forms.
   cleaned = cleaned.replace(/^[0-9\-]{6,}\s+/i, "");
+  cleaned = cleaned.replace(/^\d{1,2}\s+[A-Za-z]{3}\s+\d\s?\d{3}\s+/i, "");
+  // Drop long reference-number runs anywhere in the name.
+  cleaned = cleaned.replace(/\b\d{6,}\b/g, " ");
   
   // Remove ending trash, numbers, codes
   cleaned = cleaned.split("-")[0].trim();

@@ -7,10 +7,26 @@ interface UploadZoneProps {
   onProcessStart: () => void;
   onProcessComplete: (data: any) => void;
   onProcessError: () => void;
+  /** When set, the analysis is persisted against this applicant case. */
+  caseId?: string;
+  /** Show loan-ask inputs (used on the case-less "/" flow to enable FOIR/policy). */
+  showLoanAsk?: boolean;
 }
 
-export default function UploadZone({ onProcessStart, onProcessComplete, onProcessError }: UploadZoneProps) {
+const PRODUCT_OPTIONS: Array<[string, string]> = [
+  ["personal", "Personal Loan"],
+  ["vehicle", "Vehicle Finance"],
+  ["gold", "Gold Loan"],
+  ["msme", "MSME / Business Loan"],
+  ["lap", "Loan Against Property"],
+  ["working_capital", "Working Capital"],
+];
+
+export default function UploadZone({ onProcessStart, onProcessComplete, onProcessError, caseId, showLoanAsk }: UploadZoneProps) {
   const [files, setFiles] = useState<File[]>([]);
+  const [productType, setProductType] = useState("personal");
+  const [requestedAmount, setRequestedAmount] = useState("");
+  const [tenureMonths, setTenureMonths] = useState("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -18,6 +34,8 @@ export default function UploadZone({ onProcessStart, onProcessComplete, onProces
   const [error, setError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const isPasswordIssue = error ? (error.toLowerCase().includes("password") || error.toLowerCase().includes("decrypt")) : false;
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -78,6 +96,14 @@ export default function UploadZone({ onProcessStart, onProcessComplete, onProces
     if (password.trim()) {
       formData.append("password", password);
     }
+    if (caseId) {
+      formData.append("caseId", caseId);
+    }
+    if (showLoanAsk && Number(requestedAmount) > 0 && Number(tenureMonths) > 0) {
+      formData.append("productType", productType);
+      formData.append("requestedAmount", requestedAmount);
+      formData.append("tenureMonths", tenureMonths);
+    }
 
     try {
       const response = await fetch("/api/process", {
@@ -87,13 +113,20 @@ export default function UploadZone({ onProcessStart, onProcessComplete, onProces
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.error || "Failed to process bank statements.");
+        const errorObj = new Error(data.error || "Failed to process bank statements.");
+        (errorObj as any).code = data.code;
+        throw errorObj;
       }
 
       onProcessComplete(data);
     } catch (err: any) {
       console.error(err);
       setError(err.message || "An unexpected error occurred during processing.");
+      
+      if (err.code === "PASSWORD_REQUIRED" || err.message?.toLowerCase().includes("password")) {
+        setShowPassword(true);
+      }
+      
       onProcessError(); // revert parent block state
     } finally {
       setIsProcessing(false);
@@ -196,6 +229,52 @@ export default function UploadZone({ onProcessStart, onProcessComplete, onProces
             ))}
           </div>
 
+          {/* Loan Ask (optional, enables FOIR + policy verdict) */}
+          {showLoanAsk && (
+            <div className="border-t border-slate-800/80 pt-5 pb-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Loan Product</label>
+                <select
+                  value={productType}
+                  onChange={(e) => setProductType(e.target.value)}
+                  className="mt-1 w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500"
+                  disabled={isProcessing}
+                >
+                  {PRODUCT_OPTIONS.map(([v, l]) => (
+                    <option key={v} value={v}>{l}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Requested Amount (₹)</label>
+                <input
+                  type="number"
+                  min={1}
+                  placeholder="e.g. 500000"
+                  value={requestedAmount}
+                  onChange={(e) => setRequestedAmount(e.target.value)}
+                  className="mt-1 w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500"
+                  disabled={isProcessing}
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Tenure (months)</label>
+                <input
+                  type="number"
+                  min={1}
+                  placeholder="e.g. 36"
+                  value={tenureMonths}
+                  onChange={(e) => setTenureMonths(e.target.value)}
+                  className="mt-1 w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500"
+                  disabled={isProcessing}
+                />
+              </div>
+              <p className="sm:col-span-3 text-[10px] text-slate-500 -mt-1">
+                Optional — fill these to compute post-loan FOIR and the lender-policy verdict.
+              </p>
+            </div>
+          )}
+
           {/* Password Prompt */}
           <div className="border-t border-slate-800/80 pt-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -203,12 +282,12 @@ export default function UploadZone({ onProcessStart, onProcessComplete, onProces
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className={`p-2 rounded-xl border flex items-center justify-center cursor-pointer transition-colors ${
-                  showPassword
+                  showPassword || isPasswordIssue
                     ? "bg-amber-500/10 border-amber-500/40 text-amber-400"
                     : "bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200"
                 }`}
               >
-                {showPassword ? (
+                {showPassword || isPasswordIssue ? (
                   <Lock className="w-4 h-4 animate-pulse" />
                 ) : (
                   <Unlock className="w-4 h-4" />
@@ -219,19 +298,30 @@ export default function UploadZone({ onProcessStart, onProcessComplete, onProces
                   Password Protected?
                 </p>
                 <p className="text-[10px] text-slate-400">
-                  Check if any statement requires a decryption pin.
+                  {isPasswordIssue ? (
+                    <span className="text-amber-400 font-medium">Please enter the correct password to decrypt files.</span>
+                  ) : (
+                    "Check if any statement requires a decryption pin."
+                  )}
                 </p>
               </div>
             </div>
 
-            {showPassword && (
+            {(showPassword || isPasswordIssue) && (
               <div className="flex-1 max-w-xs transition-all duration-300 animate-in fade-in slide-in-from-left-2">
                 <input
                   type="password"
                   placeholder="Enter statement password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:border-indigo-500 transition-colors"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (error) setError(null);
+                  }}
+                  className={`w-full px-3 py-2 bg-slate-900 border rounded-xl text-sm focus:outline-none transition-colors ${
+                    isPasswordIssue
+                      ? "border-amber-500/60 focus:border-amber-500"
+                      : "border-slate-800 focus:border-indigo-500"
+                  }`}
                   disabled={isProcessing}
                 />
               </div>
