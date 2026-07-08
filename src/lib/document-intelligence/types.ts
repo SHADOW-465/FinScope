@@ -70,3 +70,15 @@ export interface DocumentLayout {
   regions: LayoutRegion[];
   confidence: number;
 }
+
+export interface TableRegion {
+  boundingBox: BoundingBox;
+  hasBorders: boolean;
+  confidence: number;
+  columnsCount?: number;
+}
+
+export interface TableDetectorResult {
+  tables: TableRegion[];
+  confidence: number;
+}
