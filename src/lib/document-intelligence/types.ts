@@ -36,3 +36,17 @@ export interface DecryptionResult {
   error?: string;
   decryptedBuffer?: Buffer;
 }
+
+export interface NormalizationOptions {
+  enhanceContrast?: boolean;
+  binarize?: boolean;
+  denoise?: boolean;
+  deskew?: boolean;
+}
+
+export interface NormalizationResult {
+  normalizedImageBase64: string;
+  qualityScore: number;
+  skewAngle: number;
+  rotationAngle: number;
+}
