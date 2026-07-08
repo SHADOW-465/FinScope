@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import pdfParser from "pdf-parse/lib/pdf-parse.js";
 import { detectBank } from "@/lib/parser/detector";
-import { parseStatementText, RawTransaction } from "@/lib/parser/extractors";
+import { parseStatementText, RawTransaction, spatialPageRender } from "@/lib/parser/extractors";
 import { checkStatementIntegrity } from "@/lib/parser/integrity";
 import { classifyTransactions, ClassifiedTransaction } from "@/lib/engine/classifier";
 import { computeRiskProfile } from "@/lib/engine/risk";
@@ -166,8 +166,16 @@ export async function POST(req: NextRequest) {
         // Detect Bank
         bankName = detectBank(extractedText);
 
-        // Parse text to extract transactions & metadata
-        parsedData = parseStatementText(extractedText, bankName);
+        if (bankName === "HDFC") {
+          // Re-parse with spatialPageRender for HDFC template to enable horizontal boundary classifications
+          const spatialPdfData = password
+            ? await pdfParser({ data: buffer, password } as any, { pagerender: spatialPageRender })
+            : await pdfParser(buffer, { pagerender: spatialPageRender });
+          parsedData = parseStatementText(spatialPdfData.text || "", bankName);
+        } else {
+          // Parse text to extract transactions & metadata
+          parsedData = parseStatementText(extractedText, bankName);
+        }
       }
 
       // Determine unique group key for this account

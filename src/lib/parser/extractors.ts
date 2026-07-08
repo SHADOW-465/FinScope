@@ -933,31 +933,287 @@ function parseCanaraBank(lines: string[], result: ParsedStatement) {
  * The amounts always appear as the LAST two realistic XX.XX sequences in the
  * complete block. Direction is inferred from INW/OUT tags or balance movement.
  */
+export function spatialPageRender(pageData: any): Promise<string> {
+  return pageData.getTextContent({
+    normalizeWhitespace: true,
+    disableCombineTextItems: false
+  }).then(function(textContent: any) {
+    const view = pageData.view || [0, 0, 612, 792];
+    const pageWidth = view[2] - view[0] || 612;
+    
+    const linesMap = new Map<number, any[]>();
+    for (const item of textContent.items) {
+      if (!item.str || item.str.trim() === "") continue;
+      const y = item.transform[5];
+      const x = item.transform[4];
+      
+      let foundY = y;
+      for (const existingY of linesMap.keys()) {
+        if (Math.abs(existingY - y) < 3.0) {
+          foundY = existingY;
+          break;
+        }
+      }
+      
+      if (!linesMap.has(foundY)) {
+        linesMap.set(foundY, []);
+      }
+      linesMap.get(foundY)!.push({ x, str: item.str });
+    }
+    
+    const sortedYs = Array.from(linesMap.keys()).sort((a, b) => b - a);
+    
+    let resultText = "";
+    for (const y of sortedYs) {
+      const items = linesMap.get(y)!;
+      items.sort((a, b) => a.x - b.x);
+      
+      let lineText = "";
+      for (const item of items) {
+        const pct = item.x / pageWidth;
+        lineText += `<x=${pct.toFixed(4)}>${item.str}`;
+      }
+      
+      resultText += lineText + "\n";
+    }
+    
+    return resultText;
+  });
+}
+
+function parseHDFCSpatial(lines: string[], result: ParsedStatement, initialBalance: number | null) {
+  // Column bounds definitions:
+  // Date Column: [0.0, 0.12]
+  // Narration Column: [0.12, 0.55]
+  // Withdrawal/Deposit Columns: [0.55, 0.75]
+  // Balance Column: [0.75, 1.0]
+
+  interface AccumulatedRow {
+    date: string;
+    originalDate: string;
+    narrationChunks: { x: number; text: string }[];
+    amountChunks: { x: number; text: string }[];
+    balanceChunks: { x: number; text: string }[];
+  }
+
+  const transactions: RawTransaction[] = [];
+  let currentAccumulator: AccumulatedRow | null = null;
+
+  function isDateString(text: string): boolean {
+    const t = text.trim();
+    // Match DD-MMM-YYYY or DD/MM/YY etc.
+    return /^\d{1,2}-[A-Za-z]{3}-\d{4}$/.test(t) ||
+           /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(t) ||
+           /^\d{1,2}-\d{1,2}-\d{2,4}$/.test(t);
+  }
+
+  function splitSmushedNumbers(str: string): string[] {
+    const cleaned = str.replace(/\s/g, "");
+    // Handles two floats joined directly: e.g. 24,000.0014,592.56
+    const match = cleaned.match(/^([\d,\-]+)\.(\d{2})([\d,\-]+)\.(\d{2})$/);
+    if (match) {
+      return [`${match[1]}.${match[2]}`, `${match[3]}.${match[4]}`];
+    }
+    return [str];
+  }
+
+  function flushAccumulator() {
+    if (!currentAccumulator) return;
+
+    // Join narration chunks
+    const description = currentAccumulator.narrationChunks
+      .map(c => c.text.trim())
+      .filter(Boolean)
+      .join(" ")
+      .trim() || "Transaction";
+
+    // Reconstruct amounts and balances from raw chunks
+    let amountStr = currentAccumulator.amountChunks
+      .map(c => c.text.trim())
+      .filter(Boolean)
+      .join("")
+      .trim();
+    let balanceStr = currentAccumulator.balanceChunks
+      .map(c => c.text.trim())
+      .filter(Boolean)
+      .join("")
+      .trim();
+
+    // Check for smushed values bleed-through
+    if (amountStr) {
+      const parts = splitSmushedNumbers(amountStr);
+      if (parts.length === 2) {
+        amountStr = parts[0];
+        balanceStr = parts[1];
+      }
+    }
+    if (balanceStr) {
+      const parts = splitSmushedNumbers(balanceStr);
+      if (parts.length === 2) {
+        if (!amountStr) amountStr = parts[0];
+        balanceStr = parts[1];
+      }
+    }
+
+    const amount = parseAmount(amountStr);
+    const balance = parseAmount(balanceStr);
+
+    transactions.push({
+      date: currentAccumulator.date,
+      originalDate: currentAccumulator.originalDate,
+      description,
+      debit: 0,
+      credit: amount, // parsed amount stored in credit temporarily, will be redistributed
+      balance,
+      transactionType: "DEBIT",
+    });
+
+    currentAccumulator = null;
+  }
+
+  function isNoiseLine(line: string): boolean {
+    const clean = line.replace(/<x=\d+\.\d+>/g, "").trim();
+    if (clean === "") return true;
+    if (/^(Transaction DateValue Date|Running|Balance$|Primary Holder:|Nominee Details:|Transaction details for |Page \d+ of \d+)/i.test(clean)) return true;
+    if (/^(Mobile No|Email:|Cust Id:|Customer Id:|Your Branch|IFSC Code:|MICR Code:|Registered$)/i.test(clean)) return true;
+    if (/^(Primary Account Holder Name:|Account Number:|Account Type:|Name:|Address:|No:|Freedom Flexi)/i.test(clean)) return true;
+    if (/^(C \d+|\d{6}$)/i.test(clean)) return true;
+    if (/^(TAMIL NADU|ANDHRA|KARNATAKA|KERALA|CHENNAI|MUMBAI|DELHI|BANGALORE|IN$)/i.test(clean)) return true;
+    if (/^(Total Withdrawals|Total Deposits|Uncleared Amount|Transaction codes|OBD \/OBC|Mobile Funds Transfer|PCD - Purchased|R - UTR|RTGS Transaction|www\.YesRewardz|YES Rewardz)/i.test(clean)) return true;
+    if (/^Statement of account/i.test(clean)) return true;
+    if (/^Period\s*:\s*From/i.test(clean)) return true;
+    if (/^Opening Balance\s*:/i.test(clean)) return true;
+    if (/^Closing Balance\s*:/i.test(clean)) return true;
+    return false;
+  }
+
+  for (const line of lines) {
+    if (isNoiseLine(line)) continue;
+
+    const chunks: { x: number; text: string }[] = [];
+    const matches = line.matchAll(/<x=(\d+\.\d+)>(.*?)(?=<x=|$)/g);
+    for (const m of matches) {
+      chunks.push({ x: parseFloat(m[1]), text: m[2] });
+    }
+
+    if (chunks.length === 0) continue;
+
+    // Condition A: Check if a date chunk exists strictly in the Date column region
+    const dateChunk = chunks.find(c => c.x >= 0.0 && c.x < 0.12 && isDateString(c.text));
+    if (dateChunk) {
+      flushAccumulator();
+      currentAccumulator = {
+        date: cleanDate(dateChunk.text),
+        originalDate: dateChunk.text,
+        narrationChunks: [],
+        amountChunks: [],
+        balanceChunks: [],
+      };
+
+      // Distribute other chunks of the line
+      for (const c of chunks) {
+        if (c === dateChunk) continue;
+        if (c.x >= 0.12 && c.x < 0.55) {
+          currentAccumulator.narrationChunks.push(c);
+        } else if (c.x >= 0.55 && c.x < 0.75) {
+          currentAccumulator.amountChunks.push(c);
+        } else if (c.x >= 0.75 && c.x <= 1.0) {
+          currentAccumulator.balanceChunks.push(c);
+        }
+      }
+    } else if (currentAccumulator) {
+      // Condition B: Accumulate wrapped properties on lines that do not have a new date anchor
+      for (const c of chunks) {
+        if (c.x >= 0.12 && c.x < 0.55) {
+          currentAccumulator.narrationChunks.push(c);
+        } else if (c.x >= 0.55 && c.x < 0.75) {
+          currentAccumulator.amountChunks.push(c);
+        } else if (c.x >= 0.75 && c.x <= 1.0) {
+          currentAccumulator.balanceChunks.push(c);
+        }
+      }
+    }
+  }
+
+  flushAccumulator();
+
+  // Resolve debit/credit directions using balance changes
+  let prevBal = initialBalance;
+  for (const t of transactions) {
+    const amount = t.credit; // raw parsed amount retrieved from temporary storage
+    t.credit = 0;
+    t.debit = 0;
+
+    const joined = t.description;
+    const isInward  = /\bINW\b/i.test(joined);
+    const isOutward = /\bOUT\b/i.test(joined);
+    const isCharge = /PAYMENT CHRGS|GST|CHARGE|CHG/i.test(joined);
+
+    if (isInward && !isOutward) {
+      t.credit = amount;
+      t.transactionType = "CREDIT";
+    } else if (isOutward && !isInward) {
+      t.debit = amount;
+      t.transactionType = "DEBIT";
+    } else if (prevBal !== null) {
+      const delta = t.balance - prevBal;
+      if (delta > 0) {
+        t.credit = amount || delta;
+        t.transactionType = "CREDIT";
+      } else if (delta < 0) {
+        t.debit = amount || Math.abs(delta);
+        t.transactionType = "DEBIT";
+      } else {
+        if (isCharge) {
+          t.debit = amount;
+          t.transactionType = "DEBIT";
+        } else {
+          t.credit = amount;
+          t.transactionType = "CREDIT";
+        }
+      }
+    } else {
+      t.debit = amount;
+      t.transactionType = "DEBIT";
+    }
+
+    prevBal = t.balance;
+    result.transactions.push(t);
+  }
+}
+
 function parseHDFC(lines: string[], result: ParsedStatement) {
+  // Check if coordinates exist in the lines
+  const isSpatial = lines.some(l => l.includes("<x="));
   const HDFC_DATE = /^(\d{2}-[A-Za-z]{3}-\d{4})(\d{2}-[A-Za-z]{3}-\d{4})/;
 
   // ── Metadata & Initial Balance ──────────────────────────────────────────────
   let initialBalance: number | null = null;
   for (const line of lines) {
+    const cleanLine = line.replace(/<x=\d+\.\d+>/g, "");
     if (!result.accountNumber || result.accountNumber === "Unknown") {
-      const m2 = line.match(/Statement of account:\s*(\d{6,20})/i);
+      const m2 = cleanLine.match(/Statement of account:\s*(\d{6,20})/i);
       if (m2) result.accountNumber = m2[1];
-      const m3 = line.match(/account number\s+(\d{6,20})/i);
+      const m3 = cleanLine.match(/account number\s+(\d{6,20})/i);
       if (m3) result.accountNumber = m3[1];
     }
     if (!result.accountHolder || result.accountHolder === "Unknown") {
-      const mh = line.match(/Primary Holder:\s*([A-Za-z][A-Za-z\s]{2,})/i);
+      const mh = cleanLine.match(/Primary Holder:\s*([A-Za-z][A-Za-z\s]{2,})/i);
       if (mh) result.accountHolder = mh[1].trim().replace(/A\/C.*$/i, "").trim();
     }
     if (!result.statementPeriod || result.statementPeriod === "Unknown") {
-      const mp = line.match(/Period:\s*From\s+(\S+)\s+To\s+(\S+)/i);
+      const mp = cleanLine.match(/Period:\s*From\s+(\S+)\s+To\s+(\S+)/i);
       if (mp) result.statementPeriod = `${mp[1]} to ${mp[2]}`;
     }
-    // Extract opening balance to prevent skipping first transaction
-    const mob = line.match(/Opening Balance\s*:\s*([\d,]+\.\d{2})/i);
+    const mob = cleanLine.match(/Opening Balance\s*:\s*([\d,]+\.\d{2})/i);
     if (mob) {
       initialBalance = parseFloat(mob[1].replace(/,/g, ""));
     }
+  }
+
+  if (isSpatial) {
+    parseHDFCSpatial(lines, result, initialBalance);
+    return;
   }
 
   // ── Noise filter ───────────────────────────────────────────────────────────

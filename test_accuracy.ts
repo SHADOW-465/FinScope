@@ -1,7 +1,7 @@
 import fs from "fs";
 import pdf from "pdf-parse";
 import { detectBank } from "./src/lib/parser/detector";
-import { parseStatementText } from "./src/lib/parser/extractors";
+import { parseStatementText, spatialPageRender } from "./src/lib/parser/extractors";
 
 const pdfParser = typeof pdf === "function" ? pdf : (pdf as any).default || require("pdf-parse");
 
@@ -27,7 +27,13 @@ async function checkAccuracy() {
       const bankName = detectBank(pdfData.text);
       console.log(`Detected Bank: ${bankName}`);
       
-      const parsed = parseStatementText(pdfData.text, bankName);
+      let textToParse = pdfData.text;
+      if (bankName === "HDFC") {
+        const spatialData = await pdfParser(dataBuffer, { pagerender: spatialPageRender });
+        textToParse = spatialData.text;
+      }
+      
+      const parsed = parseStatementText(textToParse, bankName);
 
       console.log(`Total Extracted Transactions: ${parsed.transactions.length}`);
       console.log(`Expected Statement Opening Balance: ${parsed.openingBalance}`);

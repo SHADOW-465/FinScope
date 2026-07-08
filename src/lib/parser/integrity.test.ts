@@ -76,4 +76,38 @@ describe("checkStatementIntegrity", () => {
     expect(r.status).toBe("ok");
     expect(r.transactionsChecked).toBe(0);
   });
+
+  it("heals a transaction with missing debit/credit based on balance change", () => {
+    const txns = [
+      rt({ date: "2025-01-01", credit: 10000, balance: 10000 }),
+      rt({ date: "2025-01-02", balance: 7000 }), // missing debit 3000
+      rt({ date: "2025-01-03", balance: 12000 }), // missing credit 5000
+    ];
+    const r = checkStatementIntegrity(txns, { openingBalance: 0 });
+    expect(r.status).toBe("ok");
+    expect(r.transactionsChecked).toBe(3);
+    expect(r.balanceBreaks).toEqual([]);
+    expect(txns[1].debit).toBe(3000);
+    expect(txns[1].transactionType).toBe("DEBIT");
+    expect(txns[2].credit).toBe(5000);
+    expect(txns[2].transactionType).toBe("CREDIT");
+  });
+
+  it("heals a transaction with swapped credit/debit columns", () => {
+    const txns = [
+      rt({ date: "2025-01-01", credit: 10000, balance: 10000 }),
+      // parsed as credit=3000, but balance went down from 10000 to 7000, so it's a debit!
+      { date: "2025-01-02", description: "x", credit: 3000, debit: 0, balance: 7000, transactionType: "CREDIT" as const },
+      // parsed as debit=5000, but balance went up from 7000 to 12000, so it's a credit!
+      { date: "2025-01-03", description: "x", credit: 0, debit: 5000, balance: 12000, transactionType: "DEBIT" as const },
+    ];
+    const r = checkStatementIntegrity(txns, { openingBalance: 0 });
+    expect(r.status).toBe("ok");
+    expect(txns[1].debit).toBe(3000);
+    expect(txns[1].credit).toBe(0);
+    expect(txns[1].transactionType).toBe("DEBIT");
+    expect(txns[2].credit).toBe(5000);
+    expect(txns[2].debit).toBe(0);
+    expect(txns[2].transactionType).toBe("CREDIT");
+  });
 });

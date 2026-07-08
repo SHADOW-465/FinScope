@@ -74,15 +74,70 @@ export function checkStatementIntegrity(
     const expected = prevBalance + (Number(t.credit) || 0) - (Number(t.debit) || 0);
     const actual = Number(t.balance) || 0;
     const delta = round2(actual - expected);
+
+    // Self-Healing Exception Repair Routine
+    if (Math.abs(delta) > tolerance) {
+      const actualDelta = actual - prevBalance;
+      const absDelta = round2(Math.abs(actualDelta));
+      
+      // Scenario 1: Both credit and debit are zero (missing amount token or multi-line wrap issue)
+      if ((Number(t.credit) || 0) === 0 && (Number(t.debit) || 0) === 0) {
+        if (actualDelta > 0) {
+          t.credit = absDelta;
+          t.transactionType = "CREDIT";
+        } else {
+          t.debit = absDelta;
+          t.transactionType = "DEBIT";
+        }
+        
+        // Re-verify after repair
+        const newExpected = prevBalance + (t.credit || 0) - (t.debit || 0);
+        const newDelta = round2(actual - newExpected);
+        if (Math.abs(newDelta) <= tolerance) {
+          notes.push(`[Self-Healing] Reconciled transaction at index ${i}: recovered missing amount of ${absDelta} as ${t.transactionType}.`);
+          checked++;
+          continue;
+        }
+      }
+      
+      // Scenario 2: Swapped columns (e.g. credit parsed as debit or vice versa)
+      if ((Number(t.credit) || 0) > 0 && (Number(t.debit) || 0) === 0) {
+        const testExpected = prevBalance - t.credit;
+        const testDelta = round2(actual - testExpected);
+        if (Math.abs(testDelta) <= tolerance) {
+          t.debit = t.credit;
+          t.credit = 0;
+          t.transactionType = "DEBIT";
+          notes.push(`[Self-Healing] Reconciled transaction at index ${i}: swapped CREDIT of ${t.debit} to DEBIT.`);
+          checked++;
+          continue;
+        }
+      }
+      if ((Number(t.debit) || 0) > 0 && (Number(t.credit) || 0) === 0) {
+        const testExpected = prevBalance + t.debit;
+        const testDelta = round2(actual - testExpected);
+        if (Math.abs(testDelta) <= tolerance) {
+          t.credit = t.debit;
+          t.debit = 0;
+          t.transactionType = "CREDIT";
+          notes.push(`[Self-Healing] Reconciled transaction at index ${i}: swapped DEBIT of ${t.credit} to CREDIT.`);
+          checked++;
+          continue;
+        }
+      }
+    }
+
+    const finalExpected = prevBalance + (Number(t.credit) || 0) - (Number(t.debit) || 0);
+    const finalDelta = round2(actual - finalExpected);
     checked++;
 
-    if (Math.abs(delta) > tolerance) {
+    if (Math.abs(finalDelta) > tolerance) {
       balanceBreaks.push({
         index: i,
         date: t.date,
-        expectedBalance: round2(expected),
+        expectedBalance: round2(finalExpected),
         actualBalance: round2(actual),
-        delta,
+        delta: finalDelta,
       });
     }
   }
