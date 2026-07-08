@@ -97,6 +97,8 @@ export function parseStatementText(text: string, bankName: string): ParsedStatem
     parseIndusInd(lines, result);
   } else if (bankName === "Canara Bank") {
     parseCanaraBank(lines, result);
+  } else if (bankName === "HDFC") {
+    parseHDFC(lines, result);
   } else {
     parseGeneric(lines, result);
   }
@@ -922,6 +924,171 @@ function parseCanaraBank(lines: string[], result: ParsedStatement) {
   });
 
   result.transactions = allTransactions;
+}
+/**
+ * HDFC BANK PARSER
+ *
+ * HDFC e-statements pack two dates + reference + description + amounts into
+ * lines concatenated without spaces. Each transaction may span several lines.
+ * The amounts always appear as the LAST two realistic XX.XX sequences in the
+ * complete block. Direction is inferred from INW/OUT tags or balance movement.
+ */
+function parseHDFC(lines: string[], result: ParsedStatement) {
+  const HDFC_DATE = /^(\d{2}-[A-Za-z]{3}-\d{4})(\d{2}-[A-Za-z]{3}-\d{4})/;
+
+  // ── Metadata & Initial Balance ──────────────────────────────────────────────
+  let initialBalance: number | null = null;
+  for (const line of lines) {
+    if (!result.accountNumber || result.accountNumber === "Unknown") {
+      const m2 = line.match(/Statement of account:\s*(\d{6,20})/i);
+      if (m2) result.accountNumber = m2[1];
+      const m3 = line.match(/account number\s+(\d{6,20})/i);
+      if (m3) result.accountNumber = m3[1];
+    }
+    if (!result.accountHolder || result.accountHolder === "Unknown") {
+      const mh = line.match(/Primary Holder:\s*([A-Za-z][A-Za-z\s]{2,})/i);
+      if (mh) result.accountHolder = mh[1].trim().replace(/A\/C.*$/i, "").trim();
+    }
+    if (!result.statementPeriod || result.statementPeriod === "Unknown") {
+      const mp = line.match(/Period:\s*From\s+(\S+)\s+To\s+(\S+)/i);
+      if (mp) result.statementPeriod = `${mp[1]} to ${mp[2]}`;
+    }
+    // Extract opening balance to prevent skipping first transaction
+    const mob = line.match(/Opening Balance\s*:\s*([\d,]+\.\d{2})/i);
+    if (mob) {
+      initialBalance = parseFloat(mob[1].replace(/,/g, ""));
+    }
+  }
+
+  // ── Noise filter ───────────────────────────────────────────────────────────
+  function isNoiseLine(line: string): boolean {
+    return /^(Transaction DateValue Date|Running|Balance$|Primary Holder:|Nominee Details:|Transaction details for |Page \d+ of \d+)/i.test(line)
+      || /^(Mobile No|Email:|Cust Id:|Customer Id:|Your Branch|IFSC Code:|MICR Code:|Registered$)/i.test(line)
+      || /^(Primary Account Holder Name:|Account Number:|Account Type:|Name:|Address:|No:|Freedom Flexi)/i.test(line)
+      || /^(C \d+|\d{6}$)/i.test(line.trim())
+      || /^(TAMIL NADU|ANDHRA|KARNATAKA|KERALA|CHENNAI|MUMBAI|DELHI|BANGALORE|IN$)/i.test(line);
+  }
+
+  // ── Block grouping ─────────────────────────────────────────────────────────
+  interface Block { txnDate: string; lines: string[] }
+  const blocks: Block[] = [];
+  let current: Block | null = null;
+  // Max continuation lines per block. HDFC transactions typically span 1-6 lines;
+  // capping at 8 prevents address-footer content from bleeding into a transaction.
+  const MAX_BLOCK_LINES = 8;
+
+  for (const line of lines) {
+    if (isNoiseLine(line)) {
+      if (current && current.lines.length >= MAX_BLOCK_LINES) {
+        blocks.push(current);
+        current = null;
+      }
+      continue;
+    }
+    const m = line.match(HDFC_DATE);
+    if (m) {
+      if (current) blocks.push(current);
+      current = { txnDate: m[1], lines: [line] };
+    } else if (current) {
+      if (current.lines.length < MAX_BLOCK_LINES) {
+        current.lines.push(line);
+      } else {
+        blocks.push(current);
+        current = null;
+      }
+    }
+  }
+  if (current) blocks.push(current);
+
+  // ── Amount extraction ─────────────────────────────────────────────────────
+  const MAX_AMOUNT = 9_999_999.99;
+
+  function extractBlockAmounts(block: { txnDate: string; lines: string[] }): { balance: number; amount: number } | null {
+    const lastLine = block.lines[block.lines.length - 1];
+    
+    // Strip all dates of form DD-MMM-YYYY first to avoid year concatenation
+    // e.g. "15-Jan-2026750.00" -> "750.00"
+    const cleanLine = lastLine.replace(/\d{1,2}-[A-Za-z]{3}-\d{4}/g, "");
+    
+    // Find all decimal numbers (with optional commas) in the clean line
+    const re = /\d[\d,]*\.\d{2}/g;
+    const matches = cleanLine.match(re);
+    if (!matches || matches.length === 0) return null;
+
+    const balance = parseFloat(matches[matches.length - 1].replace(/,/g, ""));
+    const amount = matches.length >= 2 ? parseFloat(matches[matches.length - 2].replace(/,/g, "")) : 0;
+
+    if (balance > MAX_AMOUNT || amount > MAX_AMOUNT) return null;
+    return { balance, amount };
+  }
+
+  // ── Parse each block ───────────────────────────────────────────────────────
+  let prevBalance: number | null = initialBalance;
+
+  for (const block of blocks) {
+    const joined = block.lines.join(" ");  // spaced join for text search
+    const extracted = extractBlockAmounts(block);
+    if (!extracted) continue;
+
+    const { balance, amount } = extracted;
+
+    if (balance <= 0 || balance > MAX_AMOUNT) { prevBalance = null; continue; }
+
+    const isInward  = /\bINW\b/i.test(joined);
+    const isOutward = /\bOUT\b/i.test(joined);
+    let type: "CREDIT" | "DEBIT";
+    let credit = 0;
+    let debit  = 0;
+
+    const isCharge = /PAYMENT CHRGS|GST|CHARGE|CHG/i.test(joined);
+
+    if (isInward && !isOutward) {
+      type = "CREDIT"; credit = amount;
+    } else if (isOutward && !isInward) {
+      type = "DEBIT"; debit = amount;
+    } else if (prevBalance !== null) {
+      const delta = balance - prevBalance;
+      if (delta > 0) {
+        type = "CREDIT"; credit = amount || delta;
+      } else if (delta < 0) {
+        type = "DEBIT"; debit = amount || Math.abs(delta);
+      } else {
+        // Delta is 0. Check description for charge indicators to categorize as DEBIT
+        if (isCharge) {
+          type = "DEBIT"; debit = amount;
+        } else {
+          type = "CREDIT"; credit = amount;
+        }
+      }
+    } else {
+      prevBalance = balance;
+      continue;
+    }
+
+    // Description: join continuation lines, strip noise
+    const descLines = block.lines.slice(1).filter(l =>
+      !isNoiseLine(l) && !/^\d{1,3}(?:,\d{3})*\.\d{2}$/.test(l.trim())
+    );
+    const firstLineRest = block.lines[0]
+      .replace(HDFC_DATE, "")
+      .replace(/\b(INW|OUT)\b/gi, "")
+      .replace(/[\d,]+\.\d{2}/g, "")          // strip amounts
+      .replace(/^[A-Z0-9]{3,20}/i, "")        // strip bank-code prefix
+      .trim();
+    const description = [firstLineRest, ...descLines].join(" ").trim() || "Transaction";
+
+    result.transactions.push({
+      date: cleanDate(block.txnDate),
+      originalDate: block.txnDate,
+      description,
+      debit,
+      credit,
+      balance,
+      transactionType: type,
+    });
+
+    prevBalance = balance;
+  }
 }
 
 /**
