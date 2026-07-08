@@ -87,3 +87,12 @@ export interface OCRProvider {
   name: string;
   performOCR(base64Images: string[]): Promise<any>;
 }
+
+export interface TextToken {
+  text: string;
+  pageNumber: number;
+  boundingBox: BoundingBox;
+  font: string;
+  confidence: number;
+  readingOrder: number;
+}
